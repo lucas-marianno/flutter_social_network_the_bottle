@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:the_wall/components/textfield.dart';
+import 'package:the_wall/components/wall_post.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,19 +12,100 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  TextEditingController controller = TextEditingController();
+  final User user = FirebaseAuth.instance.currentUser!;
+
   void logout() async {
     await FirebaseAuth.instance.signOut();
+  }
+
+  void postMessage() async {
+    // TODO implement send
+    if (controller.text.isEmpty) return;
+
+    await FirebaseFirestore.instance.collection('User Posts').add({
+      'UserEmail': user.email,
+      'Message': controller.text,
+      'TimeStamp': Timestamp.now(),
+      'Likes': []
+    });
+    controller.clear();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
+        backgroundColor: Colors.grey[900],
         centerTitle: true,
-        title: const Text('T H E  W A L L'),
-        actions: [IconButton(onPressed: logout, icon: const Icon(Icons.logout))],
+        title: Text(
+          'T H E  W A L L',
+          style: TextStyle(color: Colors.grey[200]),
+        ),
+        actions: [
+          IconButton(
+            onPressed: logout,
+            icon: const Icon(Icons.logout),
+            color: Colors.grey[200],
+          ),
+        ],
       ),
-      body: Container(),
+      body: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // the wall
+            Expanded(
+                child: StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('User Posts')
+                  .orderBy('TimeStamp', descending: false)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      final post = snapshot.data!.docs[index];
+                      // TODO: add timestamp to wallpost
+                      return WallPost(
+                        message: post['Message'],
+                        user: post['UserEmail'],
+                        postId: post.id,
+                        likes: List<String>.from(post['Likes'] ?? []),
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error ${snapshot.error}'),
+                  );
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              },
+            )),
+            // post message
+            Row(
+              children: [
+                Expanded(child: MyTextField(controller: controller, hintText: 'hintText')),
+                IconButton(
+                  onPressed: () => postMessage(),
+                  icon: const Icon(Icons.send),
+                )
+              ],
+            ),
+
+            // logged in as
+            Text('Logged in as ${user.email}', textAlign: TextAlign.center),
+          ],
+        ),
+      ),
     );
   }
 }

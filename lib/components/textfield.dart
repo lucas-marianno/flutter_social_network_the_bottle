@@ -34,11 +34,11 @@ class _MyTextFieldState extends State<MyTextField> {
                 onPressed: () => setState(() => isVisible = !isVisible))
             : null,
         focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.white, width: 3),
+          borderSide: BorderSide(color: Colors.white, width: 4),
         ),
         enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
         filled: true,
-        fillColor: Colors.grey[200],
+        fillColor: Colors.grey[100],
       ),
     );
   }
