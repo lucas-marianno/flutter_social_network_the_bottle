@@ -24,20 +24,21 @@ class _MyTextFieldState extends State<MyTextField> {
   Widget build(BuildContext context) {
     return TextField(
       controller: widget.controller,
-      obscureText: isVisible,
+      obscureText: widget.obscureText ? !isVisible : false,
       decoration: InputDecoration(
+        hintText: widget.hintText,
+        hintStyle: const TextStyle(color: Colors.grey),
         suffixIcon: widget.obscureText
             ? IconButton(
-                icon: Icon(isVisible ? Icons.visibility_off : Icons.visibility),
+                icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off),
                 onPressed: () => setState(() => isVisible = !isVisible))
             : null,
-        hintText: widget.hintText,
-        border: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-        focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white, width: 3),
+        ),
         enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
         filled: true,
         fillColor: Colors.grey[200],
-        hintStyle: const TextStyle(color: Colors.grey),
       ),
     );
   }

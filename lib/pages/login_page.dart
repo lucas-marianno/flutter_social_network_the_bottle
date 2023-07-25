@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../components/dialog_message.dart';
 import '../components/elevated_button.dart';
-import '../components/login_textfield.dart';
+import '../components/textfield.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({
@@ -18,6 +20,30 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  void login() async {
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      if (context.mounted) Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (context) => MessageDialog(context, e.code),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 50),
 
               // sign in button
-              MyButton(text: 'Sign in', onTap: () {}),
+              MyButton(text: 'Sign in', onTap: login),
 
               const SizedBox(height: 25),
               // go to register page

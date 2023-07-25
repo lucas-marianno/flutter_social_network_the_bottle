@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:the_wall/components/dialog_message.dart';
 import '../components/elevated_button.dart';
-import '../components/login_textfield.dart';
+import '../components/textfield.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({
@@ -19,6 +20,37 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+
+  void register() async {
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) return;
+    if (passwordController.text != confirmPasswordController.text) {
+      displayMessage('Passwords don\'t match.');
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      if (context.mounted) Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
+      displayMessage(e.code);
+    }
+  }
+
+  void displayMessage(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => MessageDialog(context, message),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,8 +106,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
               const SizedBox(height: 50),
 
-              // sign in button
-              MyButton(text: 'Sign up', onTap: () {}),
+              // sign up button
+              MyButton(text: 'Sign up', onTap: register),
 
               const SizedBox(height: 25),
               // go to register page
