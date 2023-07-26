@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:the_wall/components/textfield.dart';
 import 'package:the_wall/components/wall_post.dart';
 
+import '../components/drawer.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -36,18 +38,16 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
+      drawer: const MyDrawer(),
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
+        foregroundColor: Colors.grey[200],
         centerTitle: true,
-        title: Text(
-          'T H E  W A L L',
-          style: TextStyle(color: Colors.grey[200]),
-        ),
+        title: const Text('T H E  W A L L'),
         actions: [
           IconButton(
             onPressed: logout,
             icon: const Icon(Icons.logout),
-            color: Colors.grey[200],
           ),
         ],
       ),
