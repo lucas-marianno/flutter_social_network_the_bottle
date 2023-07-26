@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:the_wall/auth/auth.dart';
 
 import 'package:the_wall/firebase_options.dart';
+import 'package:the_wall/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,10 +23,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black, primary: Colors.black),
-      ),
+      theme: lightTheme,
       home: const AuthPage(),
     );
   }
