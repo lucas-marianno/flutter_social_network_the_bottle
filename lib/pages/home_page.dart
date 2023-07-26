@@ -17,10 +17,6 @@ class _HomePageState extends State<HomePage> {
   TextEditingController controller = TextEditingController();
   final User user = FirebaseAuth.instance.currentUser!;
 
-  void logout() async {
-    await FirebaseAuth.instance.signOut();
-  }
-
   void postMessage() async {
     if (controller.text.isEmpty) return;
 
@@ -44,12 +40,6 @@ class _HomePageState extends State<HomePage> {
         foregroundColor: Colors.grey[200],
         centerTitle: true,
         title: const Text('T H E  W A L L'),
-        actions: [
-          IconButton(
-            onPressed: logout,
-            icon: const Icon(Icons.logout),
-          ),
-        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,8 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/auth/auth.dart';
-
 import 'package:the_wall/firebase_options.dart';
+import 'package:the_wall/pages/profile_page.dart';
 import 'package:the_wall/theme.dart';
 
 void main() async {
@@ -24,7 +23,8 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
-      home: const AuthPage(),
+      // home: const AuthPage(),
+      home: const ProfilePage(),
     );
   }
 }
