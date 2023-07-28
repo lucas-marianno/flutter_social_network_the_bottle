@@ -45,7 +45,6 @@ class _ProfilePageState extends State<ProfilePage> {
       'username': newUsername,
       'bio': bio,
     });
-    getProfileInfo();
   }
 
   void editBio() async {
@@ -61,20 +60,16 @@ class _ProfilePageState extends State<ProfilePage> {
       'username': username,
       'bio': newBio,
     });
-    getProfileInfo();
   }
 
   @override
   void initState() {
-    username = user.email!.split('@')[0];
-    bio = 'start writing your bio';
     getProfileInfo();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!isDoneLoading) return const Center(child: CircularProgressIndicator(color: Colors.grey));
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
@@ -82,43 +77,61 @@ class _ProfilePageState extends State<ProfilePage> {
         foregroundColor: Colors.grey[200],
         centerTitle: true,
         title: const Text('P R O F I L E'),
-        actions: [IconButton(onPressed: getProfileInfo, icon: const Icon(Icons.replay))],
       ),
-      body: RefreshIndicator(
-        color: Colors.grey[300],
-        onRefresh: () async => setState(() {}),
-        child: Padding(
-          padding: const EdgeInsets.all(30),
-          child: ListView(
-            children: [
-              // profile pic
-              const SizedBox(height: 40),
-              const Icon(Icons.person, size: 100),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('User Profile').doc(user.email!).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final profileData = snapshot.data!.data();
+            return RefreshIndicator(
+              color: Colors.grey[300],
+              onRefresh: () async => setState(() {}),
+              child: Padding(
+                padding: const EdgeInsets.all(30),
+                child: ListView(
+                  children: [
+                    // profile pic
+                    const SizedBox(height: 40),
+                    const Icon(Icons.person, size: 100),
 
-              // user email
-              Text(
-                user.email!,
-                style: TextStyle(color: Colors.grey[900], fontSize: 20),
-                textAlign: TextAlign.center,
+                    // user email
+                    Text(
+                      user.email!,
+                      style: TextStyle(color: Colors.grey[900], fontSize: 20),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 70),
+
+                    // user details
+                    Text('My details', style: TextStyle(color: Colors.grey[600], fontSize: 18)),
+                    const SizedBox(height: 20),
+
+                    // username
+                    ProfileField(
+                        sectionName: 'username',
+                        text: profileData!['username'],
+                        onTap: editUsername),
+
+                    // bio
+                    ProfileField(
+                      sectionName: 'bio',
+                      text: profileData['bio'],
+                      onTap: editBio,
+                    ),
+
+                    // my posts
+                    const Divider(height: 50, color: Colors.white),
+                    Text('My posts', style: TextStyle(color: Colors.grey[600], fontSize: 18)),
+                  ],
+                ),
               ),
-              const SizedBox(height: 70),
-
-              // user details
-              Text('My details', style: TextStyle(color: Colors.grey[600], fontSize: 18)),
-              const SizedBox(height: 20),
-
-              // username
-              ProfileField(sectionName: 'username', text: username, onTap: editUsername),
-
-              // bio
-              ProfileField(sectionName: 'bio', text: bio, onTap: editBio),
-
-              // my posts
-              const Divider(height: 50, color: Colors.white),
-              Text('My posts', style: TextStyle(color: Colors.grey[600], fontSize: 18)),
-            ],
-          ),
-        ),
+            );
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return Center(child: CircularProgressIndicator(color: Colors.grey[300]));
+          }
+        },
       ),
     );
   }
