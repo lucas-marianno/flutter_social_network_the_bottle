@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
-// ignore: must_be_immutable
 class MyTextField extends StatefulWidget {
-  MyTextField({
+  const MyTextField({
     super.key,
     required this.controller,
     required this.hintText,
     this.onSubmited,
     this.obscureText = false,
+    this.autofocus = true,
   });
-
   final TextEditingController controller;
   final String hintText;
   final void Function()? onSubmited;
-  bool obscureText;
+  final bool obscureText;
+  final bool autofocus;
 
   @override
   State<MyTextField> createState() => _MyTextFieldState();
@@ -25,7 +25,7 @@ class _MyTextFieldState extends State<MyTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      autofocus: true,
+      autofocus: widget.autofocus,
       controller: widget.controller,
       obscureText: widget.obscureText ? !isVisible : false,
       onSubmitted: (value) => widget.onSubmited?.call(),

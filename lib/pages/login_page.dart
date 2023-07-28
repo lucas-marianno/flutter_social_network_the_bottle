@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../components/dialog_message.dart';
+import '../components/show_dialog.dart';
 import '../components/elevated_button.dart';
 import '../components/textfield.dart';
 
@@ -37,10 +37,7 @@ class _LoginPageState extends State<LoginPage> {
       if (context.mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
-      showDialog(
-        context: context,
-        builder: (context) => MessageDialog(context, e.code),
-      );
+      showMyDialog(context, title: 'Log in failed!', content: e.code);
     }
   }
 

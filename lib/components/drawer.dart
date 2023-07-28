@@ -13,6 +13,7 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     void goToPage(Widget page) {
+      Navigator.of(context).pop();
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => page,

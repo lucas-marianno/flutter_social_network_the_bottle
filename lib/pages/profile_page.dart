@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/textfield.dart';
+import '../components/input_from_dialog.dart';
 import '../components/profile_field.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -21,11 +21,9 @@ class _ProfilePageState extends State<ProfilePage> {
     var profile = await FirebaseFirestore.instance.collection('User Profile').doc(user.email).get();
 
     if (profile.exists) {
-      username = profile.data()!['username'] ?? '';
-      bio = profile.data()!['bio'] ?? '';
+      username = profile.data()!['username'];
+      bio = profile.data()!['bio'];
     } else {
-      username = user.email!.split('@')[0];
-      bio = 'start writing your bio';
       await FirebaseFirestore.instance.collection('User Profile').doc(user.email).set({
         'username': username,
         'bio': bio,
@@ -35,8 +33,14 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void editUsername() async {
-    final newUsername = await getNewValue(username);
-    if (newUsername == null) return;
+    final newUsername = await getInputFromDialog(
+      context,
+      title: 'New username',
+      startingString: username,
+      hintText: 'username',
+    );
+    if (newUsername == null || newUsername == username) return;
+
     await FirebaseFirestore.instance.collection('User Profile').doc(user.email).set({
       'username': newUsername,
       'bio': bio,
@@ -45,8 +49,14 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void editBio() async {
-    final newBio = await getNewValue(bio);
-    if (newBio == null) return;
+    final newBio = await getInputFromDialog(
+      context,
+      title: 'New bio',
+      startingString: bio,
+      hintText: 'Your new bio...',
+    );
+
+    if (newBio == null || newBio == bio) return;
     await FirebaseFirestore.instance.collection('User Profile').doc(user.email).set({
       'username': username,
       'bio': newBio,
@@ -54,36 +64,10 @@ class _ProfilePageState extends State<ProfilePage> {
     getProfileInfo();
   }
 
-  Future<String?> getNewValue(String startingString) async {
-    TextEditingController controller = TextEditingController();
-    controller.text = startingString;
-
-    return await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[200],
-        title: const Text('insert new value'),
-        content: MyTextField(
-          controller: controller,
-          hintText: 'ahsuadhuhasuhd',
-          onSubmited: () {
-            Navigator.pop(context, controller.text);
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context, controller.text);
-            },
-            child: Text('Ok'),
-          )
-        ],
-      ),
-    );
-  }
-
   @override
   void initState() {
+    username = user.email!.split('@')[0];
+    bio = 'start writing your bio';
     getProfileInfo();
     super.initState();
   }

@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/dialog_message.dart';
+import 'package:the_wall/components/show_dialog.dart';
 import '../components/elevated_button.dart';
 import '../components/textfield.dart';
 
@@ -24,7 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void register() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) return;
     if (passwordController.text != confirmPasswordController.text) {
-      displayMessage('Passwords don\'t match.');
+      showMyDialog(context, title: 'Nope!', content: 'Passwords don\'t match.');
       return;
     }
 
@@ -40,15 +40,8 @@ class _RegisterPageState extends State<RegisterPage> {
       if (context.mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
-      displayMessage(e.code);
+      showMyDialog(context, content: e.code);
     }
-  }
-
-  void displayMessage(String message) {
-    showDialog(
-      context: context,
-      builder: (context) => MessageDialog(context, message),
-    );
   }
 
   @override

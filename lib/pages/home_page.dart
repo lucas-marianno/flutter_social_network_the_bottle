@@ -60,10 +60,9 @@ class _HomePageState extends State<HomePage> {
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
                         final post = snapshot.data!.docs[index];
-                        // TODO: add timestamp to wallpost
                         return WallPost(
                           message: post['Message'],
-                          user: post['UserEmail'],
+                          postOwnerEmail: post['UserEmail'],
                           postId: post.id,
                           likes: List<String>.from(post['Likes'] ?? []),
                         );
@@ -94,6 +93,7 @@ class _HomePageState extends State<HomePage> {
                     controller: controller,
                     hintText: 'Write your post',
                     onSubmited: postMessage,
+                    autofocus: false,
                   ),
                 ),
                 IconButton(
