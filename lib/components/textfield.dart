@@ -6,11 +6,13 @@ class MyTextField extends StatefulWidget {
     super.key,
     required this.controller,
     required this.hintText,
+    this.onSubmited,
     this.obscureText = false,
   });
 
   final TextEditingController controller;
   final String hintText;
+  final void Function()? onSubmited;
   bool obscureText;
 
   @override
@@ -23,9 +25,10 @@ class _MyTextFieldState extends State<MyTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      autofocus: false,
+      autofocus: true,
       controller: widget.controller,
       obscureText: widget.obscureText ? !isVisible : false,
+      onSubmitted: (value) => widget.onSubmited?.call(),
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintStyle: const TextStyle(color: Colors.grey),

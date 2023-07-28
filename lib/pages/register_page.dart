@@ -102,6 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: confirmPasswordController,
                 hintText: 'Confirm Password',
                 obscureText: true,
+                onSubmited: register,
               ),
 
               const SizedBox(height: 50),

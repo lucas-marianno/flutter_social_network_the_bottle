@@ -89,9 +89,15 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.only(left: 25, right: 10),
             child: Row(
               children: [
-                Expanded(child: MyTextField(controller: controller, hintText: 'Write your post')),
+                Expanded(
+                  child: MyTextField(
+                    controller: controller,
+                    hintText: 'Write your post',
+                    onSubmited: postMessage,
+                  ),
+                ),
                 IconButton(
-                  onPressed: () => postMessage(),
+                  onPressed: postMessage,
                   icon: const Icon(Icons.send, size: 40),
                 )
               ],
