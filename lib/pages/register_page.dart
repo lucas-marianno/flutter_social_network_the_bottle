@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/components/show_dialog.dart';
@@ -33,10 +34,16 @@ class _RegisterPageState extends State<RegisterPage> {
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
     try {
+      // creates new user
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
       );
+      // creates user profile
+      await FirebaseFirestore.instance.collection('User Profile').doc(emailController.text).set({
+        'username': emailController.text.split('@')[0],
+        'bio': 'Write about yourself here...',
+      });
       if (context.mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);

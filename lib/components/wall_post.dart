@@ -5,16 +5,16 @@ import 'package:the_wall/components/show_dialog.dart';
 import 'package:the_wall/components/like_button.dart';
 
 class WallPost extends StatefulWidget {
-  WallPost({
+  const WallPost({
     super.key,
     required this.message,
-    required this.postOwnerEmail,
+    required this.postOwner,
     required this.postId,
     required this.likes,
   });
 
   final String message;
-  final String postOwnerEmail;
+  final String postOwner;
   final String postId;
   final List<String> likes;
 
@@ -30,17 +30,25 @@ class _WallPostState extends State<WallPost> {
   bool isDoneLoading = false;
 
   Future<void> getPostOwnerUsername() async {
-    final profileInfo = await FirebaseFirestore.instance
-        .collection('User Profile')
-        .doc(widget.postOwnerEmail)
-        .get();
+    final profileInfo =
+        await FirebaseFirestore.instance.collection('User Profile').doc(widget.postOwner).get();
     if (profileInfo.exists && profileInfo.data()!['username'] != null) {
       postOwnerUsername = profileInfo.data()!['username'];
     } else {
-      postOwnerUsername = widget.postOwnerEmail;
+      postOwnerUsername = widget.postOwner;
     }
 
-    isDoneLoading = true;
+    /// Error: setState() called after dispose(): _WallPostState#67c5d(lifecycle state: defunct, not mounted)
+    /// This error happens if you call setState() on a State object for a widget that no longer appears in the
+    ///  widget tree (e.g., whose parent widget no longer includes the widget in its build). This error can
+    ///  occur when code calls setState() from a timer or an animation callback.
+    /// The preferred solution is to cancel the timer or stop listening to the animation in the dispose() callback.
+    ///  Another solution is to check the "mounted" property of this object before calling setState() to ensure the
+    ///  object is still in the tree.
+    /// This error might indicate a memory leak if setState() is being called because another object is retaining
+    ///  a reference to this State object after it has been removed from the tree. To avoid memory leaks, consider
+    ///  breaking the reference to this object during dispose().
+    /// isDoneLoading = true;
     setState(() {});
   }
 
@@ -66,7 +74,7 @@ class _WallPostState extends State<WallPost> {
     FocusManager.instance.primaryFocus?.unfocus();
     if (context.mounted) Navigator.pop(context);
 
-    if (widget.postOwnerEmail != currentUser.email) {
+    if (widget.postOwner != currentUser.email) {
       showMyDialog(context,
           title: 'Nope!', content: 'You cannot delete posts made by someone else');
       return;
@@ -83,7 +91,6 @@ class _WallPostState extends State<WallPost> {
     getPostOwnerUsername();
     isLiked = widget.likes.contains(currentUser.email);
     super.initState();
-    setState(() {});
   }
 
   @override
@@ -152,7 +159,9 @@ class _WallPostState extends State<WallPost> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(postOwnerUsername, style: TextStyle(color: Colors.grey[600])),
+                  Text(postOwnerUsername,
+                      // widget.postOwner,
+                      style: TextStyle(color: Colors.grey[600])),
                   const SizedBox(height: 10),
                   SizedBox(width: 300, child: Text(widget.message)),
                 ],

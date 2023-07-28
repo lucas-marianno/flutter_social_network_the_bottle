@@ -84,34 +84,40 @@ class _ProfilePageState extends State<ProfilePage> {
         title: const Text('P R O F I L E'),
         actions: [IconButton(onPressed: getProfileInfo, icon: const Icon(Icons.replay))],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(30),
-        child: ListView(
-          children: [
-            // profile pic
-            const SizedBox(height: 40),
-            const Icon(Icons.person, size: 100),
+      body: RefreshIndicator(
+        color: Colors.grey[300],
+        onRefresh: () async => setState(() {}),
+        child: Padding(
+          padding: const EdgeInsets.all(30),
+          child: ListView(
+            children: [
+              // profile pic
+              const SizedBox(height: 40),
+              const Icon(Icons.person, size: 100),
 
-            // user email
-            Text(
-              user.email!,
-              style: TextStyle(color: Colors.grey[900], fontSize: 20),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 70),
+              // user email
+              Text(
+                user.email!,
+                style: TextStyle(color: Colors.grey[900], fontSize: 20),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 70),
 
-            // user details
-            Text('My details', style: TextStyle(color: Colors.grey[600], fontSize: 18)),
-            const SizedBox(height: 20),
+              // user details
+              Text('My details', style: TextStyle(color: Colors.grey[600], fontSize: 18)),
+              const SizedBox(height: 20),
 
-            // username
-            ProfileField(sectionName: 'username', text: username, onTap: editUsername),
-            // bio
-            ProfileField(sectionName: 'bio', text: bio, onTap: editBio),
-            // my posts
-            const Divider(height: 50, color: Colors.white),
-            Text('My posts', style: TextStyle(color: Colors.grey[600], fontSize: 18)),
-          ],
+              // username
+              ProfileField(sectionName: 'username', text: username, onTap: editUsername),
+
+              // bio
+              ProfileField(sectionName: 'bio', text: bio, onTap: editBio),
+
+              // my posts
+              const Divider(height: 50, color: Colors.white),
+              Text('My posts', style: TextStyle(color: Colors.grey[600], fontSize: 18)),
+            ],
+          ),
         ),
       ),
     );
