@@ -3,9 +3,10 @@ import 'package:the_wall/components/textfield.dart';
 
 Future<String?> getInputFromDialog(
   BuildContext context, {
-  required String startingString,
-  required String title,
-  String? hintText,
+  String? title,
+  String hintText = '',
+  String startingString = '',
+  String submitButtonLabel = 'Ok',
 }) async {
   TextEditingController controller = TextEditingController();
   controller.text = startingString;
@@ -14,10 +15,10 @@ Future<String?> getInputFromDialog(
     context: context,
     builder: (context) => AlertDialog(
       backgroundColor: Colors.grey[200],
-      title: Center(child: Text(title)),
+      title: title == null ? null : Center(child: Text(title)),
       content: MyTextField(
         controller: controller,
-        hintText: hintText ?? '',
+        hintText: hintText,
         onSubmited: () {
           Navigator.pop(context, controller.text);
         },
@@ -27,7 +28,7 @@ Future<String?> getInputFromDialog(
           onPressed: () {
             Navigator.pop(context, controller.text);
           },
-          child: const Text('Ok'),
+          child: Text(submitButtonLabel),
         )
       ],
     ),

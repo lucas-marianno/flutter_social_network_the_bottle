@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:the_wall/components/input_from_dialog.dart';
 import 'package:the_wall/components/show_dialog.dart';
 import 'package:the_wall/components/like_button.dart';
+import 'package:the_wall/settings.dart';
 
 class WallPost extends StatefulWidget {
   const WallPost({
@@ -30,12 +32,17 @@ class _WallPostState extends State<WallPost> {
   bool isDoneLoading = false;
 
   Future<void> getPostOwnerUsername() async {
+    postOwnerUsername = widget.postOwner;
+    if (!replaceEmailWithUsernameOnWallPost) {
+      isDoneLoading = true;
+      return;
+    }
+
+    // what if we replace this shit with a sreambuilder?
     final profileInfo =
         await FirebaseFirestore.instance.collection('User Profile').doc(widget.postOwner).get();
     if (profileInfo.exists && profileInfo.data()!['username'] != null) {
       postOwnerUsername = profileInfo.data()!['username'];
-    } else {
-      postOwnerUsername = widget.postOwner;
     }
 
     /// Error: setState() called after dispose(): _WallPostState#67c5d(lifecycle state: defunct, not mounted)
@@ -69,7 +76,7 @@ class _WallPostState extends State<WallPost> {
     }
   }
 
-  void deletePost() async {
+  void deletePost() {
     // dismiss any keyboard
     FocusManager.instance.primaryFocus?.unfocus();
     if (context.mounted) Navigator.pop(context);
@@ -80,10 +87,24 @@ class _WallPostState extends State<WallPost> {
       return;
     }
 
-    showMyDialog(context, title: 'Post Deleted');
-
     // delete post from firebase firestore
-    await FirebaseFirestore.instance.collection('User Posts').doc(widget.postId).delete();
+    FirebaseFirestore.instance.collection('User Posts').doc(widget.postId).delete();
+  }
+
+  void addComment() async {
+    final commentText = await getInputFromDialog(context,
+        title: 'Add Comment', hintText: 'New comment...', submitButtonLabel: 'Post Comment');
+    if (commentText == null) return;
+    // write the comment to firestore under the comments collection for this post
+    // FirebaseFirestore.instance
+    //     .collection('User Posts')
+    //     .doc(widget.postId)
+    //     .collection('Comments')
+    //     .add({
+    //   'CommentText': commentText!,
+    //   'CommentedBy': currentUser.email,
+    //   'CommentTime': Timestamp.now(),
+    // });
   }
 
   @override
@@ -138,34 +159,51 @@ class _WallPostState extends State<WallPost> {
         },
         child: Container(
           margin: const EdgeInsets.all(10),
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
               color: Colors.grey[100],
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: Colors.white)),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(width: 10),
-              // like button
-              Column(
-                children: [
-                  LikeButton(isLiked: isLiked, onTap: toggleLike),
-                  Text(widget.likes.length.toString())
-                ],
-              ),
-
-              const SizedBox(width: 15),
               // user + message
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(postOwnerUsername,
-                      // widget.postOwner,
-                      style: TextStyle(color: Colors.grey[600])),
+                  Text(
+                    postOwnerUsername,
+                    style: TextStyle(color: Colors.grey[900], fontSize: 16),
+                  ),
                   const SizedBox(height: 10),
-                  SizedBox(width: 300, child: Text(widget.message)),
+                  Text(widget.message),
+                  const SizedBox(height: 10),
                 ],
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Column(
+                    children: [
+                      LikeButton(isLiked: isLiked, onTap: toggleLike),
+                      Text(widget.likes.length.toString())
+                    ],
+                  ),
+                  const SizedBox(width: 10),
+                  // comment button
+                  Column(
+                    children: [
+                      GestureDetector(
+                          onTap: addComment,
+                          child: const Icon(Icons.comment_outlined, color: Colors.grey)),
+                      Text(widget.likes.length.toString())
+                    ],
+                  ),
+                ],
+              )
+              // like button
             ],
           ),
         ),

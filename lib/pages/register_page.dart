@@ -103,6 +103,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 hintText: 'Confirm Password',
                 obscureText: true,
                 onSubmited: register,
+                enterKeyPressSubmits: true,
               ),
 
               const SizedBox(height: 50),

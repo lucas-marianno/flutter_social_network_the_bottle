@@ -85,6 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                 hintText: 'Password',
                 obscureText: true,
                 onSubmited: login,
+                enterKeyPressSubmits: true,
               ),
 
               const SizedBox(height: 50),

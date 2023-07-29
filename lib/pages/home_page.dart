@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/components/textfield.dart';
 import 'package:the_wall/components/wall_post.dart';
-
 import '../components/drawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -101,7 +100,10 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   IconButton(
-                    onPressed: postMessage,
+                    onPressed: () {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      postMessage();
+                    },
                     icon: const Icon(Icons.send, size: 40),
                   )
                 ],
