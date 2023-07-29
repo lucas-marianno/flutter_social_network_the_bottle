@@ -4,15 +4,15 @@ import 'package:the_wall/settings.dart';
 class MyTextField extends StatefulWidget {
   const MyTextField({
     super.key,
-    required this.controller,
-    required this.hintText,
+    this.controller,
+    this.hintText,
     this.onSubmited,
     this.obscureText = false,
     this.autofocus = true,
     this.enterKeyPressSubmits = false,
   });
-  final TextEditingController controller;
-  final String hintText;
+  final TextEditingController? controller;
+  final String? hintText;
   final void Function()? onSubmited;
   final bool obscureText;
   final bool autofocus;

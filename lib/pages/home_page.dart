@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/components/textfield.dart';
 import 'package:the_wall/components/wall_post.dart';
+import 'package:the_wall/util/timestamp_to_string.dart';
 import '../components/drawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -67,6 +68,7 @@ class _HomePageState extends State<HomePage> {
                             postOwner: post['UserEmail'],
                             postId: post.id,
                             likes: List<String>.from(post['Likes'] ?? []),
+                            postTimeStamp: timestampToString(post['TimeStamp']),
                           );
                         },
                       );

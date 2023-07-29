@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../components/input_from_dialog.dart';
+import 'package:the_wall/components/input_from_modal_bottom_sheet.dart';
 import '../components/profile_field.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -13,31 +13,15 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final User user = FirebaseAuth.instance.currentUser!;
-  bool isDoneLoading = false;
   String username = '';
   String bio = '';
 
-  void getProfileInfo() async {
-    var profile = await FirebaseFirestore.instance.collection('User Profile').doc(user.email).get();
-
-    if (profile.exists) {
-      username = profile.data()!['username'];
-      bio = profile.data()!['bio'];
-    } else {
-      await FirebaseFirestore.instance.collection('User Profile').doc(user.email).set({
-        'username': username,
-        'bio': bio,
-      });
-    }
-    setState(() => isDoneLoading = true);
-  }
-
   void editUsername() async {
-    final newUsername = await getInputFromDialog(
+    final newUsername = await getInputFromModalBottomSheet(
       context,
-      title: 'New username',
+      title: 'New Username',
       startingString: username,
-      hintText: 'username',
+      hintText: 'Username',
     );
     if (newUsername == null || newUsername == username) return;
 
@@ -48,11 +32,12 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void editBio() async {
-    final newBio = await getInputFromDialog(
+    final newBio = await getInputFromModalBottomSheet(
       context,
       title: 'New bio',
       startingString: bio,
       hintText: 'Your new bio...',
+      enterKeyPressSubmits: false,
     );
 
     if (newBio == null || newBio == bio) return;
@@ -60,12 +45,6 @@ class _ProfilePageState extends State<ProfilePage> {
       'username': username,
       'bio': newBio,
     });
-  }
-
-  @override
-  void initState() {
-    getProfileInfo();
-    super.initState();
   }
 
   @override
@@ -82,7 +61,10 @@ class _ProfilePageState extends State<ProfilePage> {
         stream: FirebaseFirestore.instance.collection('User Profile').doc(user.email!).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final profileData = snapshot.data!.data();
+            final profileData = snapshot.data!.data()!;
+            username = profileData['username'];
+            bio = profileData['bio'];
+
             return RefreshIndicator(
               color: Colors.grey[300],
               onRefresh: () async => setState(() {}),
@@ -107,15 +89,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 20),
 
                     // username
-                    ProfileField(
-                        sectionName: 'username',
-                        text: profileData!['username'],
-                        onTap: editUsername),
+                    ProfileField(sectionName: 'username', text: username, onTap: editUsername),
 
                     // bio
                     ProfileField(
                       sectionName: 'bio',
-                      text: profileData['bio'],
+                      text: bio,
                       onTap: editBio,
                     ),
 

@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/input_from_dialog.dart';
+import 'package:the_wall/components/comment_button.dart';
+import 'package:the_wall/components/comments.dart';
 import 'package:the_wall/components/show_dialog.dart';
 import 'package:the_wall/components/like_button.dart';
 import 'package:the_wall/settings.dart';
+import 'package:the_wall/util/timestamp_to_string.dart';
+import 'input_from_modal_bottom_sheet.dart';
 
 class WallPost extends StatefulWidget {
   const WallPost({
@@ -13,12 +16,14 @@ class WallPost extends StatefulWidget {
     required this.postOwner,
     required this.postId,
     required this.likes,
+    required this.postTimeStamp,
   });
 
   final String message;
   final String postOwner;
   final String postId;
   final List<String> likes;
+  final String postTimeStamp;
 
   @override
   State<WallPost> createState() => _WallPostState();
@@ -92,19 +97,23 @@ class _WallPostState extends State<WallPost> {
   }
 
   void addComment() async {
-    final commentText = await getInputFromDialog(context,
-        title: 'Add Comment', hintText: 'New comment...', submitButtonLabel: 'Post Comment');
+    final commentText = await getInputFromModalBottomSheet(
+      context,
+      title: 'Add Comment',
+      hintText: 'New Comment',
+    );
+
     if (commentText == null) return;
     // write the comment to firestore under the comments collection for this post
-    // FirebaseFirestore.instance
-    //     .collection('User Posts')
-    //     .doc(widget.postId)
-    //     .collection('Comments')
-    //     .add({
-    //   'CommentText': commentText!,
-    //   'CommentedBy': currentUser.email,
-    //   'CommentTime': Timestamp.now(),
-    // });
+    FirebaseFirestore.instance
+        .collection('User Posts')
+        .doc(widget.postId)
+        .collection('Comments')
+        .add({
+      'CommentText': commentText,
+      'CommentedBy': currentUser.email,
+      'CommentTime': Timestamp.now(),
+    });
   }
 
   @override
@@ -168,42 +177,70 @@ class _WallPostState extends State<WallPost> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // user + message
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              // user + timestamp
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     postOwnerUsername,
                     style: TextStyle(color: Colors.grey[900], fontSize: 16),
                   ),
-                  const SizedBox(height: 10),
-                  Text(widget.message),
-                  const SizedBox(height: 10),
+                  Text(widget.postTimeStamp, style: const TextStyle(color: Colors.grey))
                 ],
               ),
+              const SizedBox(height: 10),
+              // post text
+              Text(widget.message, textAlign: TextAlign.justify),
+              const SizedBox(height: 10),
+              // like + comment buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Column(
-                    children: [
-                      LikeButton(isLiked: isLiked, onTap: toggleLike),
-                      Text(widget.likes.length.toString())
-                    ],
+                  LikeButton(
+                    isLiked: isLiked,
+                    onTap: toggleLike,
+                    nOfLikes: widget.likes.length,
                   ),
                   const SizedBox(width: 10),
-                  // comment button
-                  Column(
-                    children: [
-                      GestureDetector(
-                          onTap: addComment,
-                          child: const Icon(Icons.comment_outlined, color: Colors.grey)),
-                      Text(widget.likes.length.toString())
-                    ],
+                  CommentButton(
+                    onTap: addComment,
+                    nOfComments: widget.likes.length,
                   ),
                 ],
+              ),
+              // comments
+              StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('User Posts')
+                    .doc(widget.postId)
+                    .collection('Comments')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final List<Comment> comments = [];
+                    for (var doc in snapshot.data!.docs) {
+                      final commentData = doc.data();
+                      comments.add(
+                        Comment(
+                          text: commentData['CommentText'],
+                          user: commentData['CommentedBy'],
+                          time: timestampToString(commentData['CommentTime']),
+                        ),
+                      );
+                    }
+                    return ListView(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: comments,
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text(snapshot.error.toString()));
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
               )
-              // like button
             ],
           ),
         ),
