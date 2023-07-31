@@ -41,81 +41,77 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         title: const Text('T H E  W A L L'),
       ),
-      body: RefreshIndicator(
-        color: Colors.grey[300],
-        onRefresh: () async => setState(() {}),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // the wall
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('User Posts')
-                      .orderBy('TimeStamp', descending: false)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
-                          final post = snapshot.data!.docs[index];
-                          return WallPost(
-                            message: post['Message'],
-                            postOwner: post['UserEmail'],
-                            postId: post.id,
-                            likes: List<String>.from(post['Likes'] ?? []),
-                            postTimeStamp: timestampToString(post['TimeStamp']),
-                          );
-                        },
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('Error ${snapshot.error}'),
-                      );
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  },
-                ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // the wall
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('User Posts')
+                    .orderBy('TimeStamp', descending: false)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        final post = snapshot.data!.docs[index];
+                        return WallPost(
+                          message: post['Message'],
+                          postOwner: post['UserEmail'],
+                          postId: post.id,
+                          likes: List<String>.from(post['Likes'] ?? []),
+                          postTimeStamp: timestampToString(post['TimeStamp']),
+                        );
+                      },
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error ${snapshot.error}'),
+                    );
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
               ),
             ),
-            const Divider(
-              color: Colors.white,
-              height: 32,
-            ),
+          ),
+          const Divider(
+            color: Colors.white,
+            height: 32,
+          ),
 
-            // post message
-            Padding(
-              padding: const EdgeInsets.only(left: 25, right: 10),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: MyTextField(
-                      controller: controller,
-                      hintText: 'Write your post',
-                      onSubmited: postMessage,
-                      autofocus: false,
-                    ),
+          // post message
+          Padding(
+            padding: const EdgeInsets.only(left: 25, right: 10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: MyTextField(
+                    controller: controller,
+                    hintText: 'Write your post',
+                    onSubmited: postMessage,
+                    autofocus: false,
                   ),
-                  IconButton(
-                    onPressed: () {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      postMessage();
-                    },
-                    icon: const Icon(Icons.send, size: 40),
-                  )
-                ],
-              ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    postMessage();
+                  },
+                  icon: const Icon(Icons.send, size: 40),
+                )
+              ],
             ),
+          ),
 
-            // logged in as
-            Text('Logged in as ${user.email}', textAlign: TextAlign.center),
-          ],
-        ),
+          // logged in as
+          Text('Logged in as ${user.email}', textAlign: TextAlign.center),
+        ],
       ),
     );
   }
