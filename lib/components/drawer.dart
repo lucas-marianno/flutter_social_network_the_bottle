@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/pages/home_page.dart';
 import 'package:the_wall/pages/profile_page.dart';
-
+import '../pages/setting_page.dart';
 import 'list_tile.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -46,6 +46,11 @@ class MyDrawer extends StatelessWidget {
                   iconData: Icons.person,
                   text: 'P R O F I L E',
                   onTap: () => goToPage(const ProfilePage()),
+                ),
+                MyListTile(
+                  iconData: Icons.settings,
+                  text: 'S E T T I N G S',
+                  onTap: () => goToPage(const SettingsPage()),
                 ),
               ],
             ),

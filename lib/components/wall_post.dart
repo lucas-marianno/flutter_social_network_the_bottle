@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/components/comment_button.dart';
 import 'package:the_wall/components/comments.dart';
+import 'package:the_wall/components/options_modal_bottom_sheet.dart';
 import 'package:the_wall/components/show_dialog.dart';
 import 'package:the_wall/components/like_button.dart';
 import 'package:the_wall/settings.dart';
-import 'package:the_wall/util/timestamp_to_string.dart';
 import 'input_from_modal_bottom_sheet.dart';
 
 class WallPost extends StatefulWidget {
@@ -35,6 +35,16 @@ class _WallPostState extends State<WallPost> {
 
   String postOwnerUsername = '';
   bool isDoneLoading = false;
+
+  late Comments comments;
+  late int nOfComments;
+
+  initComments() {
+    comments = Comments(
+      postId: widget.postId,
+    );
+    nOfComments = comments.count;
+  }
 
   Future<void> getPostOwnerUsername() async {
     postOwnerUsername = widget.postOwner;
@@ -118,6 +128,7 @@ class _WallPostState extends State<WallPost> {
 
   @override
   void initState() {
+    initComments();
     getPostOwnerUsername();
     isLiked = widget.likes.contains(currentUser.email);
     super.initState();
@@ -134,38 +145,25 @@ class _WallPostState extends State<WallPost> {
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: Colors.white)),
         child: Center(
-            child: LinearProgressIndicator(
-          backgroundColor: Colors.grey[200],
-          color: Colors.grey[100],
-          minHeight: 50,
-        )),
+          child: LinearProgressIndicator(
+            backgroundColor: Colors.grey[200],
+            color: Colors.grey[100],
+            minHeight: 50,
+          ),
+        ),
       );
     } else {
       return GestureDetector(
-        onLongPress: () {
-          showModalBottomSheet(
-            context: context,
-            backgroundColor: Colors.grey[900],
-            showDragHandle: true,
-            builder: (context) {
-              return Padding(
-                padding: const EdgeInsets.all(15),
-                child: Column(
-                  children: [
-                    ListTile(
-                      onTap: deletePost,
-                      leading: const Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                      title: const Text('Delete post', style: TextStyle(color: Colors.white)),
-                    )
-                  ],
-                ),
-              );
-            },
-          );
-        },
+        onLongPress: () => optionsFromModalBottomSheet(
+          context,
+          children: [
+            ListTile(
+              onTap: deletePost,
+              leading: const Icon(Icons.delete, color: Colors.white),
+              title: const Text('Delete post', style: TextStyle(color: Colors.white)),
+            )
+          ],
+        ),
         child: Container(
           margin: const EdgeInsets.all(10),
           padding: const EdgeInsets.all(20),
@@ -205,42 +203,12 @@ class _WallPostState extends State<WallPost> {
                   const SizedBox(width: 10),
                   CommentButton(
                     onTap: addComment,
-                    nOfComments: widget.likes.length,
+                    nOfComments: nOfComments,
                   ),
                 ],
               ),
               // comments
-              StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('User Posts')
-                    .doc(widget.postId)
-                    .collection('Comments')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final List<Comment> comments = [];
-                    for (var doc in snapshot.data!.docs) {
-                      final commentData = doc.data();
-                      comments.add(
-                        Comment(
-                          text: commentData['CommentText'],
-                          user: commentData['CommentedBy'],
-                          time: timestampToString(commentData['CommentTime']),
-                        ),
-                      );
-                    }
-                    return ListView(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: comments,
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text(snapshot.error.toString()));
-                  } else {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                },
-              )
+              comments,
             ],
           ),
         ),

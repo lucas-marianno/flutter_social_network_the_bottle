@@ -1,2 +1,3 @@
-const replaceEmailWithUsernameOnWallPost = false;
-const enterSendsPost = false;
+var replaceEmailWithUsernameOnWallPost = false;
+var enterSendsPost = false;
+var enablePostComments = true;

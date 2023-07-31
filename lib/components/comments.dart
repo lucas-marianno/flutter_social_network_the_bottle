@@ -1,4 +1,64 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:the_wall/settings.dart';
+
+import '../util/timestamp_to_string.dart';
+
+// ignore: must_be_immutable
+class Comments extends StatelessWidget {
+  Comments({
+    super.key,
+    required this.postId,
+  });
+
+  final String postId;
+  int nOfComments = 0;
+  int get count => nOfComments;
+
+  @override
+  Widget build(BuildContext context) {
+    if (enablePostComments) {
+      return StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('User Posts')
+            .doc(postId)
+            .collection('Comments')
+            .orderBy('CommentTime', descending: false)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            nOfComments = snapshot.data!.docs.length;
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                final commentData = snapshot.data!.docs[index].data();
+                return Comment(
+                  text: commentData['CommentText'],
+                  user: commentData['CommentedBy'],
+                  time: timestampToString(commentData['CommentTime']),
+                );
+              },
+            );
+          } else if (snapshot.hasError) {
+            return Center(child: Text(snapshot.error.toString()));
+          } else {
+            return Center(
+              child: LinearProgressIndicator(
+                backgroundColor: Colors.grey[200],
+                color: Colors.grey[100],
+                minHeight: 50,
+              ),
+            );
+          }
+        },
+      );
+    } else {
+      return Container();
+    }
+  }
+}
 
 class Comment extends StatelessWidget {
   const Comment({
