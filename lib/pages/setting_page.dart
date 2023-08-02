@@ -1,6 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:restart_app/restart_app.dart';
-import 'package:the_wall/components/elevated_button.dart';
 import 'package:the_wall/settings.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -11,6 +11,16 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  final String userEmail = FirebaseAuth.instance.currentUser!.email!;
+
+  saveSettings() {
+    FirebaseFirestore.instance.collection('User Settings').doc(userEmail).set({
+      'replaceEmailWithUsernameOnWallPost': replaceEmailWithUsernameOnWallPost,
+      'enterSendsPost': enterSendsPost,
+      'enablePostComments': enablePostComments,
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,51 +31,62 @@ class _SettingsPageState extends State<SettingsPage> {
         centerTitle: true,
         title: const Text('S E T T I N G S'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(25),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('User Settings').doc(userEmail).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Padding(
+              padding: const EdgeInsets.all(25),
+              child: Column(
                 children: [
-                  SettingsTile(
-                    value: replaceEmailWithUsernameOnWallPost,
-                    title: 'replaceEmailWithUsernameOnWallPost',
-                    onChanged: (value) {
-                      replaceEmailWithUsernameOnWallPost = value;
-                      setState(() {});
-                    },
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        SettingsTile(
+                          value: replaceEmailWithUsernameOnWallPost,
+                          title: 'replaceEmailWithUsernameOnWallPost',
+                          onChanged: (value) {
+                            replaceEmailWithUsernameOnWallPost = value;
+                            saveSettings();
+                          },
+                        ),
+                        SettingsTile(
+                          value: enterSendsPost,
+                          title: 'enterSendsPost',
+                          onChanged: (value) {
+                            enterSendsPost = value;
+                            saveSettings();
+                          },
+                        ),
+                        SettingsTile(
+                          value: enablePostComments,
+                          title: 'enablePostComments',
+                          onChanged: (value) {
+                            enablePostComments = value;
+                            saveSettings();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  SettingsTile(
-                    value: enterSendsPost,
-                    title: 'enterSendsPost',
-                    onChanged: (value) {
-                      enterSendsPost = value;
-                      setState(() {});
-                    },
-                  ),
-                  SettingsTile(
-                    value: enablePostComments,
-                    title: 'enablePostComments',
-                    onChanged: (value) {
-                      enablePostComments = value;
-                      setState(() {});
-                    },
-                  ),
+                  const Text('Some configurations might not take effect until app restarts'),
+                  const SizedBox(height: 15),
+                  // MyButton(
+                  //   text: 'Save Settings',
+                  //   onTap: () {
+                  //     // TODO: replace with state management solution
+                  //     Restart.restartApp();
+                  //   },
+                  // ),
                 ],
               ),
-            ),
-            const Text('Some configurations might not take effect until app restarts'),
-            const SizedBox(height: 15),
-            MyButton(
-              text: 'Restart App',
-              onTap: () {
-                // TODO: replace with state management solution
-                Restart.restartApp();
-              },
-            ),
-          ],
-        ),
+            );
+          } else if (snapshot.hasError) {
+            return Center(child: Text(snapshot.error.toString()));
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
       ),
     );
   }
