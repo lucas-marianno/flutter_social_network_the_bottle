@@ -1,3 +1,3 @@
-var replaceEmailWithUsernameOnWallPost = false;
-var enterSendsPost = false;
-var enablePostComments = true;
+var configReplaceEmailWithUsernameOnWallPost = false;
+var configEnterSendsPost = false;
+var configEnablePostComments = true;

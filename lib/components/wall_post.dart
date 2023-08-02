@@ -48,7 +48,7 @@ class _WallPostState extends State<WallPost> {
 
   Future<void> getPostOwnerUsername() async {
     postOwnerUsername = widget.postOwner;
-    if (!replaceEmailWithUsernameOnWallPost) {
+    if (!configReplaceEmailWithUsernameOnWallPost) {
       isDoneLoading = true;
       return;
     }

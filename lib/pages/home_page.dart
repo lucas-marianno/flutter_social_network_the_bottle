@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
               child: StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection('User Posts')
-                    .orderBy('TimeStamp', descending: false)
+                    .orderBy('TimeStamp', descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {

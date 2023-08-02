@@ -27,7 +27,7 @@ class _MyTextFieldState extends State<MyTextField> {
 
   @override
   Widget build(BuildContext context) {
-    bool enterKeyPressSubmits = widget.enterKeyPressSubmits || enterSendsPost;
+    bool enterKeyPressSubmits = widget.enterKeyPressSubmits || configEnterSendsPost;
 
     return TextField(
       autofocus: widget.autofocus,

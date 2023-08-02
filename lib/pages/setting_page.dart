@@ -15,9 +15,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
   saveSettings() {
     FirebaseFirestore.instance.collection('User Settings').doc(userEmail).set({
-      'replaceEmailWithUsernameOnWallPost': replaceEmailWithUsernameOnWallPost,
-      'enterSendsPost': enterSendsPost,
-      'enablePostComments': enablePostComments,
+      'replaceEmailWithUsernameOnWallPost': configReplaceEmailWithUsernameOnWallPost,
+      'enterSendsPost': configEnterSendsPost,
+      'enablePostComments': configEnablePostComments,
     });
   }
 
@@ -43,26 +43,26 @@ class _SettingsPageState extends State<SettingsPage> {
                     child: ListView(
                       children: [
                         SettingsTile(
-                          value: replaceEmailWithUsernameOnWallPost,
+                          value: configReplaceEmailWithUsernameOnWallPost,
                           title: 'replaceEmailWithUsernameOnWallPost',
                           onChanged: (value) {
-                            replaceEmailWithUsernameOnWallPost = value;
+                            configReplaceEmailWithUsernameOnWallPost = value;
                             saveSettings();
                           },
                         ),
                         SettingsTile(
-                          value: enterSendsPost,
+                          value: configEnterSendsPost,
                           title: 'enterSendsPost',
                           onChanged: (value) {
-                            enterSendsPost = value;
+                            configEnterSendsPost = value;
                             saveSettings();
                           },
                         ),
                         SettingsTile(
-                          value: enablePostComments,
+                          value: configEnablePostComments,
                           title: 'enablePostComments',
                           onChanged: (value) {
-                            enablePostComments = value;
+                            configEnablePostComments = value;
                             saveSettings();
                           },
                         ),

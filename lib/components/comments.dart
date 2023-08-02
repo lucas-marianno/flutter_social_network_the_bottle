@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/settings.dart';
-
 import '../util/timestamp_to_string.dart';
 
 // ignore: must_be_immutable
@@ -17,13 +16,13 @@ class Comments extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (enablePostComments) {
+    if (configEnablePostComments) {
       return StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('User Posts')
             .doc(postId)
             .collection('Comments')
-            .orderBy('CommentTime', descending: false)
+            .orderBy('CommentTime', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
