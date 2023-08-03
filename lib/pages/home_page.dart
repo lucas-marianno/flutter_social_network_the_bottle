@@ -102,7 +102,7 @@ class _HomePageState extends State<HomePage> {
                     FocusManager.instance.primaryFocus?.unfocus();
                     postMessage();
                   },
-                  icon: const Icon(Icons.send, size: 40),
+                  icon: const Icon(Icons.post_add, size: 40),
                 )
               ],
             ),

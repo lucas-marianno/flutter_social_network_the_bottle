@@ -6,7 +6,7 @@ import 'package:the_wall/components/comments.dart';
 import 'package:the_wall/components/options_modal_bottom_sheet.dart';
 import 'package:the_wall/components/show_dialog.dart';
 import 'package:the_wall/components/like_button.dart';
-import 'package:the_wall/settings.dart';
+import 'package:the_wall/components/username.dart';
 
 class WallPost extends StatefulWidget {
   const WallPost({
@@ -93,42 +93,16 @@ class _WallPostState extends State<WallPost> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // user.email | username
-                !configReplaceEmailWithUsernameOnWallPost
-                    ? Text(
-                        widget.postOwner,
-                        style: TextStyle(color: Colors.grey[900], fontSize: 16),
-                      )
-                    : StreamBuilder(
-                        stream: FirebaseFirestore.instance
-                            .collection('User Profile')
-                            .doc(widget.postOwner)
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return Text(
-                              snapshot.data!.data()!['username'] ?? widget.postOwner,
-                              style: TextStyle(color: Colors.grey[900], fontSize: 16),
-                            );
-                          } else {
-                            return Expanded(
-                              child: LinearProgressIndicator(
-                                backgroundColor: Colors.grey[200],
-                                color: Colors.grey[100],
-                                minHeight: 16,
-                              ),
-                            );
-                          }
-                        },
-                      ),
+                // username
+                Username(postOwner: widget.postOwner),
                 // timestamp
                 Text(widget.postTimeStamp, style: const TextStyle(color: Colors.grey))
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
             // post text
             Text(widget.message, textAlign: TextAlign.justify),
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
             // like + comment buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

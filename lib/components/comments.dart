@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/components/elevated_button.dart';
+import 'package:the_wall/components/username.dart';
 import 'package:the_wall/settings.dart';
 import '../util/timestamp_to_string.dart';
 import 'input_from_modal_bottom_sheet.dart';
@@ -66,7 +67,7 @@ class _CommentsState extends State<Comments> {
                       return Comment(
                         text: commentData['CommentText'],
                         user: commentData['CommentedBy'],
-                        time: timestampToString(commentData['CommentTime']),
+                        timestamp: timestampToString(commentData['CommentTime']),
                       );
                     },
                   ),
@@ -95,11 +96,11 @@ class Comment extends StatelessWidget {
     super.key,
     required this.text,
     required this.user,
-    required this.time,
+    required this.timestamp,
   });
   final String text;
   final String user;
-  final String time;
+  final String timestamp;
 
   @override
   Widget build(BuildContext context) {
@@ -120,9 +121,9 @@ class Comment extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // user
-              Text(user),
-              // time
-              Text(time, style: const TextStyle(color: Colors.grey)),
+              Username(postOwner: user),
+              // timestamp
+              Text(timestamp, style: const TextStyle(color: Colors.grey)),
             ],
           ),
           const SizedBox(height: 10),

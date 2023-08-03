@@ -31,9 +31,11 @@ String timestampToString(Timestamp timestamp) {
 
   if (Duration(milliseconds: deltaT).inMinutes <= 5) {
     return 'Now';
-  } else if (Duration(milliseconds: deltaT).inHours <= 1) {
+  } else if (Duration(milliseconds: deltaT).inMinutes <= 60) {
     return "${Duration(milliseconds: deltaT).inMinutes} minutes ago";
-  } else if (Duration(milliseconds: deltaT).inHours <= 2) {
+  } else if (Duration(milliseconds: deltaT).inHours < 2) {
+    return "${Duration(milliseconds: deltaT).inHours} hour ago";
+  } else if (Duration(milliseconds: deltaT).inHours <= 6) {
     return "${Duration(milliseconds: deltaT).inHours} hours ago";
   } else if (timestamp.toDate().day == DateTime.now().day) {
     return "Today at $hour:$minute";
