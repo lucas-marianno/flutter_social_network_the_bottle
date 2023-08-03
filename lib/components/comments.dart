@@ -1,45 +1,89 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:the_wall/components/elevated_button.dart';
 import 'package:the_wall/settings.dart';
 import '../util/timestamp_to_string.dart';
+import 'input_from_modal_bottom_sheet.dart';
 
-class Comments extends StatelessWidget {
+class Comments extends StatefulWidget {
   const Comments({
     super.key,
     required this.postId,
-    required this.comments,
   });
 
   final String postId;
-  final List<QueryDocumentSnapshot<Map<String, dynamic>>> comments;
+
+  @override
+  State<Comments> createState() => _CommentsState();
+}
+
+class _CommentsState extends State<Comments> {
+  final User currentUser = FirebaseAuth.instance.currentUser!;
+
+  void addComment() async {
+    final commentText = await getInputFromModalBottomSheet(
+      context,
+      title: 'Add Comment',
+      hintText: 'New Comment',
+    );
+
+    if (commentText == null) return;
+    // write the comment to firestore under the comments collection for this post
+    FirebaseFirestore.instance
+        .collection('User Posts')
+        .doc(widget.postId)
+        .collection('Comments')
+        .add({
+      'CommentText': commentText,
+      'CommentedBy': currentUser.email,
+      'CommentTime': Timestamp.now(),
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     if (configEnablePostComments) {
       return Column(
-        children: comments.map((doc) {
-          final commentData = doc.data();
-          return Comment(
-            text: commentData['CommentText'],
-            user: commentData['CommentedBy'],
-            time: timestampToString(commentData['CommentTime']),
-          );
-        }).toList(),
-      );
+        children: [
+          StreamBuilder(
+            stream: FirebaseFirestore.instance
+                .collection('User Posts')
+                .doc(widget.postId)
+                .collection('Comments')
+                .orderBy('CommentTime', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data!.docs.isEmpty) return Container();
 
-      // ListView.builder(
-      //   shrinkWrap: true,
-      //   physics: const NeverScrollableScrollPhysics(),
-      //   itemCount: comments.length,
-      //   itemBuilder: (context, index) {
-      //     final commentData = comments[index].data();
-      //     return Comment(
-      //       text: commentData['CommentText'],
-      //       user: commentData['CommentedBy'],
-      //       time: timestampToString(commentData['CommentTime']),
-      //     );
-      //   },
-      // );
+                return ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 600),
+                  child: ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      final commentData = snapshot.data!.docs[index].data();
+                      return Comment(
+                        text: commentData['CommentText'],
+                        user: commentData['CommentedBy'],
+                        time: timestampToString(commentData['CommentTime']),
+                      );
+                    },
+                  ),
+                );
+              } else {
+                return LinearProgressIndicator(
+                  backgroundColor: Colors.grey[200],
+                  color: Colors.grey[100],
+                  minHeight: 50,
+                );
+              }
+            },
+          ),
+          const SizedBox(height: 10),
+          Material(child: MyButton(text: 'Add Comment', onTap: addComment)),
+        ],
+      );
     } else {
       return Container();
     }

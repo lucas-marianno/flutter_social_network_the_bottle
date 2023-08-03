@@ -7,7 +7,6 @@ import 'package:the_wall/components/options_modal_bottom_sheet.dart';
 import 'package:the_wall/components/show_dialog.dart';
 import 'package:the_wall/components/like_button.dart';
 import 'package:the_wall/settings.dart';
-import 'input_from_modal_bottom_sheet.dart';
 
 class WallPost extends StatefulWidget {
   const WallPost({
@@ -15,15 +14,15 @@ class WallPost extends StatefulWidget {
     required this.message,
     required this.postOwner,
     required this.postId,
-    required this.likes,
     required this.postTimeStamp,
+    this.displayComments = false,
   });
 
   final String message;
   final String postOwner;
   final String postId;
-  final List<String> likes;
   final String postTimeStamp;
+  final bool displayComments;
 
   @override
   State<WallPost> createState() => _WallPostState();
@@ -31,24 +30,6 @@ class WallPost extends StatefulWidget {
 
 class _WallPostState extends State<WallPost> {
   final User currentUser = FirebaseAuth.instance.currentUser!;
-  bool isLiked = false;
-
-  void toggleLike() {
-    setState(() {
-      isLiked = !isLiked;
-    });
-
-    final postReference = FirebaseFirestore.instance.collection('User Posts').doc(widget.postId);
-    if (isLiked) {
-      postReference.update({
-        'Likes': FieldValue.arrayUnion([currentUser.email]),
-      });
-    } else {
-      postReference.update({
-        'Likes': FieldValue.arrayRemove([currentUser.email]),
-      });
-    }
-  }
 
   void deletePost() {
     // dismiss any keyboard
@@ -65,30 +46,23 @@ class _WallPostState extends State<WallPost> {
     FirebaseFirestore.instance.collection('User Posts').doc(widget.postId).delete();
   }
 
-  void addComment() async {
-    final commentText = await getInputFromModalBottomSheet(
-      context,
-      title: 'Add Comment',
-      hintText: 'New Comment',
+  void viewComments() async {
+    if (widget.displayComments) return;
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return Center(
+          child: WallPost(
+            message: widget.message,
+            postOwner: widget.postOwner,
+            postId: widget.postId,
+            postTimeStamp: widget.postTimeStamp,
+            displayComments: true,
+          ),
+        );
+      },
     );
-
-    if (commentText == null) return;
-    // write the comment to firestore under the comments collection for this post
-    FirebaseFirestore.instance
-        .collection('User Posts')
-        .doc(widget.postId)
-        .collection('Comments')
-        .add({
-      'CommentText': commentText,
-      'CommentedBy': currentUser.email,
-      'CommentTime': Timestamp.now(),
-    });
-  }
-
-  @override
-  void initState() {
-    isLiked = widget.likes.contains(currentUser.email);
-    super.initState();
   }
 
   @override
@@ -155,50 +129,19 @@ class _WallPostState extends State<WallPost> {
             // post text
             Text(widget.message, textAlign: TextAlign.justify),
             const SizedBox(height: 10),
-            // interaction buttons + comments
-            StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('User Posts')
-                  .doc(widget.postId)
-                  .collection('Comments')
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final int commentsCount = snapshot.data!.docs.length;
-                  final List<QueryDocumentSnapshot<Map<String, dynamic>>> comments =
-                      snapshot.data!.docs;
-                  return Column(
-                    children: [
-                      // like + comment buttons
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          LikeButton(
-                            isLiked: isLiked,
-                            onTap: toggleLike,
-                            nOfLikes: widget.likes.length,
-                          ),
-                          const SizedBox(width: 10),
-                          CommentButton(
-                            onTap: addComment,
-                            nOfComments: commentsCount,
-                          ),
-                        ],
-                      ),
-                      // comments
-                      Comments(postId: widget.postId, comments: comments),
-                    ],
-                  );
-                } else {
-                  return LinearProgressIndicator(
-                    backgroundColor: Colors.grey[200],
-                    color: Colors.grey[100],
-                    minHeight: 50,
-                  );
-                }
-              },
+            // like + comment buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                LikeButton(postId: widget.postId),
+                ViewCommentsButton(
+                  onTap: viewComments,
+                  postId: widget.postId,
+                )
+              ],
             ),
+            // comments
+            widget.displayComments ? Comments(postId: widget.postId) : Container(),
           ],
         ),
       ),

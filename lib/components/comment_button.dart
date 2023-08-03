@@ -1,23 +1,54 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class CommentButton extends StatelessWidget {
-  const CommentButton({
+class ViewCommentsButton extends StatelessWidget {
+  const ViewCommentsButton({
     super.key,
     required this.onTap,
-    required this.nOfComments,
+    required this.postId,
   });
 
   final void Function()? onTap;
-  final int nOfComments;
+
+  final String postId;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        GestureDetector(
-            onTap: onTap, child: const Icon(Icons.comment_outlined, color: Colors.grey)),
-        Text('$nOfComments')
-      ],
+    return TextButton(
+      onPressed: onTap,
+      child: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('User Posts')
+            .doc(postId)
+            .collection('Comments')
+            .orderBy('CommentTime', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final int nOfComments = snapshot.data!.docs.length;
+            final String label = nOfComments == 1 ? 'comment' : 'comments';
+            return Column(
+              children: [
+                const Icon(Icons.comment_outlined, color: Colors.grey),
+                Text(
+                  '$nOfComments $label',
+                  style: TextStyle(color: Colors.grey[600]),
+                )
+              ],
+            );
+          } else {
+            return SizedBox(
+              height: 50,
+              width: 75,
+              child: LinearProgressIndicator(
+                backgroundColor: Colors.grey[200],
+                color: Colors.grey[100],
+                minHeight: 50,
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }
