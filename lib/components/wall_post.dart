@@ -33,47 +33,6 @@ class _WallPostState extends State<WallPost> {
   final User currentUser = FirebaseAuth.instance.currentUser!;
   bool isLiked = false;
 
-  String postOwnerUsername = '';
-  bool isDoneLoading = false;
-
-  late Comments comments;
-  late int nOfComments;
-
-  initComments() {
-    comments = Comments(
-      postId: widget.postId,
-    );
-    nOfComments = comments.count;
-  }
-
-  Future<void> getPostOwnerUsername() async {
-    postOwnerUsername = widget.postOwner;
-    if (!configReplaceEmailWithUsernameOnWallPost) {
-      isDoneLoading = true;
-      return;
-    }
-
-    // what if we replace this shit with a sreambuilder?
-    final profileInfo =
-        await FirebaseFirestore.instance.collection('User Profile').doc(widget.postOwner).get();
-    if (profileInfo.exists && profileInfo.data()!['username'] != null) {
-      postOwnerUsername = profileInfo.data()!['username'];
-    }
-
-    /// Error: setState() called after dispose(): _WallPostState#67c5d(lifecycle state: defunct, not mounted)
-    /// This error happens if you call setState() on a State object for a widget that no longer appears in the
-    ///  widget tree (e.g., whose parent widget no longer includes the widget in its build). This error can
-    ///  occur when code calls setState() from a timer or an animation callback.
-    /// The preferred solution is to cancel the timer or stop listening to the animation in the dispose() callback.
-    ///  Another solution is to check the "mounted" property of this object before calling setState() to ensure the
-    ///  object is still in the tree.
-    /// This error might indicate a memory leak if setState() is being called because another object is retaining
-    ///  a reference to this State object after it has been removed from the tree. To avoid memory leaks, consider
-    ///  breaking the reference to this object during dispose().
-    isDoneLoading = true;
-    setState(() {});
-  }
-
   void toggleLike() {
     setState(() {
       isLiked = !isLiked;
@@ -128,91 +87,121 @@ class _WallPostState extends State<WallPost> {
 
   @override
   void initState() {
-    initComments();
-    getPostOwnerUsername();
     isLiked = widget.likes.contains(currentUser.email);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!isDoneLoading) {
-      return Container(
+    return GestureDetector(
+      onLongPress: () => optionsFromModalBottomSheet(
+        context,
+        children: [
+          ListTile(
+            onTap: deletePost,
+            leading: const Icon(Icons.delete, color: Colors.white),
+            title: const Text('Delete post', style: TextStyle(color: Colors.white)),
+          )
+        ],
+      ),
+      child: Container(
         margin: const EdgeInsets.all(10),
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
             color: Colors.grey[100],
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: Colors.white)),
-        child: Center(
-          child: LinearProgressIndicator(
-            backgroundColor: Colors.grey[200],
-            color: Colors.grey[100],
-            minHeight: 50,
-          ),
-        ),
-      );
-    } else {
-      return GestureDetector(
-        onLongPress: () => optionsFromModalBottomSheet(
-          context,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              onTap: deletePost,
-              leading: const Icon(Icons.delete, color: Colors.white),
-              title: const Text('Delete post', style: TextStyle(color: Colors.white)),
-            )
+            // user + timestamp
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // user.email | username
+                !configReplaceEmailWithUsernameOnWallPost
+                    ? Text(
+                        widget.postOwner,
+                        style: TextStyle(color: Colors.grey[900], fontSize: 16),
+                      )
+                    : StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection('User Profile')
+                            .doc(widget.postOwner)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Text(
+                              snapshot.data!.data()!['username'] ?? widget.postOwner,
+                              style: TextStyle(color: Colors.grey[900], fontSize: 16),
+                            );
+                          } else {
+                            return Expanded(
+                              child: LinearProgressIndicator(
+                                backgroundColor: Colors.grey[200],
+                                color: Colors.grey[100],
+                                minHeight: 16,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                // timestamp
+                Text(widget.postTimeStamp, style: const TextStyle(color: Colors.grey))
+              ],
+            ),
+            const SizedBox(height: 10),
+            // post text
+            Text(widget.message, textAlign: TextAlign.justify),
+            const SizedBox(height: 10),
+            // interaction buttons + comments
+            StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('User Posts')
+                  .doc(widget.postId)
+                  .collection('Comments')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final int commentsCount = snapshot.data!.docs.length;
+                  final List<QueryDocumentSnapshot<Map<String, dynamic>>> comments =
+                      snapshot.data!.docs;
+                  return Column(
+                    children: [
+                      // like + comment buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          LikeButton(
+                            isLiked: isLiked,
+                            onTap: toggleLike,
+                            nOfLikes: widget.likes.length,
+                          ),
+                          const SizedBox(width: 10),
+                          CommentButton(
+                            onTap: addComment,
+                            nOfComments: commentsCount,
+                          ),
+                        ],
+                      ),
+                      // comments
+                      Comments(postId: widget.postId, comments: comments),
+                    ],
+                  );
+                } else {
+                  return LinearProgressIndicator(
+                    backgroundColor: Colors.grey[200],
+                    color: Colors.grey[100],
+                    minHeight: 50,
+                  );
+                }
+              },
+            ),
           ],
         ),
-        child: Container(
-          margin: const EdgeInsets.all(10),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.white)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // user + timestamp
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    postOwnerUsername,
-                    style: TextStyle(color: Colors.grey[900], fontSize: 16),
-                  ),
-                  Text(widget.postTimeStamp, style: const TextStyle(color: Colors.grey))
-                ],
-              ),
-              const SizedBox(height: 10),
-              // post text
-              Text(widget.message, textAlign: TextAlign.justify),
-              const SizedBox(height: 10),
-              // like + comment buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  LikeButton(
-                    isLiked: isLiked,
-                    onTap: toggleLike,
-                    nOfLikes: widget.likes.length,
-                  ),
-                  const SizedBox(width: 10),
-                  CommentButton(
-                    onTap: addComment,
-                    nOfComments: nOfComments,
-                  ),
-                ],
-              ),
-              // comments
-              comments,
-            ],
-          ),
-        ),
-      );
-    }
+      ),
+    );
   }
 }

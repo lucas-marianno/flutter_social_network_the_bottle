@@ -3,56 +3,43 @@ import 'package:flutter/material.dart';
 import 'package:the_wall/settings.dart';
 import '../util/timestamp_to_string.dart';
 
-// ignore: must_be_immutable
 class Comments extends StatelessWidget {
-  Comments({
+  const Comments({
     super.key,
     required this.postId,
+    required this.comments,
   });
 
   final String postId;
-  int nOfComments = 0;
-  int get count => nOfComments;
+  final List<QueryDocumentSnapshot<Map<String, dynamic>>> comments;
 
   @override
   Widget build(BuildContext context) {
     if (configEnablePostComments) {
-      return StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('User Posts')
-            .doc(postId)
-            .collection('Comments')
-            .orderBy('CommentTime', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            nOfComments = snapshot.data!.docs.length;
-            return ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: snapshot.data!.docs.length,
-              itemBuilder: (context, index) {
-                final commentData = snapshot.data!.docs[index].data();
-                return Comment(
-                  text: commentData['CommentText'],
-                  user: commentData['CommentedBy'],
-                  time: timestampToString(commentData['CommentTime']),
-                );
-              },
-            );
-          } else if (snapshot.hasError) {
-            return Center(child: Text(snapshot.error.toString()));
-          } else {
-            return Center(
-              child: LinearProgressIndicator(
-                backgroundColor: Colors.grey[200],
-                color: Colors.grey[100],
-                minHeight: 50,
-              ),
-            );
-          }
-        },
+      return Column(
+        children: comments.map((doc) {
+          final commentData = doc.data();
+          return Comment(
+            text: commentData['CommentText'],
+            user: commentData['CommentedBy'],
+            time: timestampToString(commentData['CommentTime']),
+          );
+        }).toList(),
       );
+
+      // ListView.builder(
+      //   shrinkWrap: true,
+      //   physics: const NeverScrollableScrollPhysics(),
+      //   itemCount: comments.length,
+      //   itemBuilder: (context, index) {
+      //     final commentData = comments[index].data();
+      //     return Comment(
+      //       text: commentData['CommentText'],
+      //       user: commentData['CommentedBy'],
+      //       time: timestampToString(commentData['CommentTime']),
+      //     );
+      //   },
+      // );
     } else {
       return Container();
     }
