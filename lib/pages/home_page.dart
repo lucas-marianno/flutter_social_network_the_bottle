@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.grey[200],
         centerTitle: true,
-        title: const Text('T H E  W A L L'),
+        title: Text(FirebaseAuth.instance.currentUser!.email.toString()),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

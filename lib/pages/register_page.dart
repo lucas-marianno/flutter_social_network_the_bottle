@@ -28,6 +28,14 @@ class _RegisterPageState extends State<RegisterPage> {
       showMyDialog(context, title: 'Nope!', content: 'Passwords don\'t match.');
       return;
     }
+    if (passwordController.text.length < 6) {
+      showMyDialog(
+        context,
+        title: 'Weak Passord!',
+        content: 'Password must be at least 6 characters long',
+      );
+      return;
+    }
 
     showDialog(
       context: context,
@@ -39,14 +47,14 @@ class _RegisterPageState extends State<RegisterPage> {
         email: emailController.text,
         password: passwordController.text,
       );
+      if (context.mounted) Navigator.pop(context);
       // creates user profile
       await FirebaseFirestore.instance.collection('User Profile').doc(emailController.text).set({
         'username': emailController.text.split('@')[0],
         'bio': 'Write about yourself here...',
       });
-      if (context.mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
-      Navigator.pop(context);
+      if (context.mounted) Navigator.pop(context);
       showMyDialog(context, content: e.code);
     }
   }
@@ -57,18 +65,20 @@ class _RegisterPageState extends State<RegisterPage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Container(
-          margin: const EdgeInsets.all(40),
+          margin: const EdgeInsets.symmetric(horizontal: 40),
           alignment: Alignment.center,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // logo
-              const Icon(
-                Icons.lock,
-                size: 100,
+              const Flexible(
+                flex: 2,
+                child: FittedBox(
+                  child: Icon(Icons.lock),
+                ),
               ),
-              const SizedBox(height: 25),
+              const Flexible(child: SizedBox(height: 25)),
 
               // welcome back message
               Text(
@@ -79,7 +89,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   color: Colors.grey[700],
                 ),
               ),
-              const SizedBox(height: 50),
+              const Flexible(child: SizedBox(height: 50)),
 
               // email textfield
               MyTextField(
@@ -87,7 +97,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 hintText: 'Email',
               ),
 
-              const SizedBox(height: 25),
+              const Flexible(child: SizedBox(height: 25)),
 
               // password texfield
               MyTextField(
@@ -96,7 +106,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 obscureText: true,
               ),
 
-              const SizedBox(height: 25),
+              const Flexible(child: SizedBox(height: 25)),
               // confirm password texfield
               MyTextField(
                 controller: confirmPasswordController,
@@ -106,12 +116,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 enterKeyPressSubmits: true,
               ),
 
-              const SizedBox(height: 50),
+              const Flexible(child: SizedBox(height: 50)),
 
               // sign up button
               MyButton(text: 'Sign up', onTap: register),
 
-              const SizedBox(height: 25),
+              const Flexible(child: SizedBox(height: 25)),
               // go to register page
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

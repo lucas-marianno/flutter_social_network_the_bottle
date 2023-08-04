@@ -47,29 +47,33 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Container(
-          margin: const EdgeInsets.all(40),
+          margin: const EdgeInsets.symmetric(horizontal: 40),
           alignment: Alignment.center,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // logo
-              const Icon(
-                Icons.lock,
-                size: 100,
-              ),
-              const SizedBox(height: 25),
-
-              // welcome back message
-              Text(
-                'Welcome back, you\'ve been missed!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[700],
+              const Flexible(
+                flex: 2,
+                child: FittedBox(
+                  child: Icon(Icons.lock),
                 ),
               ),
-              const SizedBox(height: 50),
+              const Flexible(child: SizedBox(height: 25)),
+
+              // welcome back message
+              Flexible(
+                child: Text(
+                  'Welcome back, you\'ve been missed!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ),
+              const Flexible(child: SizedBox(height: 50)),
 
               // email textfield
               MyTextField(
@@ -77,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                 hintText: 'Email',
               ),
 
-              const SizedBox(height: 25),
+              const Flexible(child: SizedBox(height: 25)),
 
               // password texfield
               MyTextField(
@@ -88,12 +92,12 @@ class _LoginPageState extends State<LoginPage> {
                 enterKeyPressSubmits: true,
               ),
 
-              const SizedBox(height: 50),
+              const Flexible(child: SizedBox(height: 50)),
 
               // sign in button
               MyButton(text: 'Sign in', onTap: login),
 
-              const SizedBox(height: 25),
+              const Flexible(child: SizedBox(height: 25)),
               // go to register page
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

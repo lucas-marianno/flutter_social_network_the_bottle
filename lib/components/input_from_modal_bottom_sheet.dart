@@ -25,10 +25,12 @@ Future<String?> getInputFromModalBottomSheet(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(title ?? '',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[300], fontSize: 20)),
-            Divider(color: Colors.grey[700], height: 30),
+            Flexible(
+              child: Text(title ?? '',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey[300], fontSize: 20)),
+            ),
+            Flexible(child: Divider(color: Colors.grey[700], height: 30)),
             Row(
               children: [
                 Expanded(

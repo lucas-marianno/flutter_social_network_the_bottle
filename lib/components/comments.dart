@@ -45,45 +45,47 @@ class _CommentsState extends State<Comments> {
   @override
   Widget build(BuildContext context) {
     if (configEnablePostComments) {
-      return Column(
-        children: [
-          StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collection('User Posts')
-                .doc(widget.postId)
-                .collection('Comments')
-                .orderBy('CommentTime', descending: true)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data!.docs.isEmpty) return Container();
+      return Expanded(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('User Posts')
+                    .doc(widget.postId)
+                    .collection('Comments')
+                    .orderBy('CommentTime', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    if (snapshot.data!.docs.isEmpty) return Container();
 
-                return ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 600),
-                  child: ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      final commentData = snapshot.data!.docs[index].data();
-                      return Comment(
-                        text: commentData['CommentText'],
-                        user: commentData['CommentedBy'],
-                        timestamp: timestampToString(commentData['CommentTime']),
-                      );
-                    },
-                  ),
-                );
-              } else {
-                return LinearProgressIndicator(
-                  backgroundColor: Colors.grey[200],
-                  color: Colors.grey[100],
-                  minHeight: 50,
-                );
-              }
-            },
-          ),
-          const SizedBox(height: 10),
-          Material(child: MyButton(text: 'Add Comment', onTap: addComment)),
-        ],
+                    return ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        final commentData = snapshot.data!.docs[index].data();
+                        return Comment(
+                          text: commentData['CommentText'],
+                          user: commentData['CommentedBy'],
+                          timestamp: timestampToString(commentData['CommentTime']),
+                        );
+                      },
+                    );
+                  } else {
+                    return LinearProgressIndicator(
+                      backgroundColor: Colors.grey[200],
+                      color: Colors.grey[100],
+                      minHeight: 50,
+                    );
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: 10),
+            Material(child: MyButton(text: 'Add Comment', onTap: addComment)),
+          ],
+        ),
       );
     } else {
       return Container();
