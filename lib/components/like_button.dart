@@ -46,11 +46,11 @@ class _LikeButtonState extends State<LikeButton> {
               children: [
                 Icon(
                   isLiked ? Icons.favorite : Icons.favorite_outline,
-                  color: isLiked ? Colors.red : Colors.grey,
+                  color: isLiked ? Colors.red : Theme.of(context).colorScheme.secondary,
                 ),
                 Text(
                   '${likes.length} $label',
-                  style: TextStyle(color: Colors.grey[600]),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
                 )
               ],
             );
@@ -59,8 +59,8 @@ class _LikeButtonState extends State<LikeButton> {
               height: 50,
               width: 75,
               child: LinearProgressIndicator(
-                backgroundColor: Colors.grey[200],
-                color: Colors.grey[100],
+                backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).colorScheme.surface,
                 minHeight: 50,
               ),
             );

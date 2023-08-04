@@ -12,7 +12,7 @@ Future<String?> getInputFromModalBottomSheet(
   controller.text = startingString;
 
   return await showModalBottomSheet(
-    backgroundColor: Colors.grey[900],
+    backgroundColor: Theme.of(context).colorScheme.primary,
     context: context,
     builder: (context) {
       return Container(
@@ -26,11 +26,21 @@ Future<String?> getInputFromModalBottomSheet(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Flexible(
-              child: Text(title ?? '',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[300], fontSize: 20)),
+              child: Text(
+                title ?? '',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontSize: 20,
+                ),
+              ),
             ),
-            Flexible(child: Divider(color: Colors.grey[700], height: 30)),
+            Flexible(
+              child: Divider(
+                color: Theme.of(context).colorScheme.onBackground,
+                height: 30,
+              ),
+            ),
             Row(
               children: [
                 Expanded(
@@ -43,7 +53,11 @@ Future<String?> getInputFromModalBottomSheet(
                 ),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(controller.text),
-                  icon: Icon(Icons.send, color: Colors.grey[300], size: 40),
+                  icon: Icon(
+                    Icons.send,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    size: 40,
+                  ),
                 ),
               ],
             ),

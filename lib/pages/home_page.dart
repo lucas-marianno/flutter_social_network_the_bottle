@@ -33,13 +33,13 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Theme.of(context).colorScheme.background,
       drawer: const MyDrawer(),
       appBar: AppBar(
-        backgroundColor: Colors.grey[900],
-        foregroundColor: Colors.grey[200],
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         centerTitle: true,
-        title: Text(FirebaseAuth.instance.currentUser!.email.toString()),
+        title: const Text('T H E  W A L L'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -79,8 +79,8 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          const Divider(
-            color: Colors.white,
+          Divider(
+            color: Theme.of(context).colorScheme.surface,
             height: 32,
           ),
 

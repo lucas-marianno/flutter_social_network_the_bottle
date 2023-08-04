@@ -53,12 +53,15 @@ class _WallPostState extends State<WallPost> {
       context: context,
       builder: (context) {
         return Center(
-          child: WallPost(
-            message: widget.message,
-            postOwner: widget.postOwner,
-            postId: widget.postId,
-            postTimeStamp: widget.postTimeStamp,
-            displayComments: true,
+          child: Flexible(
+            fit: FlexFit.loose,
+            child: WallPost(
+              message: widget.message,
+              postOwner: widget.postOwner,
+              postId: widget.postId,
+              postTimeStamp: widget.postTimeStamp,
+              displayComments: true,
+            ),
           ),
         );
       },
@@ -73,8 +76,9 @@ class _WallPostState extends State<WallPost> {
         children: [
           ListTile(
             onTap: deletePost,
-            leading: const Icon(Icons.delete, color: Colors.white),
-            title: const Text('Delete post', style: TextStyle(color: Colors.white)),
+            leading: Icon(Icons.delete, color: Theme.of(context).colorScheme.onPrimary),
+            title: Text('Delete post',
+                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
           )
         ],
       ),
@@ -82,9 +86,12 @@ class _WallPostState extends State<WallPost> {
         margin: const EdgeInsets.all(10),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.white)),
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(color: Theme.of(context).colorScheme.shadow, spreadRadius: 5, blurRadius: 5)
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
@@ -96,7 +103,10 @@ class _WallPostState extends State<WallPost> {
                 // username
                 Username(postOwner: widget.postOwner),
                 // timestamp
-                Text(widget.postTimeStamp, style: const TextStyle(color: Colors.grey))
+                Text(
+                  widget.postTimeStamp,
+                  style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                )
               ],
             ),
             const SizedBox(height: 15),

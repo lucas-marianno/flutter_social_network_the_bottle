@@ -21,9 +21,8 @@ class ProfileField extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 15),
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.white),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,9 +34,12 @@ class ProfileField extends StatelessWidget {
               children: [
                 Text(
                   sectionName,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 18),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 18),
                 ),
-                IconButton(onPressed: onTap, icon: Icon(Icons.edit, color: Colors.grey[600]))
+                IconButton(
+                  onPressed: onTap,
+                  icon: Icon(Icons.edit, color: Theme.of(context).colorScheme.onBackground),
+                )
               ],
             ),
             const SizedBox(height: 10),
@@ -45,7 +47,7 @@ class ProfileField extends StatelessWidget {
             // field value
             Text(
               text,
-              style: TextStyle(color: Colors.grey[900], fontSize: 20),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 20),
             ),
           ],
         ),

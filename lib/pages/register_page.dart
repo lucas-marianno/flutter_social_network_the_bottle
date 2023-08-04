@@ -62,7 +62,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 40),
@@ -86,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 18,
-                  color: Colors.grey[700],
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
               ),
               const Flexible(child: SizedBox(height: 50)),
@@ -130,7 +130,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     'Already have an account? ',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[700],
+                      color: Theme.of(context).colorScheme.onBackground,
                     ),
                   ),
                   GestureDetector(

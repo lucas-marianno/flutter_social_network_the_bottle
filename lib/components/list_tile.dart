@@ -14,8 +14,8 @@ class MyListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      iconColor: Colors.grey[200],
-      textColor: Colors.grey[200],
+      iconColor: Theme.of(context).colorScheme.onPrimary,
+      textColor: Theme.of(context).colorScheme.onPrimary,
       leading: Icon(iconData),
       title: Text(text),
       onTap: onTap,

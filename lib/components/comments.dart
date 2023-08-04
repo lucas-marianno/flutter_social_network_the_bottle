@@ -45,11 +45,11 @@ class _CommentsState extends State<Comments> {
   @override
   Widget build(BuildContext context) {
     if (configEnablePostComments) {
-      return Expanded(
+      return Flexible(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
+            Flexible(
               child: StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection('User Posts')
@@ -59,9 +59,10 @@ class _CommentsState extends State<Comments> {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    if (snapshot.data!.docs.isEmpty) return Container();
+                    if (snapshot.data!.docs.isEmpty) return const Text('');
 
                     return ListView.builder(
+                      shrinkWrap: true,
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
                         final commentData = snapshot.data!.docs[index].data();
@@ -74,8 +75,8 @@ class _CommentsState extends State<Comments> {
                     );
                   } else {
                     return LinearProgressIndicator(
-                      backgroundColor: Colors.grey[200],
-                      color: Colors.grey[100],
+                      backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                      color: Theme.of(context).colorScheme.surface,
                       minHeight: 50,
                     );
                   }
@@ -110,7 +111,7 @@ class Comment extends StatelessWidget {
       margin: const EdgeInsets.all(10),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Theme.of(context).colorScheme.tertiary,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -125,7 +126,7 @@ class Comment extends StatelessWidget {
               // user
               Username(postOwner: user),
               // timestamp
-              Text(timestamp, style: const TextStyle(color: Colors.grey)),
+              Text(timestamp, style: TextStyle(color: Theme.of(context).colorScheme.onBackground)),
             ],
           ),
           const SizedBox(height: 10),

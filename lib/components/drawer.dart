@@ -25,33 +25,38 @@ class MyDrawer extends StatelessWidget {
     }
 
     return Drawer(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Theme.of(context).colorScheme.primary,
       child: Padding(
         padding: const EdgeInsets.all(25),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              children: [
-                const DrawerHeader(
-                  child: Icon(Icons.person, size: 75, color: Colors.grey),
-                ),
-                MyListTile(
-                  iconData: Icons.home,
-                  text: 'H O M E',
-                  onTap: () => Navigator.of(context).pop(),
-                ),
-                MyListTile(
-                  iconData: Icons.person,
-                  text: 'P R O F I L E',
-                  onTap: () => goToPage(const ProfilePage()),
-                ),
-                MyListTile(
-                  iconData: Icons.settings,
-                  text: 'S E T T I N G S',
-                  onTap: () => goToPage(const SettingsPage()),
-                ),
-              ],
+            Expanded(
+              child: Column(
+                children: [
+                  DrawerHeader(
+                    child: Icon(
+                      Icons.person,
+                      size: 75,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                  MyListTile(
+                    iconData: Icons.home,
+                    text: 'H O M E',
+                    onTap: () => Navigator.of(context).pop(),
+                  ),
+                  MyListTile(
+                    iconData: Icons.person,
+                    text: 'P R O F I L E',
+                    onTap: () => goToPage(const ProfilePage()),
+                  ),
+                  MyListTile(
+                    iconData: Icons.settings,
+                    text: 'S E T T I N G S',
+                    onTap: () => goToPage(const SettingsPage()),
+                  ),
+                ],
+              ),
             ),
             const Divider(height: 32),
             MyListTile(

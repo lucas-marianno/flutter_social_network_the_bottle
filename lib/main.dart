@@ -23,8 +23,8 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
+      darkTheme: darkTheme,
       home: const AuthPage(),
-      // home: const ProfilePage(),
     );
   }
 }

@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 40),
@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
-                    color: Colors.grey[700],
+                    color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
               ),
@@ -106,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                     'Not a member? ',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[700],
+                      color: Theme.of(context).colorScheme.onBackground,
                     ),
                   ),
                   GestureDetector(

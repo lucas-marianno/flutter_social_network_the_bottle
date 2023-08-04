@@ -12,7 +12,7 @@ class Username extends StatelessWidget {
     if (!configReplaceEmailWithUsernameOnWallPost) {
       return Text(
         postOwner,
-        style: TextStyle(color: Colors.grey[900], fontSize: 16),
+        style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
       );
     } else {
       return StreamBuilder(
@@ -21,13 +21,13 @@ class Username extends StatelessWidget {
           if (snapshot.hasData) {
             return Text(
               snapshot.data!.data()!['username'] ?? postOwner,
-              style: TextStyle(color: Colors.grey[900], fontSize: 16),
+              style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
             );
           } else {
             return Expanded(
               child: LinearProgressIndicator(
-                backgroundColor: Colors.grey[200],
-                color: Colors.grey[100],
+                backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).colorScheme.surface,
                 minHeight: 16,
               ),
             );

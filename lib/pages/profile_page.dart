@@ -50,10 +50,10 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        backgroundColor: Colors.grey[900],
-        foregroundColor: Colors.grey[200],
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         centerTitle: true,
         title: const Text('P R O F I L E'),
       ),
@@ -76,12 +76,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   // user email
                   Text(
                     user.email!,
-                    style: TextStyle(color: Colors.grey[900], fontSize: 20),
+                    style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 20),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 70),
                   // user details
-                  Text('My details', style: TextStyle(color: Colors.grey[600], fontSize: 18)),
+                  Text(
+                    'My details',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onBackground,
+                      fontSize: 18,
+                    ),
+                  ),
                   const SizedBox(height: 20),
 
                   // username
@@ -95,8 +101,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
 
                   // my posts
-                  const Divider(height: 50, color: Colors.white),
-                  Text('My posts', style: TextStyle(color: Colors.grey[600], fontSize: 18)),
+                  Divider(height: 50, color: Theme.of(context).colorScheme.surface),
+                  Text('My posts',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onBackground,
+                        fontSize: 18,
+                      )),
                 ],
               ),
             );
@@ -105,7 +115,11 @@ class _ProfilePageState extends State<ProfilePage> {
           } else if (snapshot.data?.data() == null) {
             return const Center(child: Text('Error: User does not exist'));
           } else {
-            return Center(child: CircularProgressIndicator(color: Colors.grey[900]));
+            return Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            );
           }
         },
       ),

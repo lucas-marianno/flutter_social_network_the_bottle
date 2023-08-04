@@ -30,6 +30,7 @@ class _MyTextFieldState extends State<MyTextField> {
     bool enterKeyPressSubmits = widget.enterKeyPressSubmits || configEnterSendsPost;
 
     return TextField(
+      cursorColor: Theme.of(context).colorScheme.onSurface,
       autofocus: widget.autofocus,
       controller: widget.controller,
       obscureText: widget.obscureText ? !isVisible : false,
@@ -43,16 +44,17 @@ class _MyTextFieldState extends State<MyTextField> {
             ? IconButton(
                 icon: Icon(
                   isVisible ? Icons.visibility : Icons.visibility_off,
-                  color: Colors.grey,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
                 onPressed: () => setState(() => isVisible = !isVisible))
             : null,
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.white, width: 4),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.onError, width: 4),
         ),
-        enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+        enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Theme.of(context).colorScheme.onError)),
         filled: true,
-        fillColor: Colors.grey[100],
+        fillColor: Theme.of(context).colorScheme.surface,
       ),
     );
   }

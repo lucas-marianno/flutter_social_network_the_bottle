@@ -6,7 +6,7 @@ Future<dynamic> optionsFromModalBottomSheet(
 }) async {
   return await showModalBottomSheet(
     context: context,
-    backgroundColor: Colors.grey[900],
+    backgroundColor: Theme.of(context).colorScheme.primary,
     showDragHandle: true,
     builder: (context) {
       return Padding(

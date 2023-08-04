@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/settings.dart';
 
+import '../components/settings_tile.dart';
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -24,10 +26,10 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        backgroundColor: Colors.grey[900],
-        foregroundColor: Colors.grey[200],
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         centerTitle: true,
         title: const Text('S E T T I N G S'),
       ),
@@ -69,15 +71,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       ],
                     ),
                   ),
-                  const Text('Some configurations might not take effect until app restarts'),
-                  const SizedBox(height: 15),
-                  // MyButton(
-                  //   text: 'Save Settings',
-                  //   onTap: () {
-                  //     // TODO: replace with state management solution
-                  //     Restart.restartApp();
-                  //   },
-                  // ),
                 ],
               ),
             );
@@ -88,34 +81,6 @@ class _SettingsPageState extends State<SettingsPage> {
           }
         },
       ),
-    );
-  }
-}
-
-class SettingsTile extends StatelessWidget {
-  const SettingsTile({
-    super.key,
-    required this.value,
-    required this.title,
-    required this.onChanged,
-  });
-  final bool value;
-  final String title;
-  final void Function(bool value)? onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(title),
-        Switch(
-          trackColor: const MaterialStatePropertyAll(Colors.white),
-          trackOutlineColor: MaterialStatePropertyAll(Colors.grey[300]),
-          value: value,
-          onChanged: onChanged,
-        ),
-      ],
     );
   }
 }

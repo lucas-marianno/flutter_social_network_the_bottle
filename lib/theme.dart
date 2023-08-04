@@ -1,71 +1,39 @@
 import 'package:flutter/material.dart';
 
 ThemeData lightTheme = ThemeData(
-    useMaterial3: true,
-    colorScheme: ColorScheme(
-      brightness: Brightness.light,
-      primary: Colors.grey[900]!,
-      onPrimary: Colors.grey[900]!,
-      secondary: Colors.grey[900]!,
-      onSecondary: Colors.grey[900]!,
-      error: Colors.grey[900]!,
-      onError: Colors.grey[900]!,
-      background: Colors.grey[900]!,
-      onBackground: Colors.grey[900]!,
-      surface: Colors.grey[200]!,
-      onSurface: Colors.grey[900]!,
-      primaryContainer: Colors.grey[900],
-      onPrimaryContainer: Colors.grey[900],
-      secondaryContainer: Colors.grey[900],
-      onSecondaryContainer: Colors.grey[900],
-      tertiary: Colors.grey[900],
-      onTertiary: Colors.grey[900],
-      tertiaryContainer: Colors.grey[900],
-      onTertiaryContainer: Colors.grey[900],
-      errorContainer: Colors.grey[900],
-      onErrorContainer: Colors.grey[900],
-      outline: Colors.grey[900],
-      outlineVariant: Colors.grey[900],
-      surfaceVariant: Colors.grey[900],
-      onSurfaceVariant: Colors.grey[900],
-      inverseSurface: Colors.grey[900],
-      onInverseSurface: Colors.grey[900],
-      inversePrimary: Colors.grey[900],
-      shadow: Colors.grey[900],
-      scrim: Colors.grey[900],
-      surfaceTint: Colors.grey[900],
-    )
-    // ColorScheme.fromSeed(
-    //   seedColor: Colors.black,
-    //   primary: Colors.black,
-    //   onPrimary: Colors.grey[900],
-    //   primaryContainer: Colors.grey[900],
-    //   onPrimaryContainer: Colors.grey[900],
-    //   secondary: Colors.grey[900],
-    //   onSecondary: Colors.grey[900],
-    //   secondaryContainer: Colors.grey[900],
-    //   onSecondaryContainer: Colors.grey[900],
-    //   tertiary: Colors.grey[900],
-    //   onTertiary: Colors.grey[900],
-    //   tertiaryContainer: Colors.grey[900],
-    //   onTertiaryContainer: Colors.grey[900],
-    //   error: Colors.grey[900],
-    //   onError: Colors.grey[900],
-    //   errorContainer: Colors.grey[900],
-    //   onErrorContainer: Colors.grey[900],
-    //   outline: Colors.grey[900],
-    //   outlineVariant: Colors.grey[900],
-    //   background: Colors.grey[900],
-    //   onBackground: Colors.grey[900],
-    //   surface: Colors.grey[900],
-    //   onSurface: Colors.grey[900],
-    //   surfaceVariant: Colors.grey[900],
-    //   onSurfaceVariant: Colors.grey[900],
-    //   inverseSurface: Colors.grey[900],
-    //   onInverseSurface: Colors.grey[900],
-    //   inversePrimary: Colors.grey[900],
-    //   shadow: Colors.grey[900],
-    //   scrim: Colors.grey[900],
-    //   surfaceTint: Colors.grey[900],
-    // ),
-    );
+  useMaterial3: true,
+  colorScheme: ColorScheme(
+    brightness: Brightness.light,
+    primary: Colors.grey[900]!, //
+    onPrimary: Colors.grey[200]!, //
+    secondary: Colors.grey, //
+    onSecondary: Colors.red,
+    tertiary: Colors.grey[100],
+    error: Colors.grey[900]!,
+    onError: Colors.white, //
+    background: Colors.grey[300]!, //
+    onBackground: Colors.grey[700]!, //
+    surface: Colors.grey[100]!, //
+    onSurface: Colors.grey[900]!,
+    shadow: const Color.fromARGB(75, 189, 189, 189),
+  ),
+);
+
+ThemeData darkTheme = ThemeData(
+  useMaterial3: true,
+  colorScheme: ColorScheme(
+    brightness: Brightness.dark,
+    primary: Colors.grey[900]!, //
+    onPrimary: Colors.grey[200]!, //
+    secondary: Colors.grey[400]!, //
+    onSecondary: Colors.red,
+    tertiary: Colors.grey[800],
+    error: Colors.grey[900]!,
+    onError: Colors.black45, //
+    background: Colors.grey[900]!, //
+    onBackground: Colors.grey[300]!, //
+    surface: Colors.grey[850]!, //
+    onSurface: Colors.grey[100]!,
+    shadow: Colors.transparent,
+  ),
+);
