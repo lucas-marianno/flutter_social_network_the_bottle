@@ -9,7 +9,7 @@ class Username extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!configReplaceEmailWithUsernameOnWallPost) {
+    if (!UserConfig().replaceEmailWithUsernameOnWallPost) {
       return Text(
         postOwner,
         style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),

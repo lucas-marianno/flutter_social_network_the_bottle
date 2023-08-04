@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/settings.dart';
-
 import '../components/settings_tile.dart';
+import '../settings.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -14,14 +13,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   final String userEmail = FirebaseAuth.instance.currentUser!.email!;
-
-  saveSettings() {
-    FirebaseFirestore.instance.collection('User Settings').doc(userEmail).set({
-      'replaceEmailWithUsernameOnWallPost': configReplaceEmailWithUsernameOnWallPost,
-      'enterSendsPost': configEnterSendsPost,
-      'enablePostComments': configEnablePostComments,
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,37 +30,35 @@ class _SettingsPageState extends State<SettingsPage> {
           if (snapshot.hasData) {
             return Padding(
               padding: const EdgeInsets.all(25),
-              child: Column(
+              child: ListView(
                 children: [
-                  Expanded(
-                    child: ListView(
-                      children: [
-                        SettingsTile(
-                          value: configReplaceEmailWithUsernameOnWallPost,
-                          title: 'replaceEmailWithUsernameOnWallPost',
-                          onChanged: (value) {
-                            configReplaceEmailWithUsernameOnWallPost = value;
-                            saveSettings();
-                          },
-                        ),
-                        SettingsTile(
-                          value: configEnterSendsPost,
-                          title: 'enterSendsPost',
-                          onChanged: (value) {
-                            configEnterSendsPost = value;
-                            saveSettings();
-                          },
-                        ),
-                        SettingsTile(
-                          value: configEnablePostComments,
-                          title: 'enablePostComments',
-                          onChanged: (value) {
-                            configEnablePostComments = value;
-                            saveSettings();
-                          },
-                        ),
-                      ],
-                    ),
+                  SettingsTile(
+                    value: UserConfig().replaceEmailWithUsernameOnWallPost,
+                    title: 'replaceEmailWithUsernameOnWallPost',
+                    onChanged: (value) {
+                      UserConfig().saveSettings(replaceEmailWithUsernameOnWallPost: value);
+                    },
+                  ),
+                  SettingsTile(
+                    value: UserConfig().enterSendsPost,
+                    title: 'enterSendsPost',
+                    onChanged: (value) {
+                      UserConfig().saveSettings(enterSendsPost: value);
+                    },
+                  ),
+                  SettingsTile(
+                    value: UserConfig().enablePostComments,
+                    title: 'enablePostComments',
+                    onChanged: (value) {
+                      UserConfig().saveSettings(enablePostComments: value);
+                    },
+                  ),
+                  SettingsTile(
+                    value: UserConfig().enterSendsPost,
+                    title: 'darkMode',
+                    onChanged: (value) {
+                      UserConfig().saveSettings(darkMode: value);
+                    },
                   ),
                 ],
               ),

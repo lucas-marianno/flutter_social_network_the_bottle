@@ -44,7 +44,7 @@ class _CommentsState extends State<Comments> {
 
   @override
   Widget build(BuildContext context) {
-    if (configEnablePostComments) {
+    if (UserConfig().enablePostComments) {
       return Flexible(
         child: Column(
           mainAxisSize: MainAxisSize.min,

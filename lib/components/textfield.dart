@@ -27,7 +27,7 @@ class _MyTextFieldState extends State<MyTextField> {
 
   @override
   Widget build(BuildContext context) {
-    bool enterKeyPressSubmits = widget.enterKeyPressSubmits || configEnterSendsPost;
+    bool enterKeyPressSubmits = widget.enterKeyPressSubmits || UserConfig().enterSendsPost;
 
     return TextField(
       cursorColor: Theme.of(context).colorScheme.onSurface,
@@ -48,8 +48,8 @@ class _MyTextFieldState extends State<MyTextField> {
                 ),
                 onPressed: () => setState(() => isVisible = !isVisible))
             : null,
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.onError, width: 4),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white, width: 4),
         ),
         enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Theme.of(context).colorScheme.onError)),
