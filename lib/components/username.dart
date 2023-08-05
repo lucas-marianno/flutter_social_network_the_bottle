@@ -18,9 +18,14 @@ class Username extends StatelessWidget {
       return StreamBuilder(
         stream: FirebaseFirestore.instance.collection('User Profile').doc(postOwner).snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.hasData && snapshot.data!.data() != null) {
             return Text(
               snapshot.data!.data()!['username'] ?? postOwner,
+              style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+            );
+          } else if (snapshot.data?.data() == null) {
+            return Text(
+              postOwner,
               style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
             );
           } else {

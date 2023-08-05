@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/firebase_options.dart';
+import 'package:the_wall/sandbox.dart';
 import 'package:the_wall/settings.dart';
 import 'package:the_wall/theme.dart';
 import 'auth/auth.dart';
@@ -23,6 +24,13 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    if (sandboxEnabled) {
+      return MaterialApp(
+        theme: lightTheme,
+        home: const Sandbox(),
+      );
+    }
+
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('User Settings')

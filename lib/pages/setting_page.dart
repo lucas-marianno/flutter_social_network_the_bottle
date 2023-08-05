@@ -54,7 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     },
                   ),
                   SettingsTile(
-                    value: UserConfig().enterSendsPost,
+                    value: UserConfig().darkMode,
                     title: 'darkMode',
                     onChanged: (value) {
                       UserConfig().saveSettings(darkMode: value);

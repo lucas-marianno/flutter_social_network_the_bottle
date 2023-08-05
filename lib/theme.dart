@@ -8,7 +8,7 @@ ThemeData lightTheme = ThemeData(
     onPrimary: Colors.grey[200]!, //
     secondary: Colors.grey, //
     onSecondary: Colors.red,
-    tertiary: Colors.grey[100],
+    tertiary: Colors.grey[200],
     error: Colors.grey[900]!,
     onError: Colors.white, //
     background: Colors.grey[300]!, //
