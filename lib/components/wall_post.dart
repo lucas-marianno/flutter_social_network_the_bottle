@@ -117,7 +117,7 @@ class _WallPostState extends State<WallPost> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                LikeButton(postId: widget.postId),
+                PostLikeButton(postId: widget.postId),
                 ViewCommentsButton(
                   onTap: viewComments,
                   postId: widget.postId,

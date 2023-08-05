@@ -1,11 +1,38 @@
+import 'dart:js_interop';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/components/comment.dart';
 
-class Sandbox extends StatelessWidget {
+class Sandbox extends StatefulWidget {
   const Sandbox({super.key});
 
   @override
+  State<Sandbox> createState() => _SandboxState();
+}
+
+class _SandboxState extends State<Sandbox> {
+  bool loginComplete = false;
+  void login() async {
+    if (FirebaseAuth.instance.currentUser.isNull) {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: 'test@user.com', password: 'password');
+    }
+
+    setState(() => loginComplete = true);
+  }
+
+  @override
+  void initState() {
+    login();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (!loginComplete) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
@@ -17,12 +44,10 @@ class Sandbox extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(25),
         child: ListView(
-          children: [
+          children: const [
             Comment(
-              text:
-                  'This is a loren ipsum da vida ashudhaus huda as u sudh ufh usu  sidf hisjd ijfsid jifsd ihsidh fishd ih',
-              user: 'user',
-              timestamp: 'timestamp',
+              postId: 'Ad9RpA9qpwvdZsrpMUbs',
+              commentId: '0zpqCkJzkq7mUyTqmccq',
             ),
           ],
         ),

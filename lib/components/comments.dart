@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:the_wall/components/comment.dart';
 import 'package:the_wall/components/elevated_button.dart';
 import 'package:the_wall/settings.dart';
-import '../util/timestamp_to_string.dart';
 import 'input_from_modal_bottom_sheet.dart';
 
 class Comments extends StatefulWidget {
@@ -39,6 +38,7 @@ class _CommentsState extends State<Comments> {
       'CommentText': commentText,
       'CommentedBy': currentUser.email,
       'CommentTime': Timestamp.now(),
+      'CommentLikes': [],
     });
   }
 
@@ -65,11 +65,9 @@ class _CommentsState extends State<Comments> {
                       shrinkWrap: true,
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
-                        final commentData = snapshot.data!.docs[index].data();
                         return Comment(
-                          text: commentData['CommentText'],
-                          user: commentData['CommentedBy'],
-                          timestamp: timestampToString(commentData['CommentTime']),
+                          postId: widget.postId,
+                          commentId: snapshot.data!.docs[index].id,
                         );
                       },
                     );

@@ -38,7 +38,6 @@ class _MyAppState extends State<MyApp> {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data!.data() != null) {
-          print(snapshot.data!.data()!['darkMode']);
           ThemeMode themeMode() {
             if (snapshot.data!.data()!['darkMode'] == null) return ThemeMode.system;
             return snapshot.data!.data()!['darkMode'] ? ThemeMode.dark : ThemeMode.light;
