@@ -20,6 +20,7 @@ class Comments extends StatefulWidget {
 
 class _CommentsState extends State<Comments> {
   final User currentUser = FirebaseAuth.instance.currentUser!;
+  ScrollController scrollController = ScrollController();
 
   void addComment() async {
     final commentText = await getInputFromModalBottomSheet(
@@ -29,6 +30,12 @@ class _CommentsState extends State<Comments> {
     );
 
     if (commentText == null) return;
+
+    scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 1500),
+      curve: Curves.decelerate,
+    );
     // write the comment to firestore under the comments collection for this post
     FirebaseFirestore.instance
         .collection('User Posts')
@@ -62,6 +69,7 @@ class _CommentsState extends State<Comments> {
                     if (snapshot.data!.docs.isEmpty) return const Text('');
 
                     return ListView.builder(
+                      controller: scrollController,
                       shrinkWrap: true,
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {

@@ -38,7 +38,7 @@ class _PostLikeButtonState extends State<PostLikeButton> {
         stream: FirebaseFirestore.instance.collection('User Posts').doc(widget.postId).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final likes = snapshot.data!.data()!['Likes'] as List;
+            final List likes = snapshot.data!.data()?['Likes'] ?? [];
             final nOfLikes = likes.length;
             final String label = nOfLikes == 1 ? 'like' : 'likes';
             isLiked = likes.contains(currentUser.email);
@@ -49,7 +49,7 @@ class _PostLikeButtonState extends State<PostLikeButton> {
                   color: isLiked ? Colors.red : Theme.of(context).colorScheme.secondary,
                 ),
                 Text(
-                  '${likes.length} $label',
+                  '$nOfLikes $label',
                   style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
                 )
               ],

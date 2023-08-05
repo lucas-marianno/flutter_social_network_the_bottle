@@ -15,10 +15,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController controller = TextEditingController();
+  ScrollController scrollController = ScrollController();
   final User user = FirebaseAuth.instance.currentUser!;
 
   void postMessage() async {
     if (controller.text.isEmpty) return;
+    scrollController.animateTo(0,
+        duration: const Duration(milliseconds: 1500), curve: Curves.decelerate);
 
     await FirebaseFirestore.instance.collection('User Posts').add({
       'UserEmail': user.email,
@@ -57,6 +60,7 @@ class _HomePageState extends State<HomePage> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
+                      controller: scrollController,
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
                         final post = snapshot.data!.docs[index];
