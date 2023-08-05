@@ -13,7 +13,7 @@ class PostLikeButton extends StatefulWidget {
 
 class _PostLikeButtonState extends State<PostLikeButton> {
   final User currentUser = FirebaseAuth.instance.currentUser!;
-  bool isLiked = false;
+  late bool isLiked;
 
   void toggleLike() {
     setState(() => isLiked = !isLiked);
@@ -41,7 +41,7 @@ class _PostLikeButtonState extends State<PostLikeButton> {
             final likes = snapshot.data!.data()!['Likes'] as List;
             final nOfLikes = likes.length;
             final String label = nOfLikes == 1 ? 'like' : 'likes';
-            final bool isLiked = likes.contains(currentUser.email);
+            isLiked = likes.contains(currentUser.email);
             return Column(
               children: [
                 Icon(
@@ -90,7 +90,6 @@ class _CommentLikeButtonState extends State<CommentLikeButton> {
   final User currentUser = FirebaseAuth.instance.currentUser!;
 
   void toggleLike() {
-    print('hi');
     setState(() => isLiked = !isLiked);
 
     final postReference = FirebaseFirestore.instance
@@ -111,59 +110,58 @@ class _CommentLikeButtonState extends State<CommentLikeButton> {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: toggleLike,
-      child: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('User Posts')
-            .doc(widget.postId)
-            .collection('Comments')
-            .doc(widget.commentId)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final List likes = snapshot.data!.data()?['CommentLikes'] ?? [];
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('User Posts')
+          .doc(widget.postId)
+          .collection('Comments')
+          .doc(widget.commentId)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final List likes = snapshot.data!.data()?['CommentLikes'] ?? [];
 
-            final bool isLiked = likes.contains(currentUser.email);
-            return Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.tertiary,
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Row(
-                // alignment: Alignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(width: 5),
-                  Icon(
-                    isLiked ? Icons.favorite : Icons.favorite_outline,
-                    color: isLiked ? Colors.red : Theme.of(context).colorScheme.secondary,
-                  ),
-                  const SizedBox(width: 5),
-                  Text(
-                    likes.isEmpty ? '' : '${likes.length}',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onBackground,
+          isLiked = likes.contains(currentUser.email);
+          return Material(
+            color: Theme.of(context).colorScheme.tertiary,
+            borderRadius: BorderRadius.circular(5),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(5),
+              onTap: toggleLike,
+              child: Padding(
+                padding: const EdgeInsets.all(3),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(width: 5),
+                    Icon(
+                      isLiked ? Icons.favorite : Icons.favorite_outline,
+                      color: isLiked ? Colors.red : Theme.of(context).colorScheme.secondary,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 5),
+                    Text(
+                      likes.isEmpty ? '' : '${likes.length}',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            );
-          } else {
-            return SizedBox(
-              height: 50,
-              width: 75,
-              child: LinearProgressIndicator(
-                backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                color: Theme.of(context).colorScheme.surface,
-                minHeight: 50,
-              ),
-            );
-          }
-        },
-      ),
+            ),
+          );
+        } else {
+          return SizedBox(
+            height: 50,
+            width: 75,
+            child: LinearProgressIndicator(
+              backgroundColor: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.surface,
+              minHeight: 50,
+            ),
+          );
+        }
+      },
     );
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:js_interop';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/components/comment.dart';
@@ -14,7 +12,7 @@ class Sandbox extends StatefulWidget {
 class _SandboxState extends State<Sandbox> {
   bool loginComplete = false;
   void login() async {
-    if (FirebaseAuth.instance.currentUser.isNull) {
+    if (FirebaseAuth.instance.currentUser == null) {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: 'test@user.com', password: 'password');
     }

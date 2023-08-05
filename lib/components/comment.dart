@@ -31,8 +31,8 @@ class Comment extends StatelessWidget {
             children: [
               Container(
                 margin: const EdgeInsets.only(
-                  top: 10,
-                  right: 20,
+                  top: 15,
+                  right: 15,
                   left: 10,
                   bottom: 10,
                 ),
@@ -64,11 +64,8 @@ class Comment extends StatelessWidget {
                   ],
                 ),
               ),
-              Positioned(
-                bottom: -5,
-                right: -25,
-                child: CommentLikeButton(postId: postId, commentId: commentId),
-              ),
+              // comment like
+              CommentLikeButton(postId: postId, commentId: commentId),
             ],
           );
         } else {
