@@ -3,10 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/components/comment_button.dart';
 import 'package:the_wall/components/comments.dart';
+import 'package:the_wall/components/input_from_modal_bottom_sheet.dart';
 import 'package:the_wall/components/options_modal_bottom_sheet.dart';
 import 'package:the_wall/components/show_dialog.dart';
 import 'package:the_wall/components/like_button.dart';
 import 'package:the_wall/components/username.dart';
+import 'package:the_wall/util/timestamp_to_string.dart';
 
 class WallPost extends StatefulWidget {
   const WallPost({
@@ -15,13 +17,16 @@ class WallPost extends StatefulWidget {
     required this.postOwner,
     required this.postId,
     required this.postTimeStamp,
+    this.likes,
+    this.isEdited = false,
     this.isFullScreen = false,
   });
-
   final String message;
   final String postOwner;
   final String postId;
-  final String postTimeStamp;
+  final Timestamp postTimeStamp;
+  final List? likes;
+  final bool isEdited;
   final bool isFullScreen;
 
   @override
@@ -30,6 +35,39 @@ class WallPost extends StatefulWidget {
 
 class _WallPostState extends State<WallPost> {
   final User currentUser = FirebaseAuth.instance.currentUser!;
+
+  void editPost() async {
+    // dismiss any keyboard
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (context.mounted) Navigator.pop(context);
+
+    if (widget.postOwner != currentUser.email) {
+      showMyDialog(
+        context,
+        title: 'Nope!',
+        content: 'You cannot edit posts made by someone else',
+      );
+      return;
+    }
+
+    // get new text from user
+    String? newPostText = await getInputFromModalBottomSheet(
+      context,
+      startingString: widget.message,
+      enterKeyPressSubmits: false,
+    );
+
+    if (newPostText == null || newPostText.isEmpty || newPostText == widget.message) return;
+
+    // edit post in firebase firestore
+    FirebaseFirestore.instance.collection('User Posts').doc(widget.postId).set({
+      'Likes': widget.likes,
+      'Message': newPostText,
+      'TimeStamp': widget.postTimeStamp,
+      'UserEmail': widget.postOwner,
+      'Edited': true,
+    });
+  }
 
   void deletePost() {
     // dismiss any keyboard
@@ -89,13 +127,21 @@ class _WallPostState extends State<WallPost> {
                 context,
                 children: [
                   ListTile(
+                    onTap: editPost,
+                    leading: Icon(Icons.edit, color: Theme.of(context).colorScheme.onPrimary),
+                    title: Text(
+                      'Edit post',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                    ),
+                  ),
+                  ListTile(
                     onTap: deletePost,
                     leading: Icon(Icons.delete, color: Theme.of(context).colorScheme.onPrimary),
                     title: Text(
                       'Delete post',
                       style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                     ),
-                  )
+                  ),
                 ],
               );
             },
@@ -111,12 +157,20 @@ class _WallPostState extends State<WallPost> {
                     Username(postOwner: widget.postOwner),
                     // timestamp
                     Text(
-                      widget.postTimeStamp,
+                      timestampToString(widget.postTimeStamp),
                       style: TextStyle(color: Theme.of(context).colorScheme.secondary),
                     )
                   ],
                 ),
-                const SizedBox(height: 15),
+                Text(
+                  widget.isEdited ? 'edited' : '',
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+                // const SizedBox(height: 15),
                 // post text
                 Text(widget.message, textAlign: TextAlign.justify),
                 const SizedBox(height: 15),

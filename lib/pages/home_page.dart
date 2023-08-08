@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/components/textfield.dart';
 import 'package:the_wall/components/wall_post.dart';
-import 'package:the_wall/util/timestamp_to_string.dart';
 import '../components/drawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -64,11 +63,19 @@ class _HomePageState extends State<HomePage> {
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
                         final post = snapshot.data!.docs[index];
+                        late bool edited;
+                        try {
+                          edited = post['Edited'];
+                        } catch (e) {
+                          edited = false;
+                        }
                         return WallPost(
                           message: post['Message'],
                           postOwner: post['UserEmail'],
                           postId: post.id,
-                          postTimeStamp: timestampToString(post['TimeStamp']),
+                          postTimeStamp: post['TimeStamp'],
+                          likes: post['Likes'],
+                          isEdited: edited,
                         );
                       },
                     );
