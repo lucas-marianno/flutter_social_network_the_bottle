@@ -17,7 +17,6 @@ class WallPost extends StatefulWidget {
     required this.postOwner,
     required this.postId,
     required this.postTimeStamp,
-    this.likes,
     this.isEdited = false,
     this.isFullScreen = false,
   });
@@ -25,7 +24,6 @@ class WallPost extends StatefulWidget {
   final String postOwner;
   final String postId;
   final Timestamp postTimeStamp;
-  final List? likes;
   final bool isEdited;
   final bool isFullScreen;
 
@@ -61,12 +59,9 @@ class _WallPostState extends State<WallPost> {
 
     // edit post in firebase firestore
     FirebaseFirestore.instance.collection('User Posts').doc(widget.postId).set({
-      'Likes': widget.likes,
       'Message': newPostText,
-      'TimeStamp': widget.postTimeStamp,
-      'UserEmail': widget.postOwner,
       'Edited': true,
-    });
+    }, SetOptions(merge: true));
   }
 
   void deletePost() {

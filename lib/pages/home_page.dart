@@ -63,19 +63,13 @@ class _HomePageState extends State<HomePage> {
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
                         final post = snapshot.data!.docs[index];
-                        late bool edited;
-                        try {
-                          edited = post['Edited'];
-                        } catch (e) {
-                          edited = false;
-                        }
+                        final isEdited = post.data().containsKey('Edited') ? post['Edited'] : false;
                         return WallPost(
                           message: post['Message'],
                           postOwner: post['UserEmail'],
                           postId: post.id,
                           postTimeStamp: post['TimeStamp'],
-                          likes: post['Likes'],
-                          isEdited: edited,
+                          isEdited: isEdited,
                         );
                       },
                     );
