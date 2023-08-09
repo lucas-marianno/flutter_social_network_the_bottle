@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:the_wall/components/elevated_button.dart';
 
 class Sandbox extends StatefulWidget {
@@ -11,32 +13,29 @@ class Sandbox extends StatefulWidget {
 }
 
 class _SandboxState extends State<Sandbox> {
-  final storageRef = FirebaseStorage.instance.ref();
-  late final String olarURL;
-  late final String olar2URL;
+  List<String> imageList = [];
   bool isLoading = true;
-  void getImage() async {
-    olarURL = await storageRef.child('olar.jpg').getDownloadURL();
-    olar2URL = await storageRef.child('Test Folder/olar2.jpg').getDownloadURL();
+
+  Future<void> uploadImage(ImageSource imageSource) async {
+    setState(() => isLoading = true);
+    XFile? image = await ImagePicker().pickImage(source: imageSource);
+
+    if (image == null) return;
+
+    String newFileName = 'Test Folder/img-${DateTime.now()}';
+
+    final uploadTask = await FirebaseStorage.instance.ref(newFileName).putFile(File(image.path));
+    final newFileUrl = await uploadTask.ref.getDownloadURL();
+
+    FirebaseFirestore.instance.collection('Test Collection').add({
+      'imagePath': newFileUrl,
+    });
+
     setState(() => isLoading = false);
   }
 
   @override
-  void initState() {
-    // getImage();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // if (isLoading) {
-    //   return Container(
-    //     color: Colors.grey[200],
-    //     child: const Center(child: CircularProgressIndicator()),
-    //   );
-    // }
-    File file = File('lib/assets/olar3.jpg');
-
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
@@ -46,16 +45,51 @@ class _SandboxState extends State<Sandbox> {
         centerTitle: true,
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Flexible(child: Image.network(olarURL)),
-          // Flexible(child: Image.network(olar2URL)),
-          Image.file(file),
-          const SizedBox(height: 20),
-          MyButton(
-            text: 'upload image',
-            onTap: () async {
-              // storageRef.putFile(file);
-            },
+          isLoading ? const LinearProgressIndicator() : Container(),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(25),
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance.collection('Test Collection').snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    return GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Image.network(snapshot.data!.docs[index].data()['imagePath']),
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              MyButton(
+                text: 'take a picture',
+                onTap: () async {
+                  uploadImage(ImageSource.camera);
+                },
+              ),
+              MyButton(
+                text: 'upload image',
+                onTap: () async {
+                  uploadImage(ImageSource.gallery);
+                },
+              ),
+            ],
           )
         ],
       ),
