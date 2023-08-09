@@ -1,6 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/comment.dart';
+import 'package:the_wall/components/elevated_button.dart';
 
 class Sandbox extends StatefulWidget {
   const Sandbox({super.key});
@@ -10,27 +11,32 @@ class Sandbox extends StatefulWidget {
 }
 
 class _SandboxState extends State<Sandbox> {
-  bool loginComplete = false;
-  void login() async {
-    if (FirebaseAuth.instance.currentUser == null) {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: 'test@user.com', password: 'password');
-    }
-
-    setState(() => loginComplete = true);
+  final storageRef = FirebaseStorage.instance.ref();
+  late final String olarURL;
+  late final String olar2URL;
+  bool isLoading = true;
+  void getImage() async {
+    olarURL = await storageRef.child('olar.jpg').getDownloadURL();
+    olar2URL = await storageRef.child('Test Folder/olar2.jpg').getDownloadURL();
+    setState(() => isLoading = false);
   }
 
   @override
   void initState() {
-    login();
+    // getImage();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!loginComplete) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    // if (isLoading) {
+    //   return Container(
+    //     color: Colors.grey[200],
+    //     child: const Center(child: CircularProgressIndicator()),
+    //   );
+    // }
+    File file = File('lib/assets/olar3.jpg');
+
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
@@ -39,16 +45,19 @@ class _SandboxState extends State<Sandbox> {
         foregroundColor: Colors.grey[200],
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(25),
-        child: ListView(
-          children: const [
-            Comment(
-              postId: 'Ad9RpA9qpwvdZsrpMUbs',
-              commentId: '0zpqCkJzkq7mUyTqmccq',
-            ),
-          ],
-        ),
+      body: Column(
+        children: [
+          // Flexible(child: Image.network(olarURL)),
+          // Flexible(child: Image.network(olar2URL)),
+          Image.file(file),
+          const SizedBox(height: 20),
+          MyButton(
+            text: 'upload image',
+            onTap: () async {
+              // storageRef.putFile(file);
+            },
+          )
+        ],
       ),
     );
   }
