@@ -19,24 +19,31 @@ class _SandboxState extends State<Sandbox> {
 
   Future<void> uploadImage(ImageSource imageSource) async {
     setState(() => isLoading = true);
-    XFile? image = await ImagePicker().pickImage(source: imageSource);
 
-    if (image == null) return;
+    await () async {
+      // retrieve image from user
+      XFile? image = await ImagePicker().pickImage(source: imageSource, imageQuality: 50);
 
-    String newFileName = 'Test Folder/img-${DateTime.now()}';
+      if (image == null) return;
 
-    late final TaskSnapshot uploadTask;
-    if (kIsWeb) {
-      uploadTask =
-          await FirebaseStorage.instance.ref(newFileName).putData(await image.readAsBytes());
-    } else {
-      uploadTask = await FirebaseStorage.instance.ref(newFileName).putFile(File(image.path));
-    }
-    final newFileUrl = await uploadTask.ref.getDownloadURL();
+      // set filename
+      String newFileName = 'Test Folder/img-${DateTime.now()}';
 
-    FirebaseFirestore.instance.collection('Test Collection').add({
-      'imagePath': newFileUrl,
-    });
+      //upload to storage
+      late final TaskSnapshot uploadTask;
+      if (kIsWeb) {
+        uploadTask =
+            await FirebaseStorage.instance.ref(newFileName).putData(await image.readAsBytes());
+      } else {
+        uploadTask = await FirebaseStorage.instance.ref(newFileName).putFile(File(image.path));
+      }
+      final newFileUrl = await uploadTask.ref.getDownloadURL();
+
+      // save image URL to database
+      FirebaseFirestore.instance.collection('Test Collection').add({
+        'imagePath': newFileUrl,
+      });
+    }();
 
     setState(() => isLoading = false);
   }
@@ -70,9 +77,37 @@ class _SandboxState extends State<Sandbox> {
                           const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
+                        final String imagePath = snapshot.data!.docs[index].data()['imagePath'];
+
                         return Padding(
                           padding: const EdgeInsets.all(5.0),
-                          child: Image.network(snapshot.data!.docs[index].data()['imagePath']),
+                          child: GestureDetector(
+                            onTap: () {
+                              // go to full screen
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => FullscreenImage(imagePath),
+                                ),
+                              );
+                            },
+                            onLongPress: () {
+                              // delete from database
+                              FirebaseFirestore.instance
+                                  .collection('Test Collection')
+                                  .doc(snapshot.data!.docs[index].id)
+                                  .delete();
+                              // delete from storage
+                              FirebaseStorage.instance.refFromURL(imagePath).delete();
+                            },
+                            child: Hero(
+                              tag: imagePath,
+                              child: Image.network(
+                                imagePath,
+                                scale: 0.01,
+                                filterQuality: FilterQuality.low,
+                              ),
+                            ),
+                          ),
 
                           /// When loading an image in a web app you need to allow (server side)
                           /// your database contents to be displayed cross origin.
@@ -107,6 +142,32 @@ class _SandboxState extends State<Sandbox> {
             ],
           )
         ],
+      ),
+    );
+  }
+}
+
+class FullscreenImage extends StatelessWidget {
+  const FullscreenImage(
+    this.imagePath, {
+    super.key,
+  });
+  final String imagePath;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Expanded(
+          child: Hero(
+            tag: imagePath,
+            child: Image.network(
+              imagePath,
+              filterQuality: FilterQuality.high,
+              scale: 1,
+            ),
+          ),
+        ),
       ),
     );
   }
