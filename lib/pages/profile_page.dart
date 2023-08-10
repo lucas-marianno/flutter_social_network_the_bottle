@@ -26,6 +26,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void deleteAccount() {
     // TODO: Implement this function
+
+    // delete data from storage
+
+    // delete data from database
+
+    // delete data from auth
+
+    // logout
   }
 
   void viewPicture(String? imageUrl) {
