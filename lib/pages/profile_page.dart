@@ -24,6 +24,10 @@ class _ProfilePageState extends State<ProfilePage> {
   String username = '';
   String bio = '';
 
+  void deleteAccount() {
+    // TODO: Implement this function
+  }
+
   void viewPicture(String? imageUrl) {
     if (imageUrl == null) return;
     Navigator.of(context).push(MaterialPageRoute(
