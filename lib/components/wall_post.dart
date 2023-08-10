@@ -5,6 +5,7 @@ import 'package:the_wall/components/comment_button.dart';
 import 'package:the_wall/components/comments.dart';
 import 'package:the_wall/components/input_from_modal_bottom_sheet.dart';
 import 'package:the_wall/components/options_modal_bottom_sheet.dart';
+import 'package:the_wall/components/profile_picture.dart';
 import 'package:the_wall/components/show_dialog.dart';
 import 'package:the_wall/components/like_button.dart';
 import 'package:the_wall/components/username.dart';
@@ -98,6 +99,31 @@ class _WallPostState extends State<WallPost> {
     );
   }
 
+  void postOptions() {
+    if (widget.isFullScreen) return;
+    optionsFromModalBottomSheet(
+      context,
+      children: [
+        ListTile(
+          onTap: editPost,
+          leading: Icon(Icons.edit, color: Theme.of(context).colorScheme.onPrimary),
+          title: Text(
+            'Edit post',
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+          ),
+        ),
+        ListTile(
+          onTap: deletePost,
+          leading: Icon(Icons.delete, color: Theme.of(context).colorScheme.onPrimary),
+          title: Text(
+            'Delete post',
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -114,59 +140,59 @@ class _WallPostState extends State<WallPost> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // post body
+          // post header + body
           GestureDetector(
-            onLongPress: () {
-              if (widget.isFullScreen) return;
-              optionsFromModalBottomSheet(
-                context,
-                children: [
-                  ListTile(
-                    onTap: editPost,
-                    leading: Icon(Icons.edit, color: Theme.of(context).colorScheme.onPrimary),
-                    title: Text(
-                      'Edit post',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-                    ),
-                  ),
-                  ListTile(
-                    onTap: deletePost,
-                    leading: Icon(Icons.delete, color: Theme.of(context).colorScheme.onPrimary),
-                    title: Text(
-                      'Delete post',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-                    ),
-                  ),
-                ],
-              );
-            },
+            onLongPress: postOptions,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // user + timestamp
+                // header
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    // username
-                    Username(postOwner: widget.postOwner),
-                    // timestamp
-                    Text(
-                      timestampToString(widget.postTimeStamp),
-                      style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                    )
+                    // profile thumbnail
+                    ProfilePicture(
+                      profileEmailId: widget.postOwner,
+                      size: ProfilePictureSize.small,
+                      onTap: () {
+                        // TODO: go to this users profile
+                      },
+                    ),
+                    const SizedBox(width: 15),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // username
+                        Username(postOwner: widget.postOwner),
+                        // timestamp
+                        Text(
+                          timestampToString(widget.postTimeStamp),
+                          style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                        )
+                      ],
+                    ),
+                    const Spacer(),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // more
+                        GestureDetector(onTap: postOptions, child: const Icon(Icons.more_horiz)),
+                        // edited flag
+                        Text(
+                          widget.isEdited ? 'edited' : '',
+                          textAlign: TextAlign.end,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-                Text(
-                  widget.isEdited ? 'edited' : '',
-                  textAlign: TextAlign.end,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-                // const SizedBox(height: 15),
-                // post text
+                const SizedBox(height: 15),
+                // body
                 Text(widget.message, textAlign: TextAlign.justify),
                 const SizedBox(height: 15),
               ],

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:the_wall/components/profile_picture.dart';
 import 'package:the_wall/pages/profile_page.dart';
 import '../pages/setting_page.dart';
 import 'list_tile.dart';
@@ -12,7 +13,7 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     void goToPage(Widget page) {
-      Navigator.of(context).pop();
+      // Navigator.of(context).pop();
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => page,
@@ -34,10 +35,13 @@ class MyDrawer extends StatelessWidget {
               child: Column(
                 children: [
                   DrawerHeader(
-                    child: Icon(
-                      Icons.person,
-                      size: 75,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                    child: Hero(
+                      tag: 'profilePic',
+                      child: ProfilePicture(
+                        profileEmailId: FirebaseAuth.instance.currentUser!.email,
+                        size: ProfilePictureSize.medium,
+                        onTap: () => goToPage(const ProfilePage()),
+                      ),
                     ),
                   ),
                   MyListTile(
