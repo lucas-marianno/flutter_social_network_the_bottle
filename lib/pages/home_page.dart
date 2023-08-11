@@ -1,9 +1,14 @@
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:the_wall/components/textfield.dart';
 import 'package:the_wall/components/wall_post.dart';
+import 'package:the_wall/components/wall_post_header.dart';
+import 'package:the_wall/components/wall_post_picture.dart';
+import 'package:the_wall/pages/image_visualizer_page.dart';
 import '../components/drawer.dart';
 import '../components/list_tile.dart';
 import '../components/options_modal_bottom_sheet.dart';
@@ -19,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   TextEditingController controller = TextEditingController();
   ScrollController scrollController = ScrollController();
   final User user = FirebaseAuth.instance.currentUser!;
-  dynamic loadedImage;
+  Uint8List? loadedImage;
 
   void postMessage() async {
     if (controller.text.isEmpty) return null;
@@ -41,10 +46,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   void addImageToPost(String postId) async {
+    if (loadedImage == null) return;
+
     // TODO: implement add image to post
+
+    // upload picture to firebase storage
+
+    final String storageUrl =
+        await (await FirebaseStorage.instance.ref('Post Pictures/$postId').putData(loadedImage!))
+            .ref
+            .getDownloadURL();
+
+    // upload pictureUrl to firebase database
+    FirebaseFirestore.instance.collection('User Posts').doc(postId).set(
+      {'Post Picture': storageUrl},
+      SetOptions(merge: true),
+    );
 
     // unload image after post
     loadedImage = null;
+    setState(() {});
   }
 
   void selectImage({bool enabled = false}) async {
@@ -113,12 +134,33 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (context, index) {
                         final post = snapshot.data!.docs[index];
                         final isEdited = post.data().containsKey('Edited') ? post['Edited'] : false;
+                        String? postPictureUrl;
+                        try {
+                          postPictureUrl = post['Post Picture'];
+                        } catch (e) {
+                          e;
+                        }
                         return WallPost(
+                          header: WallPostHeader(
+                            message: post['Message'],
+                            postId: post.id,
+                            postOwner: post['UserEmail'],
+                            postTimeStamp: post['TimeStamp'],
+                            isEdited: isEdited,
+                          ),
                           message: post['Message'],
-                          postOwner: post['UserEmail'],
                           postId: post.id,
-                          postTimeStamp: post['TimeStamp'],
-                          isEdited: isEdited,
+                          postPicture: PostPicture(
+                            postImageUrl: postPictureUrl,
+                            onTap: () {
+                              //TODO: implement this
+                              if (postPictureUrl == null) return;
+
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ImageVisualizer(postPictureUrl!),
+                              ));
+                            },
+                          ),
                         );
                       },
                     );
@@ -149,7 +191,7 @@ class _HomePageState extends State<HomePage> {
                     : SizedBox(
                         width: 40,
                         height: 40,
-                        child: Image.memory(loadedImage, fit: BoxFit.cover),
+                        child: Image.memory(loadedImage!, fit: BoxFit.cover),
                       ),
                 loadedImage == null ? Container() : const SizedBox(width: 10),
                 // input textfield
