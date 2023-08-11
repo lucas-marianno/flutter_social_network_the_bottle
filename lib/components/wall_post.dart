@@ -5,12 +5,12 @@ import 'package:the_wall/components/comment_button.dart';
 import 'package:the_wall/components/comments.dart';
 import 'package:the_wall/components/input_from_modal_bottom_sheet.dart';
 import 'package:the_wall/components/options_modal_bottom_sheet.dart';
+import 'package:the_wall/components/wall_post_picture.dart';
 import 'package:the_wall/components/profile_picture.dart';
 import 'package:the_wall/components/show_dialog.dart';
 import 'package:the_wall/components/like_button.dart';
 import 'package:the_wall/components/username.dart';
 import 'package:the_wall/util/timestamp_to_string.dart';
-
 import '../pages/profile_page.dart';
 
 class WallPost extends StatefulWidget {
@@ -142,74 +142,67 @@ class _WallPostState extends State<WallPost> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // post header + body
-          GestureDetector(
-            onLongPress: postOptions,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    // profile thumbnail
-                    Hero(
-                      tag: widget.postId,
-                      child: ProfilePicture(
-                        profileEmailId: widget.postOwner,
-                        size: ProfilePictureSize.small,
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ProfilePage(
-                                userEmail: widget.postOwner,
-                                heroTag: widget.postId,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // username
-                        Username(postOwner: widget.postOwner),
-                        // timestamp
-                        Text(
-                          timestampToString(widget.postTimeStamp),
-                          style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                        )
-                      ],
-                    ),
-                    const Spacer(),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        // more
-                        GestureDetector(onTap: postOptions, child: const Icon(Icons.more_horiz)),
-                        // edited flag
-                        Text(
-                          widget.isEdited ? 'edited' : '',
-                          textAlign: TextAlign.end,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontStyle: FontStyle.italic,
-                          ),
+          // post header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              // profile thumbnail
+              Hero(
+                tag: widget.postId,
+                child: ProfilePicture(
+                  profileEmailId: widget.postOwner,
+                  size: ProfilePictureSize.small,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ProfilePage(
+                          userEmail: widget.postOwner,
+                          heroTag: widget.postId,
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    );
+                  },
                 ),
-                const SizedBox(height: 15),
-                // body
-                Text(widget.message, textAlign: TextAlign.justify),
-                const SizedBox(height: 15),
-              ],
-            ),
+              ),
+              const SizedBox(width: 15),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // username
+                  Username(postOwner: widget.postOwner),
+                  // timestamp
+                  Text(
+                    timestampToString(widget.postTimeStamp),
+                    style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                  )
+                ],
+              ),
+              const Spacer(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // more
+                  GestureDetector(onTap: postOptions, child: const Icon(Icons.more_horiz)),
+                  // edited flag
+                  Text(
+                    widget.isEdited ? 'edited' : '',
+                    textAlign: TextAlign.end,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
+          const SizedBox(height: 15),
+          // post text
+          Text(widget.message, textAlign: TextAlign.justify),
+          const SizedBox(height: 15),
+          // post picture
+          PostPicture(postId: widget.postId),
+          const SizedBox(height: 15),
           // like + comment buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
