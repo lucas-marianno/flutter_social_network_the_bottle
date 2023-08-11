@@ -43,21 +43,28 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (response != true) return;
 
+    // delete data from auth
+    final currentUserEmail = currentUser.email;
+    try {
+      await FirebaseAuth.instance.currentUser!.delete();
+    } on FirebaseAuthException catch (error) {
+      // ignore: use_build_context_synchronously
+      await showMyDialog(context, title: 'Error', content: error.code);
+      return;
+    }
+
     // delete data from storage
     final storage = FirebaseStorage.instance.ref();
-    storage.child('Profile Pictures/${currentUser.email}').delete();
-    storage.child('Profile Thumbnails/${currentUser.email}').delete();
+    storage.child('Profile Pictures/$currentUserEmail').delete();
+    storage.child('Profile Thumbnails/$currentUserEmail').delete();
 
     // delete data from database
     final database = FirebaseFirestore.instance;
-    database.collection('User Profile').doc(currentUser.email).delete();
-    database.collection('User Settings').doc(currentUser.email).delete();
+    database.collection('User Profile').doc(currentUserEmail).delete();
+    database.collection('User Settings').doc(currentUserEmail).delete();
 
-    // delete data from auth
-    // TODO: delete requires recent sign in, bugfix
-    FirebaseAuth.instance.currentUser!.delete();
-    FirebaseAuth.instance.signOut();
     // logout
+    FirebaseAuth.instance.signOut();
   }
 
   void viewPicture(String? imageUrl) {
