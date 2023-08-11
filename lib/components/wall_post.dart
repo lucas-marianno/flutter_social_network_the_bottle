@@ -11,6 +11,8 @@ import 'package:the_wall/components/like_button.dart';
 import 'package:the_wall/components/username.dart';
 import 'package:the_wall/util/timestamp_to_string.dart';
 
+import '../pages/profile_page.dart';
+
 class WallPost extends StatefulWidget {
   const WallPost({
     super.key,
@@ -152,12 +154,22 @@ class _WallPostState extends State<WallPost> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     // profile thumbnail
-                    ProfilePicture(
-                      profileEmailId: widget.postOwner,
-                      size: ProfilePictureSize.small,
-                      onTap: () {
-                        // TODO: go to this users profile
-                      },
+                    Hero(
+                      tag: widget.postId,
+                      child: ProfilePicture(
+                        profileEmailId: widget.postOwner,
+                        size: ProfilePictureSize.small,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ProfilePage(
+                                userEmail: widget.postOwner,
+                                heroTag: widget.postId,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(width: 15),
                     Column(

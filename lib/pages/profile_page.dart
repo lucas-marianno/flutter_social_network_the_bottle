@@ -1,38 +1,62 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:the_wall/components/input_from_modal_bottom_sheet.dart';
 import 'package:the_wall/components/list_tile.dart';
 import 'package:the_wall/components/options_modal_bottom_sheet.dart';
 import 'package:the_wall/components/profile_picture.dart';
+import 'package:the_wall/components/show_dialog.dart';
 import 'package:the_wall/pages/image_visualizer_page.dart';
 import '../components/profile_field.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({
+    super.key,
+    required this.userEmail,
+    this.heroTag = 'null',
+  });
+
+  final String userEmail;
+  final String heroTag;
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final User user = FirebaseAuth.instance.currentUser!;
+  final User currentUser = FirebaseAuth.instance.currentUser!;
   String username = '';
   String bio = '';
 
-  void deleteAccount() {
+  void deleteAccount() async {
     // TODO: Implement this function
 
+    final response = await showMyDialog(
+      context,
+      title: 'This action is irreversible!!!',
+      content: 'Are you sure you want to delete your account?',
+      showActions: true,
+    );
+
+    if (response != true) return;
+
     // delete data from storage
+    final storage = FirebaseStorage.instance.ref();
+    storage.child('Profile Pictures/${currentUser.email}').delete();
+    storage.child('Profile Thumbnails/${currentUser.email}').delete();
 
     // delete data from database
+    final database = FirebaseFirestore.instance;
+    database.collection('User Profile').doc(currentUser.email).delete();
+    database.collection('User Settings').doc(currentUser.email).delete();
 
     // delete data from auth
-
+    // TODO: delete requires recent sign in, bugfix
+    FirebaseAuth.instance.currentUser!.delete();
+    FirebaseAuth.instance.signOut();
     // logout
   }
 
@@ -61,30 +85,42 @@ class _ProfilePageState extends State<ProfilePage> {
     if (imgSource == null) return;
 
     // retrieve image from user
-    final XFile? imgFile = await ImagePicker().pickImage(source: imgSource, imageQuality: 50);
+    final XFile? imgFile = await ImagePicker().pickImage(
+      source: imgSource,
+      imageQuality: 75,
+      maxHeight: 1080,
+      maxWidth: 1080,
+    );
 
     if (imgFile == null) return;
 
+    // creates thumbnail
+    final image = await imgFile.readAsBytes();
+    final thumbnail = await FlutterImageCompress.compressWithList(
+      image,
+      quality: 50,
+      minHeight: 50,
+      minWidth: 50,
+    );
+
     // set filename as user email
-    final String filename = 'Profile Pictures/${user.email}';
+    final String picturesFilename = 'Profile Pictures/${widget.userEmail}';
+    final String thumbnailsFilename = 'Profile Thumbnails/${widget.userEmail}';
 
     // upload to storage (handle web)
-    late final TaskSnapshot uploadTask;
-    if (kIsWeb) {
-      uploadTask = await FirebaseStorage.instance.ref(filename).putData(
-            await imgFile.readAsBytes(),
-          );
-    } else {
-      uploadTask = await FirebaseStorage.instance.ref(filename).putFile(
-            File(imgFile.path),
-          );
-    }
-    final String imgStorageUrl = await uploadTask.ref.getDownloadURL();
+    final TaskSnapshot imgUploadTask =
+        await FirebaseStorage.instance.ref(picturesFilename).putData(image);
+    final TaskSnapshot thumbnailUploadTask =
+        await FirebaseStorage.instance.ref(thumbnailsFilename).putData(thumbnail);
+
+    // img and thumbnail urls
+    final String imgStorageUrl = await imgUploadTask.ref.getDownloadURL();
+    final String thumbnailStorageUrl = await thumbnailUploadTask.ref.getDownloadURL();
 
     // save image download URL to database in UserProfile/picture
-    await FirebaseFirestore.instance.collection('User Profile').doc(user.email).set({
-      'pictureUrl': imgStorageUrl,
-    }, SetOptions(merge: true));
+    await FirebaseFirestore.instance.collection('User Profile').doc(widget.userEmail).set(
+        {'pictureUrl': imgStorageUrl, 'thumbnailUrl': thumbnailStorageUrl},
+        SetOptions(merge: true));
   }
 
   void editUsername() async {
@@ -96,7 +132,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
     if (newUsername == null || newUsername == username) return;
 
-    await FirebaseFirestore.instance.collection('User Profile').doc(user.email).set({
+    await FirebaseFirestore.instance.collection('User Profile').doc(widget.userEmail).set({
       'username': newUsername,
     }, SetOptions(merge: true));
   }
@@ -111,7 +147,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
 
     if (newBio == null || newBio == bio) return;
-    await FirebaseFirestore.instance.collection('User Profile').doc(user.email).set({
+    await FirebaseFirestore.instance.collection('User Profile').doc(widget.userEmail).set({
       'bio': newBio,
     }, SetOptions(merge: true));
   }
@@ -127,7 +163,8 @@ class _ProfilePageState extends State<ProfilePage> {
         title: const Text('P R O F I L E'),
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('User Profile').doc(user.email!).snapshots(),
+        stream:
+            FirebaseFirestore.instance.collection('User Profile').doc(widget.userEmail).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data!.data() != null) {
             final profileData = snapshot.data!.data()!;
@@ -148,22 +185,24 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: [
                         // profile pic
                         Hero(
-                          tag: 'profilePic',
+                          tag: widget.heroTag,
                           child: ProfilePicture(
-                            profileEmailId: user.email,
+                            profileEmailId: widget.userEmail,
                             size: ProfilePictureSize.large,
                             onTap: () => viewPicture(pictureUrl),
                           ),
                         ),
-                        IconButton(
-                          onPressed: pickAndUploadPicture,
-                          icon: CircleAvatar(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.grey[900],
-                            radius: 25,
-                            child: const Icon(Icons.add_a_photo),
-                          ),
-                        ),
+                        widget.userEmail != currentUser.email
+                            ? Container()
+                            : IconButton(
+                                onPressed: pickAndUploadPicture,
+                                icon: CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.grey[900],
+                                  radius: 25,
+                                  child: const Icon(Icons.add_a_photo),
+                                ),
+                              ),
                       ],
                     ),
                   ),
@@ -171,7 +210,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   // user email
                   Text(
-                    user.email!,
+                    widget.userEmail,
                     style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 20),
                     textAlign: TextAlign.center,
                   ),
@@ -187,22 +226,56 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 20),
 
                   // username
-                  ProfileField(sectionName: 'username', text: username, onTap: editUsername),
+                  ProfileField(
+                    sectionName: 'username',
+                    text: username,
+                    onTap: editUsername,
+                    editable: widget.userEmail == currentUser.email,
+                  ),
 
                   // bio
                   ProfileField(
                     sectionName: 'bio',
                     text: bio,
                     onTap: editBio,
+                    editable: widget.userEmail == currentUser.email,
                   ),
 
                   // my posts
                   Divider(height: 50, color: Theme.of(context).colorScheme.surface),
-                  Text('My posts',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onBackground,
-                        fontSize: 18,
-                      )),
+                  Text(
+                    'My posts',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onBackground,
+                      fontSize: 18,
+                    ),
+                  ),
+                  // implement/ delete this shit
+                  SizedBox(
+                    height: 300,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: 7,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) => Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Container(
+                          width: 300,
+                          alignment: Alignment.center,
+                          color: Colors.white,
+                          child: Text('$index'),
+                        ),
+                      ),
+                    ),
+                  ),
+                  widget.userEmail != currentUser.email
+                      ? Container()
+                      : MyListTile(
+                          iconData: Icons.delete,
+                          text: 'Delete Acount',
+                          onTap: deleteAccount,
+                          reverseColors: true,
+                        ),
                 ],
               ),
             );

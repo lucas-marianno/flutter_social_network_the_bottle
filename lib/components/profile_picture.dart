@@ -51,13 +51,27 @@ class ProfilePicture extends StatelessWidget {
           stream:
               FirebaseFirestore.instance.collection('User Profile').doc(profileEmailId).snapshots(),
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.hasData && snapshot.connectionState.name == 'active') {
               final imgUrl = snapshot.data!.data()?['pictureUrl'];
+              final thumbUrl = snapshot.data!.data()?['thumbnailUrl'];
+              final thumbnail = thumbUrl != null
+                  ? Image.network(thumbUrl, fit: BoxFit.cover)
+                  : LinearProgressIndicator(
+                      backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                      color: Theme.of(context).colorScheme.surface,
+                      minHeight: imgSize,
+                    );
               if (imgUrl != null) {
                 return Image.network(
                   imgUrl,
                   scale: imgScale,
                   fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    }
+                    return thumbnail;
+                  },
                 );
               }
               return Icon(
@@ -66,7 +80,13 @@ class ProfilePicture extends StatelessWidget {
                 color: iconColor,
               );
             } else {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                child: LinearProgressIndicator(
+                  backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.surface,
+                  minHeight: imgSize,
+                ),
+              );
             }
           },
         ),

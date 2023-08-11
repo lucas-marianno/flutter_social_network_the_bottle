@@ -6,10 +6,12 @@ class ProfileField extends StatelessWidget {
     required this.sectionName,
     required this.text,
     required this.onTap,
+    this.editable = false,
   });
   final String sectionName;
   final String text;
   final Function()? onTap;
+  final bool editable;
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +38,15 @@ class ProfileField extends StatelessWidget {
                   sectionName,
                   style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 18),
                 ),
-                IconButton(
-                  onPressed: onTap,
-                  icon: Icon(Icons.edit, color: Theme.of(context).colorScheme.onBackground),
-                )
+                !editable
+                    ? Container()
+                    : IconButton(
+                        onPressed: onTap,
+                        icon: Icon(
+                          Icons.edit,
+                          color: Theme.of(context).colorScheme.onBackground,
+                        ),
+                      ),
               ],
             ),
             const SizedBox(height: 10),

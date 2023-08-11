@@ -12,6 +12,8 @@ class MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
     void goToPage(Widget page) {
       // Navigator.of(context).pop();
       Navigator.of(context).push(
@@ -38,9 +40,14 @@ class MyDrawer extends StatelessWidget {
                     child: Hero(
                       tag: 'profilePic',
                       child: ProfilePicture(
-                        profileEmailId: FirebaseAuth.instance.currentUser!.email,
+                        profileEmailId: currentUser!.email,
                         size: ProfilePictureSize.medium,
-                        onTap: () => goToPage(const ProfilePage()),
+                        onTap: () => goToPage(
+                          ProfilePage(
+                            userEmail: currentUser.email!,
+                            heroTag: 'profilePic',
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -52,7 +59,7 @@ class MyDrawer extends StatelessWidget {
                   MyListTile(
                     iconData: Icons.person,
                     text: 'P R O F I L E',
-                    onTap: () => goToPage(const ProfilePage()),
+                    onTap: () => goToPage(ProfilePage(userEmail: currentUser.email!)),
                   ),
                   MyListTile(
                     iconData: Icons.settings,
