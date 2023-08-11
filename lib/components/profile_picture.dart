@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -17,26 +18,22 @@ class ProfilePicture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     late double imgSize;
-    late double imgScale;
     late double iconSize;
     late Color iconColor;
     switch (size) {
       case ProfilePictureSize.small:
         imgSize = 40;
         iconSize = 40;
-        imgScale = 0.01;
         iconColor = Theme.of(context).colorScheme.primary;
         break;
       case ProfilePictureSize.medium:
         imgSize = 120;
         iconSize = 75;
-        imgScale = 0.1;
         iconColor = Theme.of(context).colorScheme.onPrimary;
         break;
       case ProfilePictureSize.large:
         imgSize = 250;
         iconSize = 150;
-        imgScale = 1;
         iconColor = Theme.of(context).colorScheme.primary;
         break;
     }
@@ -53,25 +50,12 @@ class ProfilePicture extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.connectionState.name == 'active') {
               final imgUrl = snapshot.data!.data()?['pictureUrl'];
-              final thumbUrl = snapshot.data!.data()?['thumbnailUrl'];
-              final thumbnail = thumbUrl != null
-                  ? Image.network(thumbUrl, fit: BoxFit.cover)
-                  : LinearProgressIndicator(
-                      backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                      color: Theme.of(context).colorScheme.surface,
-                      minHeight: imgSize,
-                    );
               if (imgUrl != null) {
-                return Image.network(
-                  imgUrl,
-                  scale: imgScale,
+                return CachedNetworkImage(
+                  imageUrl: imgUrl,
                   fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) {
-                      return child;
-                    }
-                    return thumbnail;
-                  },
+                  memCacheHeight: 50,
+                  memCacheWidth: 50,
                 );
               }
               return Icon(

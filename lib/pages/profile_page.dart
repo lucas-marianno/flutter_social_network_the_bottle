@@ -32,8 +32,6 @@ class _ProfilePageState extends State<ProfilePage> {
   String bio = '';
 
   void deleteAccount() async {
-    // TODO: Implement this function
-
     final response = await showMyDialog(
       context,
       title: 'This action is irreversible!!!',

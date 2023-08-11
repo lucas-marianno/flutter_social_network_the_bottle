@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -11,7 +12,7 @@ class ImageVisualizer extends StatelessWidget {
       body: Hero(
         tag: 'profilePic',
         child: PhotoView(
-          imageProvider: NetworkImage(imageUrl),
+          imageProvider: CachedNetworkImageProvider(imageUrl),
         ),
       ),
     );
