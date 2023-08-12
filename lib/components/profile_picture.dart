@@ -51,11 +51,15 @@ class ProfilePicture extends StatelessWidget {
             if (snapshot.hasData && snapshot.connectionState.name == 'active') {
               final imgUrl = snapshot.data!.data()?['pictureUrl'];
               if (imgUrl != null) {
-                return CachedNetworkImage(
-                  imageUrl: imgUrl,
-                  fit: BoxFit.cover,
-                  memCacheHeight: 50,
-                  memCacheWidth: 50,
+                return ConstrainedBox(
+                  constraints: BoxConstraints.loose(Size.square(imgSize)),
+                  child: CachedNetworkImage(
+                    imageUrl: imgUrl,
+                    fit: BoxFit.cover,
+                    width: imgSize,
+                    memCacheWidth: 200,
+                    useOldImageOnUrlChange: true,
+                  ),
                 );
               }
               return Icon(

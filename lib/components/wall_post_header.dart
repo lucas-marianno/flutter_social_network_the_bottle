@@ -91,9 +91,6 @@ class _WallPostHeaderState extends State<WallPostHeader> {
 
   void deletePost() {
     // dismiss any keyboard
-
-    // TODO: delete any pictures from storage
-
     FocusManager.instance.primaryFocus?.unfocus();
     if (context.mounted) Navigator.pop(context);
 
@@ -116,6 +113,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // profile thumbnail
         Hero(

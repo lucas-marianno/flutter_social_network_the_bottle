@@ -26,6 +26,26 @@ class _HomePageState extends State<HomePage> {
   final User user = FirebaseAuth.instance.currentUser!;
   Uint8List? loadedImage;
 
+  void addImageToPost(String postId) async {
+    if (loadedImage == null) return;
+
+    // upload picture to firebase storage and retrieve download URL
+    final String storageUrl =
+        await (await FirebaseStorage.instance.ref('Post Pictures/$postId').putData(loadedImage!))
+            .ref
+            .getDownloadURL();
+
+    // upload pictureUrl to firebase database
+    FirebaseFirestore.instance.collection('User Posts').doc(postId).set(
+      {'Post Picture': storageUrl},
+      SetOptions(merge: true),
+    );
+
+    // unload image after post
+    loadedImage = null;
+    setState(() {});
+  }
+
   void postMessage() async {
     if (controller.text.isEmpty) return null;
     scrollController.animateTo(0,
@@ -43,29 +63,6 @@ class _HomePageState extends State<HomePage> {
     if (loadedImage == null) return;
 
     addImageToPost(post.id);
-  }
-
-  void addImageToPost(String postId) async {
-    if (loadedImage == null) return;
-
-    // TODO: implement add image to post
-
-    // upload picture to firebase storage
-
-    final String storageUrl =
-        await (await FirebaseStorage.instance.ref('Post Pictures/$postId').putData(loadedImage!))
-            .ref
-            .getDownloadURL();
-
-    // upload pictureUrl to firebase database
-    FirebaseFirestore.instance.collection('User Posts').doc(postId).set(
-      {'Post Picture': storageUrl},
-      SetOptions(merge: true),
-    );
-
-    // unload image after post
-    loadedImage = null;
-    setState(() {});
   }
 
   void selectImage({bool enabled = false}) async {
@@ -100,6 +97,18 @@ class _HomePageState extends State<HomePage> {
     loadedImage = await img.readAsBytes();
 
     setState(() {});
+  }
+
+  void unSelectImage() {
+    setState(() => loadedImage = null);
+  }
+
+  void viewSelectedImage() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ImageVisualizer(image: loadedImage),
+      ),
+    );
   }
 
   @override
@@ -153,12 +162,12 @@ class _HomePageState extends State<HomePage> {
                           postPicture: PostPicture(
                             postImageUrl: postPictureUrl,
                             onTap: () {
-                              //TODO: implement this
                               if (postPictureUrl == null) return;
-
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => ImageVisualizer(postPictureUrl!),
-                              ));
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => ImageVisualizer(imageUrl: postPictureUrl!),
+                                ),
+                              );
                             },
                           ),
                         );
@@ -186,13 +195,18 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               children: [
                 // preview of loaded image
-                loadedImage == null
-                    ? Container()
-                    : SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: Image.memory(loadedImage!, fit: BoxFit.cover),
-                      ),
+                if (loadedImage == null)
+                  Container()
+                else
+                  GestureDetector(
+                    onTap: viewSelectedImage,
+                    onLongPress: unSelectImage,
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Image.memory(loadedImage!, fit: BoxFit.cover),
+                    ),
+                  ),
                 loadedImage == null ? Container() : const SizedBox(width: 10),
                 // input textfield
                 Expanded(

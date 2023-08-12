@@ -68,7 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void viewPicture(String? imageUrl) {
     if (imageUrl == null) return;
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => ImageVisualizer(imageUrl),
+      builder: (context) => ImageVisualizer(imageUrl: imageUrl),
     ));
   }
 
