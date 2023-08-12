@@ -17,8 +17,8 @@ class MyListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     if (reverseColors) {
       return ListTile(
-        iconColor: Theme.of(context).colorScheme.primary,
-        textColor: Theme.of(context).colorScheme.primary,
+        iconColor: Theme.of(context).colorScheme.onBackground,
+        textColor: Theme.of(context).colorScheme.onBackground,
         leading: Icon(iconData),
         title: Text(text),
         onTap: onTap,

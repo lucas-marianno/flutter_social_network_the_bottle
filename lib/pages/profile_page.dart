@@ -179,7 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
             return Padding(
               padding: const EdgeInsets.all(30),
-              child: ListView(
+              child: Column(
                 children: [
                   // profile pic
                   const SizedBox(height: 40),
@@ -245,34 +245,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: editBio,
                     editable: widget.userEmail == currentUser.email,
                   ),
-
-                  // my posts
-                  Divider(height: 50, color: Theme.of(context).colorScheme.surface),
-                  Text(
-                    'My posts',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onBackground,
-                      fontSize: 18,
-                    ),
-                  ),
-                  // implement/ delete this shit
-                  SizedBox(
-                    height: 300,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: 7,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) => Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Container(
-                          width: 300,
-                          alignment: Alignment.center,
-                          color: Colors.white,
-                          child: Text('$index'),
-                        ),
-                      ),
-                    ),
-                  ),
+                  const Spacer(),
+                  // delete account
                   widget.userEmail != currentUser.email
                       ? Container()
                       : MyListTile(

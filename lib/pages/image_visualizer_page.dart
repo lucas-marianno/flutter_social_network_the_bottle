@@ -15,7 +15,10 @@ class ImageVisualizer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    assert((imageUrl != null) ^ (image != null));
+    assert(
+      (imageUrl != null) ^ (image != null),
+      'Only one image source should be provided.',
+    );
 
     if (imageUrl != null) {
       return Scaffold(

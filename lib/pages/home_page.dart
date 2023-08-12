@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:the_wall/components/drawer_messages.dart';
 import 'package:the_wall/components/textfield.dart';
 import 'package:the_wall/components/wall_post.dart';
 import 'package:the_wall/components/wall_post_header.dart';
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void postMessage() async {
-    if (controller.text.isEmpty) return null;
+    if (controller.text.isEmpty && loadedImage == null) return;
     scrollController.animateTo(0,
         duration: const Duration(milliseconds: 1500), curve: Curves.decelerate);
 
@@ -65,9 +66,7 @@ class _HomePageState extends State<HomePage> {
     addImageToPost(post.id);
   }
 
-  void selectImage({bool enabled = false}) async {
-    // if (!enabled) return;
-
+  void selectImage() async {
     // prompt user to select camera or gallery
     final ImageSource? imgSource = await optionsFromModalBottomSheet(context, children: [
       MyListTile(
@@ -113,14 +112,28 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
     return Scaffold(
+      key: scaffoldKey,
       backgroundColor: Theme.of(context).colorScheme.background,
       drawer: const MyDrawer(),
+      endDrawer: const DrawerMessages(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         centerTitle: true,
         title: const Text('T H E  W A L L'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              scaffoldKey.currentState?.openEndDrawer();
+              //TODO: go to messages
+              //TODO: show messages list in a drawer
+            },
+            icon: const Icon(Icons.message),
+          )
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

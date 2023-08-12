@@ -90,6 +90,8 @@ class _WallPostHeaderState extends State<WallPostHeader> {
   }
 
   void deletePost() {
+    // TODO: bugfix, when deleting a post, you must first delete its comments, otherwise the
+    // comments colection will remain even after the parent collection has been deleted
     // dismiss any keyboard
     FocusManager.instance.primaryFocus?.unfocus();
     if (context.mounted) Navigator.pop(context);
