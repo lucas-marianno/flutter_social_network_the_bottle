@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-const sandboxEnabled = false;
+const sandboxEnabled = true;
 
 class UserConfig {
   static final UserConfig _instance = UserConfig._internal();

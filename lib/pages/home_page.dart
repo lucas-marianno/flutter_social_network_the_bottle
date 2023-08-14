@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:the_wall/components/drawer_messages.dart';
+import 'package:the_wall/components/drawer_conversation.dart';
 import 'package:the_wall/components/textfield.dart';
 import 'package:the_wall/components/wall_post.dart';
 import 'package:the_wall/components/wall_post_header.dart';
@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> {
       key: scaffoldKey,
       backgroundColor: Theme.of(context).colorScheme.background,
       drawer: const MyDrawer(),
-      endDrawer: const DrawerMessages(),
+      endDrawer: const DrawerConversations(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,

@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     if (sandboxEnabled) {
       return MaterialApp(
-        theme: lightTheme,
+        theme: darkTheme,
         home: const Sandbox(),
       );
     }
