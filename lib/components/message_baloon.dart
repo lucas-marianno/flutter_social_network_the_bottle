@@ -18,7 +18,7 @@ class MessageBaloon extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: replace isIncoming parameter with:
     // final currentUser = FirebaseAuth.instance.currentUser;
-    // final isIncoming = sender == currentUser!.email;
+    // final isIncoming = sender != currentUser!.email;
     return Align(
       alignment: isIncoming ? Alignment.topLeft : Alignment.topRight,
       child: FractionallySizedBox(

@@ -34,6 +34,48 @@ class WallPostHeader extends StatefulWidget {
 class _WallPostHeaderState extends State<WallPostHeader> {
   final User currentUser = FirebaseAuth.instance.currentUser!;
 
+  void profileTap() {
+    optionsFromModalBottomSheet(
+      context,
+      children: [
+        ListTile(
+          onTap: () {
+            // TODO: send message
+          },
+          leading: Icon(Icons.message, color: Theme.of(context).colorScheme.onPrimary),
+          title: Row(
+            children: [
+              Text(
+                'Message ',
+                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+              ),
+              Username(postOwner: widget.postOwner),
+            ],
+          ),
+        ),
+        ListTile(
+          onTap: () {
+            // Go to profile
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ProfilePage(
+                  userEmail: widget.postOwner,
+                  heroTag: widget.postId,
+                ),
+              ),
+            );
+          },
+          leading: Icon(Icons.person, color: Theme.of(context).colorScheme.onPrimary),
+          title: Text(
+            'View Profile',
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+          ),
+        ),
+      ],
+    );
+  }
+
   void postOptions() {
     if (widget.isFullScreen) return;
     optionsFromModalBottomSheet(
@@ -123,16 +165,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
           child: ProfilePicture(
             profileEmailId: widget.postOwner,
             size: ProfilePictureSize.small,
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ProfilePage(
-                    userEmail: widget.postOwner,
-                    heroTag: widget.postId,
-                  ),
-                ),
-              );
-            },
+            onTap: profileTap,
           ),
         ),
         const SizedBox(width: 15),
@@ -140,7 +173,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // username
-            Username(postOwner: widget.postOwner),
+            Username(postOwner: widget.postOwner, onTap: profileTap),
             // timestamp
             Text(
               timestampToString(widget.postTimeStamp),
