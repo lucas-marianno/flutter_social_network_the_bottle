@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/drawer.dart';
 import 'package:the_wall/components/drawer_conversation.dart';
+import '../components/message_baloon.dart';
 
 class ConversationPage extends StatelessWidget {
   const ConversationPage({super.key});
@@ -11,7 +11,7 @@ class ConversationPage extends StatelessWidget {
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Theme.of(context).colorScheme.background,
-      drawer: const MyDrawer(),
+      // drawer: const MyDrawer(),
       endDrawer: const DrawerConversations(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -22,8 +22,6 @@ class ConversationPage extends StatelessWidget {
           IconButton(
             onPressed: () {
               scaffoldKey.currentState?.openEndDrawer();
-              //TODO: go to messages
-              //TODO: show messages list in a drawer
             },
             icon: const Icon(Icons.message),
           )
@@ -34,59 +32,12 @@ class ConversationPage extends StatelessWidget {
         itemCount: 20,
         itemBuilder: (context, index) {
           return MessageBaloon(
-            text: 'message bla ${'bla' * (index % 10)}',
+            text: 'message bla ${'bla ' * (index * 2)}',
             timestamp: '12:34',
             sender: 'sender',
+            isIncoming: index % 2 == 0,
           );
         },
-      ),
-    );
-  }
-}
-
-class MessageBaloon extends StatelessWidget {
-  const MessageBaloon({
-    super.key,
-    required this.text,
-    required this.timestamp,
-    required this.sender,
-  });
-
-  final String text;
-  final String timestamp;
-  final String sender;
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: Container(
-        color: Colors.grey[800],
-        margin: const EdgeInsets.all(10),
-        padding: const EdgeInsets.only(
-          top: 10,
-          left: 10,
-          right: 10,
-          bottom: 20,
-        ),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(sender),
-                Text(text),
-              ],
-            ),
-            Positioned(
-              right: 0,
-              bottom: -20,
-              child: Text(timestamp),
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -7,7 +7,7 @@ ThemeData lightTheme = ThemeData(
     primary: Colors.grey[900]!, //
     onPrimary: Colors.grey[200]!, //
     secondary: Colors.grey, //
-    onSecondary: Colors.red,
+    onSecondary: Colors.blueGrey[100]!,
     tertiary: Colors.grey[200],
     error: Colors.grey[900]!,
     onError: Colors.white, //
@@ -26,7 +26,7 @@ ThemeData darkTheme = ThemeData(
     primary: Colors.grey[900]!, //
     onPrimary: Colors.grey[200]!, //
     secondary: Colors.grey[400]!, //
-    onSecondary: Colors.red,
+    onSecondary: Colors.blueGrey[800]!,
     tertiary: Colors.grey[800],
     error: Colors.grey[900]!,
     onError: Colors.black45, //

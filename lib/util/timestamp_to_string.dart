@@ -5,7 +5,7 @@ String timestampToString(Timestamp timestamp) {
 
   String toTwoDigitString(int n) {
     final t = n.toString();
-    return t.length == 1 ? '${t}0' : t;
+    return t.length == 1 ? '0$t' : t;
   }
 
   String hour = toTwoDigitString(timestamp.toDate().hour);
