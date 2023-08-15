@@ -37,46 +37,51 @@ class ProfilePicture extends StatelessWidget {
         iconColor = Theme.of(context).colorScheme.primary;
         break;
     }
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: imgSize,
-        width: imgSize,
-        clipBehavior: Clip.hardEdge,
-        decoration: const BoxDecoration(shape: BoxShape.circle),
-        child: StreamBuilder(
-          stream:
-              FirebaseFirestore.instance.collection('User Profile').doc(profileEmailId).snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.connectionState.name == 'active') {
-              final imgUrl = snapshot.data!.data()?['pictureUrl'];
-              if (imgUrl != null) {
-                return ConstrainedBox(
-                  constraints: BoxConstraints.loose(Size.square(imgSize)),
-                  child: CachedNetworkImage(
-                    imageUrl: imgUrl,
-                    fit: BoxFit.cover,
-                    width: imgSize,
-                    memCacheWidth: 200,
-                    useOldImageOnUrlChange: true,
+    return Container(
+      height: imgSize,
+      width: imgSize,
+      clipBehavior: Clip.hardEdge,
+      decoration: const BoxDecoration(shape: BoxShape.circle),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: StreamBuilder(
+            stream: FirebaseFirestore.instance
+                .collection('User Profile')
+                .doc(profileEmailId)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.connectionState.name == 'active') {
+                final imgUrl = snapshot.data!.data()?['pictureUrl'];
+                if (imgUrl != null) {
+                  return ConstrainedBox(
+                    constraints: BoxConstraints.loose(Size.square(imgSize)),
+                    child: CachedNetworkImage(
+                      imageUrl: imgUrl,
+                      fit: BoxFit.cover,
+                      width: imgSize,
+                      memCacheWidth: 200,
+                      useOldImageOnUrlChange: true,
+                    ),
+                  );
+                }
+                return Icon(
+                  Icons.person,
+                  size: iconSize,
+                  color: iconColor,
+                );
+              } else {
+                return Center(
+                  child: LinearProgressIndicator(
+                    backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                    color: Theme.of(context).colorScheme.surface,
+                    minHeight: imgSize,
                   ),
                 );
               }
-              return Icon(
-                Icons.person,
-                size: iconSize,
-                color: iconColor,
-              );
-            } else {
-              return Center(
-                child: LinearProgressIndicator(
-                  backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                  color: Theme.of(context).colorScheme.surface,
-                  minHeight: imgSize,
-                ),
-              );
-            }
-          },
+            },
+          ),
         ),
       ),
     );

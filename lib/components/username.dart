@@ -15,39 +15,46 @@ class Username extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!UserConfig().replaceEmailWithUsernameOnWallPost) {
-      return GestureDetector(
-        onTap: onTap,
-        child: Text(
-          postOwner,
-          style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: Text(
+            postOwner,
+            style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+          ),
         ),
       );
     } else {
-      return GestureDetector(
-        onTap: onTap,
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('User Profile').doc(postOwner).snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data!.data() != null) {
-              return Text(
-                snapshot.data!.data()!['username'] ?? postOwner,
-                style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
-              );
-            } else if (snapshot.data?.data() == null) {
-              return Text(
-                postOwner,
-                style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
-              );
-            } else {
-              return Expanded(
-                child: LinearProgressIndicator(
-                  backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                  color: Theme.of(context).colorScheme.surface,
-                  minHeight: 16,
-                ),
-              );
-            }
-          },
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: StreamBuilder(
+            stream:
+                FirebaseFirestore.instance.collection('User Profile').doc(postOwner).snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data!.data() != null) {
+                return Text(
+                  snapshot.data!.data()!['username'] ?? postOwner,
+                  style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+                );
+              } else if (snapshot.data?.data() == null) {
+                return Text(
+                  postOwner,
+                  style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+                );
+              } else {
+                return Expanded(
+                  child: LinearProgressIndicator(
+                    backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                    color: Theme.of(context).colorScheme.surface,
+                    minHeight: 16,
+                  ),
+                );
+              }
+            },
+          ),
         ),
       );
     }

@@ -128,8 +128,8 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             onPressed: () {
               scaffoldKey.currentState?.openEndDrawer();
-              //TODO: go to messages
-              //TODO: show messages list in a drawer
+              //TODO: Feature: show messages list in a drawer
+              //TODO: Implement: go to messages
             },
             icon: const Icon(Icons.message),
           )
@@ -222,6 +222,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                 loadedImage == null ? Container() : const SizedBox(width: 10),
                 // input textfield
+                // TODO: Bugfix: either put a character limit or find a way to scroll through
+                // the written text. (Check Kazu's video message for details)
                 Expanded(
                   child: MyTextField(
                     controller: controller,

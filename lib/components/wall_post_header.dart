@@ -40,7 +40,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
       children: [
         ListTile(
           onTap: () {
-            // TODO: send message
+            // TODO: Implementat: send message
           },
           leading: Icon(Icons.message, color: Theme.of(context).colorScheme.onPrimary),
           title: Row(
@@ -132,7 +132,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
   }
 
   void deletePost() {
-    // TODO: bugfix, when deleting a post, you must first delete its comments, otherwise the
+    // TODO: bugfix: when deleting a post, you must first delete its comments, otherwise the
     // comments colection will remain even after the parent collection has been deleted
     // dismiss any keyboard
     FocusManager.instance.primaryFocus?.unfocus();
@@ -155,6 +155,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final bool userOwnsPost = widget.postOwner == currentUser.email;
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,7 +187,11 @@ class _WallPostHeaderState extends State<WallPostHeader> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             // more
-            GestureDetector(onTap: postOptions, child: const Icon(Icons.more_horiz)),
+            userOwnsPost
+                ? Material(
+                    color: Colors.transparent,
+                    child: InkWell(onTap: postOptions, child: const Icon(Icons.more_horiz)))
+                : Container(),
             // edited flag
             Text(
               widget.isEdited ? 'edited' : '',

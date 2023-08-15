@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+// TODO: Feature: show likes list when like button is long pressed
+
 class PostLikeButton extends StatefulWidget {
   const PostLikeButton({super.key, required this.postId});
 
