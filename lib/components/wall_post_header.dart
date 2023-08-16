@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:the_wall/components/profile_picture.dart';
 import 'package:the_wall/components/show_dialog.dart';
 import 'package:the_wall/components/username.dart';
+import 'package:the_wall/pages/conversation_page.dart';
 import '../pages/profile_page.dart';
 import '../util/timestamp_to_string.dart';
 import 'input_from_modal_bottom_sheet.dart';
@@ -35,35 +36,94 @@ class _WallPostHeaderState extends State<WallPostHeader> {
   final User currentUser = FirebaseAuth.instance.currentUser!;
   late final bool userOwnsPost;
 
+  void messagePostOwner() async {
+    if (currentUser.email == widget.postOwner) return;
+
+    // check profile for a previous conversation
+    final conversation = await FirebaseFirestore.instance
+        .collection('User Profile')
+        .doc(currentUser.email)
+        .collection('Conversations')
+        .doc(widget.postOwner)
+        .get();
+
+    // if theres a conversation, navigate to conversation
+    if (conversation.exists) {
+      Navigator.pop(context);
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => ConversationPage(
+            conversationId: conversation['conversationId'],
+            talkingTo: Username(userEmail: widget.postOwner),
+          ),
+        ),
+      );
+    } else {
+      // if theres no conversation, create a new one and notify participants
+      final newConversation = FirebaseFirestore.instance.collection('Conversations').doc();
+      newConversation.set({
+        'participants': [currentUser.email, widget.postOwner]
+      });
+
+      // notify currentUser
+      await FirebaseFirestore.instance
+          .collection('User Profile')
+          .doc(currentUser.email)
+          .collection('Conversations')
+          .doc(widget.postOwner)
+          .set({
+        'conversationId': newConversation.id,
+        'lastUpdated': Timestamp.now(),
+        'seen': true,
+      });
+
+      // notify postOwner
+      await FirebaseFirestore.instance
+          .collection('User Profile')
+          .doc(widget.postOwner)
+          .collection('Conversations')
+          .doc(currentUser.email)
+          .set({
+        'conversationId': newConversation.id,
+        'lastUpdated': Timestamp.now(),
+        'seen': false,
+      });
+
+      Navigator.pop(context);
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => ConversationPage(
+            conversationId: newConversation.id,
+            talkingTo: Username(userEmail: widget.postOwner),
+          ),
+        ),
+      );
+    }
+  }
+
   void profileTap() {
     optionsFromModalBottomSheet(
       context,
       children: [
-        ListTile(
-          onTap: () {
-            // TODO: Implementat: send message
-            FirebaseFirestore.instance.collection('User Conversations').doc(widget.postOwner).set({
-              'participants': [widget.postOwner, currentUser.email],
-            });
-            // Navigator.pop(context);
-            // Navigator.of(context).push(MaterialPageRoute(
-            //   builder: (context) => ConversationPage(),
-            // ));
-          },
-          leading: Icon(Icons.message, color: Theme.of(context).colorScheme.onPrimary),
-          title: Row(
-            children: [
-              Text(
-                'Message ',
-                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+        currentUser.email == widget.postOwner
+            ? Container()
+            : ListTile(
+                onTap: messagePostOwner,
+                leading: Icon(Icons.message, color: Theme.of(context).colorScheme.onPrimary),
+                title: Row(
+                  children: [
+                    Text(
+                      'Message ',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                    ),
+                    Username(
+                      userEmail: widget.postOwner,
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
-              Username(
-                userEmail: widget.postOwner,
-                style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
-              ),
-            ],
-          ),
-        ),
         ListTile(
           onTap: () {
             // Go to profile

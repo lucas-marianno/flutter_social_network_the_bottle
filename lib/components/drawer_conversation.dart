@@ -34,7 +34,7 @@ class DrawerConversations extends StatelessWidget {
             ),
             StreamBuilder(
               stream: FirebaseFirestore.instance
-                  .collection('User Conversations')
+                  .collection('User Profile')
                   .doc(currentUser!.email)
                   .collection('Conversations')
                   .orderBy('lastUpdated')
