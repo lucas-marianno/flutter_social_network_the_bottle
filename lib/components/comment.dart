@@ -5,7 +5,6 @@ import 'package:the_wall/components/like_button.dart';
 import 'package:the_wall/components/show_dialog.dart';
 import 'package:the_wall/components/username.dart';
 import 'package:the_wall/util/timestamp_to_string.dart';
-
 import 'input_from_modal_bottom_sheet.dart';
 import 'options_modal_bottom_sheet.dart';
 
@@ -142,7 +141,11 @@ class _CommentState extends State<Comment> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // user
-                          Username(postOwner: commentData['CommentedBy']),
+                          Username(
+                            userEmail: commentData['CommentedBy'],
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+                          ),
                           // timestamp
                           Text(
                             timestampToString(commentData['CommentTime']),

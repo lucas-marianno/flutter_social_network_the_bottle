@@ -68,7 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void viewPicture(String? imageUrl) {
     if (imageUrl == null) return;
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => ImageVisualizer(imageUrl: imageUrl),
+      builder: (context) => ImageVisualizerPage(imageUrl: imageUrl),
     ));
   }
 
@@ -129,6 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void editUsername() async {
+    // TODO: bugfix: limit field to 20 characaters or something
     final newUsername = await getInputFromModalBottomSheet(
       context,
       title: 'New Username',
@@ -216,7 +217,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   // user email
                   Text(
                     widget.userEmail,
-                    style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 20),
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 20),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 70),

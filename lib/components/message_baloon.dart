@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:the_wall/components/username.dart';
 
 class MessageBaloon extends StatelessWidget {
   const MessageBaloon({
@@ -6,19 +8,16 @@ class MessageBaloon extends StatelessWidget {
     required this.text,
     required this.timestamp,
     required this.sender,
-    required this.isIncoming,
   });
 
   final String text;
   final String timestamp;
   final String sender;
-  final bool isIncoming;
 
   @override
   Widget build(BuildContext context) {
-    // TODO: replace isIncoming parameter with:
-    // final currentUser = FirebaseAuth.instance.currentUser;
-    // final isIncoming = sender != currentUser!.email;
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final isIncoming = sender != currentUser!.email;
     return Align(
       alignment: isIncoming ? Alignment.topLeft : Alignment.topRight,
       child: FractionallySizedBox(
@@ -26,6 +25,7 @@ class MessageBaloon extends StatelessWidget {
         child: Align(
           alignment: isIncoming ? Alignment.topLeft : Alignment.topRight,
           child: Container(
+            constraints: const BoxConstraints(minWidth: 130),
             decoration: BoxDecoration(
               color: isIncoming
                   ? Theme.of(context).colorScheme.tertiary
@@ -47,10 +47,7 @@ class MessageBaloon extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // sender
-                    Text(
-                      sender,
-                      style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                    ),
+                    Username(userEmail: sender),
                     // message
                     Text(text),
                   ],

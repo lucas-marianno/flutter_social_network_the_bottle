@@ -10,7 +10,7 @@ import 'package:the_wall/components/wall_post.dart';
 import 'package:the_wall/components/wall_post_header.dart';
 import 'package:the_wall/components/wall_post_picture.dart';
 import 'package:the_wall/pages/image_visualizer_page.dart';
-import '../components/drawer.dart';
+import '../components/drawer_navigation.dart';
 import '../components/list_tile.dart';
 import '../components/options_modal_bottom_sheet.dart';
 
@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
   void viewSelectedImage() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ImageVisualizer(image: loadedImage),
+        builder: (context) => ImageVisualizerPage(image: loadedImage),
       ),
     );
   }
@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Theme.of(context).colorScheme.background,
-      drawer: const MyDrawer(),
+      drawer: const DrawerNavigation(),
       endDrawer: const DrawerConversations(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -178,7 +178,8 @@ class _HomePageState extends State<HomePage> {
                               if (postPictureUrl == null) return;
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => ImageVisualizer(imageUrl: postPictureUrl!),
+                                  builder: (context) =>
+                                      ImageVisualizerPage(imageUrl: postPictureUrl!),
                                 ),
                               );
                             },
@@ -246,7 +247,7 @@ class _HomePageState extends State<HomePage> {
                     FocusManager.instance.primaryFocus?.unfocus();
                     postMessage();
                   },
-                  icon: const Icon(Icons.post_add, size: 40),
+                  icon: Icon(loadedImage == null ? Icons.post_add : Icons.send, size: 40),
                 ),
               ],
             ),

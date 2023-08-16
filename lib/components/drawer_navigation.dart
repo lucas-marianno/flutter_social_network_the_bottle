@@ -1,12 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/components/profile_picture.dart';
+import 'package:the_wall/pages/home_page.dart';
 import 'package:the_wall/pages/profile_page.dart';
-import '../pages/setting_page.dart';
+import '../pages/settings_page.dart';
 import 'list_tile.dart';
 
-class MyDrawer extends StatelessWidget {
-  const MyDrawer({
+class DrawerNavigation extends StatelessWidget {
+  const DrawerNavigation({
     super.key,
   });
 
@@ -54,7 +55,7 @@ class MyDrawer extends StatelessWidget {
                   MyListTile(
                     iconData: Icons.home,
                     text: 'H O M E',
-                    onTap: () => Navigator.of(context).pop(),
+                    onTap: () => goToPage(const HomePage()),
                   ),
                   MyListTile(
                     iconData: Icons.person,

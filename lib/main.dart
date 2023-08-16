@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/firebase_options.dart';
+
 import 'package:the_wall/sandbox.dart';
 import 'package:the_wall/settings.dart';
 import 'package:the_wall/theme.dart';
@@ -11,17 +12,19 @@ import 'auth/auth.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+  runApp(const Main());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class Main extends StatefulWidget {
+  static const String name = 'Main';
+
+  const Main({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<Main> createState() => _MainState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
     if (sandboxEnabled) {
@@ -37,28 +40,22 @@ class _MyAppState extends State<MyApp> {
           .doc(FirebaseAuth.instance.currentUser?.email)
           .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot.data!.data() != null) {
-          ThemeMode themeMode() {
+        ThemeMode themeMode() {
+          if (snapshot.hasData && snapshot.data!.data() != null) {
             if (snapshot.data!.data()!['darkMode'] == null) return ThemeMode.system;
             return snapshot.data!.data()!['darkMode'] ? ThemeMode.dark : ThemeMode.light;
+          } else {
+            return UserConfig().darkMode ? ThemeMode.dark : ThemeMode.light;
           }
-
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: lightTheme,
-            darkTheme: darkTheme,
-            themeMode: themeMode(),
-            home: const AuthPage(),
-          );
-        } else {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: lightTheme,
-            darkTheme: darkTheme,
-            themeMode: UserConfig().darkMode ? ThemeMode.dark : ThemeMode.light,
-            home: const AuthPage(),
-          );
         }
+
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: themeMode(),
+          home: const AuthPage(),
+        );
       },
     );
   }

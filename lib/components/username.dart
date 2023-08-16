@@ -6,22 +6,24 @@ import '../settings.dart';
 class Username extends StatelessWidget {
   const Username({
     super.key,
-    required this.postOwner,
+    required this.userEmail,
+    this.style,
     this.onTap,
   });
-  final String postOwner;
+  final String userEmail;
   final void Function()? onTap;
-
+  final TextStyle? style;
   @override
   Widget build(BuildContext context) {
+    // TODO: bugfix: colorscheme problems when shown in options in lightmode
     if (!UserConfig().replaceEmailWithUsernameOnWallPost) {
       return Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
           child: Text(
-            postOwner,
-            style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+            userEmail,
+            style: style,
           ),
         ),
       );
@@ -32,18 +34,12 @@ class Username extends StatelessWidget {
           onTap: onTap,
           child: StreamBuilder(
             stream:
-                FirebaseFirestore.instance.collection('User Profile').doc(postOwner).snapshots(),
+                FirebaseFirestore.instance.collection('User Profile').doc(userEmail).snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data!.data() != null) {
-                return Text(
-                  snapshot.data!.data()!['username'] ?? postOwner,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
-                );
+                return Text(snapshot.data!.data()!['username'] ?? userEmail, style: style);
               } else if (snapshot.data?.data() == null) {
-                return Text(
-                  postOwner,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
-                );
+                return Text(userEmail, style: style);
               } else {
                 return Expanded(
                   child: LinearProgressIndicator(

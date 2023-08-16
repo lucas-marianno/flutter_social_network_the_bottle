@@ -4,8 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
-class ImageVisualizer extends StatelessWidget {
-  const ImageVisualizer({
+class ImageVisualizerPage extends StatelessWidget {
+  const ImageVisualizerPage({
     super.key,
     this.imageUrl,
     this.image,

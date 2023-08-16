@@ -33,6 +33,7 @@ class WallPostHeader extends StatefulWidget {
 
 class _WallPostHeaderState extends State<WallPostHeader> {
   final User currentUser = FirebaseAuth.instance.currentUser!;
+  late final bool userOwnsPost;
 
   void profileTap() {
     optionsFromModalBottomSheet(
@@ -41,6 +42,13 @@ class _WallPostHeaderState extends State<WallPostHeader> {
         ListTile(
           onTap: () {
             // TODO: Implementat: send message
+            FirebaseFirestore.instance.collection('User Conversations').doc(widget.postOwner).set({
+              'participants': [widget.postOwner, currentUser.email],
+            });
+            // Navigator.pop(context);
+            // Navigator.of(context).push(MaterialPageRoute(
+            //   builder: (context) => ConversationPage(),
+            // ));
           },
           leading: Icon(Icons.message, color: Theme.of(context).colorScheme.onPrimary),
           title: Row(
@@ -49,7 +57,10 @@ class _WallPostHeaderState extends State<WallPostHeader> {
                 'Message ',
                 style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
               ),
-              Username(postOwner: widget.postOwner),
+              Username(
+                userEmail: widget.postOwner,
+                style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+              ),
             ],
           ),
         ),
@@ -154,8 +165,14 @@ class _WallPostHeaderState extends State<WallPostHeader> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userOwnsPost = widget.postOwner == currentUser.email;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bool userOwnsPost = widget.postOwner == currentUser.email;
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,7 +191,11 @@ class _WallPostHeaderState extends State<WallPostHeader> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // username
-            Username(postOwner: widget.postOwner, onTap: profileTap),
+            Username(
+              userEmail: widget.postOwner,
+              onTap: profileTap,
+              style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+            ),
             // timestamp
             Text(
               timestampToString(widget.postTimeStamp),
