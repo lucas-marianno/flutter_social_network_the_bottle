@@ -10,8 +10,13 @@ import 'list_tile.dart';
 import 'options_modal_bottom_sheet.dart';
 
 class InputField extends StatefulWidget {
-  const InputField({super.key, required this.postMessageFunction});
-  final void Function(String text, Uint8List? loadedImage)? postMessageFunction;
+  const InputField({
+    super.key,
+    required this.onSendTap,
+    this.dismissKeyboardOnSend = true,
+  });
+  final void Function(String text, Uint8List? loadedImage)? onSendTap;
+  final bool dismissKeyboardOnSend;
 
   @override
   State<InputField> createState() => _InputFieldState();
@@ -100,8 +105,7 @@ class _InputFieldState extends State<InputField> {
                 child: MyTextField(
                   controller: textEditingController,
                   hintText: loadedImage == null ? 'Write your post' : 'Write your description',
-                  onSubmited: () =>
-                      widget.postMessageFunction?.call(textEditingController.text, loadedImage),
+                  onSubmited: () => widget.onSendTap?.call(textEditingController.text, loadedImage),
                   autofocus: false,
                 ),
               ),
@@ -116,8 +120,11 @@ class _InputFieldState extends State<InputField> {
               // post text button
               IconButton(
                 onPressed: () {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  widget.postMessageFunction?.call(textEditingController.text, loadedImage);
+                  if (widget.dismissKeyboardOnSend) {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  }
+                  widget.onSendTap?.call(textEditingController.text, loadedImage);
+                  textEditingController.clear();
                 },
                 icon: Icon(loadedImage == null ? Icons.post_add : Icons.send, size: 40),
               ),

@@ -73,8 +73,6 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             onPressed: () {
               scaffoldKey.currentState?.openEndDrawer();
-              //TODO: Feature: show messages list in a drawer
-              //TODO: Implement: go to messages
             },
             icon: const Icon(Icons.message),
           )
@@ -144,7 +142,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           // post message
-          InputField(postMessageFunction: postMessage),
+          InputField(onSendTap: postMessage),
         ],
       ),
     );

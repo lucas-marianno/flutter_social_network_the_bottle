@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/components/conversation_tile.dart';
+import 'package:the_wall/components/profile_picture.dart';
 import 'package:the_wall/components/textfield.dart';
 import 'package:the_wall/components/username.dart';
 import 'package:the_wall/pages/conversation_page.dart';
@@ -12,7 +13,11 @@ class DrawerConversations extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser;
-    // TODO: implement: this!
+
+    final conversationsCollectionRef = FirebaseFirestore.instance
+        .collection('User Profile')
+        .doc(currentUser!.email)
+        .collection('Conversations');
 
     return Drawer(
       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -33,11 +38,11 @@ class DrawerConversations extends StatelessWidget {
               ),
             ),
             StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('User Profile')
-                  .doc(currentUser!.email)
-                  .collection('Conversations')
-                  .orderBy('lastUpdated')
+              stream: conversationsCollectionRef
+                  .orderBy(
+                    'lastUpdated',
+                    descending: true,
+                  )
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -46,16 +51,35 @@ class DrawerConversations extends StatelessWidget {
                     shrinkWrap: true,
                     itemCount: conversations.length,
                     itemBuilder: (context, index) {
+                      final conversation = conversations[index];
                       return ConversationTile(
-                        userEmail: conversations[index].id,
+                        seen: conversation['seen'],
+                        userEmail: conversation.id,
+                        lastUpdated: conversation['lastUpdated'],
                         onTap: () {
+                          // mark as seen
+                          conversationsCollectionRef
+                              .doc(conversation.id)
+                              .set({'seen': true}, SetOptions(merge: true));
+                          // go to conversation
                           Navigator.pop(context);
                           Navigator.of(context).popUntil((route) => route.isFirst);
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => ConversationPage(
                                 conversationId: conversations[index].data()['conversationId'],
-                                talkingTo: Username(userEmail: conversations[index].id),
+                                talkingTo: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const SizedBox(width: 10),
+                                    ProfilePicture(
+                                      profileEmailId: conversations[index].id,
+                                      size: ProfilePictureSize.small,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Username(userEmail: conversations[index].id),
+                                  ],
+                                ),
                               ),
                             ),
                           );

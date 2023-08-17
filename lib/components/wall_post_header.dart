@@ -49,7 +49,9 @@ class _WallPostHeaderState extends State<WallPostHeader> {
 
     // if theres a conversation, navigate to conversation
     if (conversation.exists) {
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
+      // ignore: use_build_context_synchronously
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => ConversationPage(
@@ -77,6 +79,10 @@ class _WallPostHeaderState extends State<WallPostHeader> {
         'seen': true,
       });
 
+      // TODO: bugfix: only notify postOwner when currentUser sends a message
+      // if currentUser doesnt send a starting message:
+      // delete the conversation and never notify postOwner
+
       // notify postOwner
       await FirebaseFirestore.instance
           .collection('User Profile')
@@ -89,7 +95,9 @@ class _WallPostHeaderState extends State<WallPostHeader> {
         'seen': false,
       });
 
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
+      // ignore: use_build_context_synchronously
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => ConversationPage(
@@ -228,7 +236,6 @@ class _WallPostHeaderState extends State<WallPostHeader> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     userOwnsPost = widget.postOwner == currentUser.email;
   }
