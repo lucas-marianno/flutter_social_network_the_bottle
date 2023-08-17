@@ -12,12 +12,27 @@ class PostPicture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (postImageUrl == null) return Container();
-    return GestureDetector(
-      onTap: onTap,
-      child: CachedNetworkImage(
-        imageUrl: postImageUrl!,
-        fit: BoxFit.cover,
-      ),
-    );
+    try {
+      return GestureDetector(
+        onTap: onTap,
+        child: CachedNetworkImage(
+          imageUrl: postImageUrl!,
+          fit: BoxFit.cover,
+        ),
+      );
+    } catch (e) {
+      return Container(
+        color: Theme.of(context).colorScheme.tertiary,
+        height: 300,
+        width: 300,
+        child: Column(
+          children: [
+            const Text('There was a problem fetching the image!'),
+            const Text(''),
+            Text(e.toString()),
+          ],
+        ),
+      );
+    }
   }
 }

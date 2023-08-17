@@ -50,6 +50,7 @@ class DrawerConversations extends StatelessWidget {
                         userEmail: conversations[index].id,
                         onTap: () {
                           Navigator.pop(context);
+                          Navigator.of(context).popUntil((route) => route.isFirst);
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => ConversationPage(

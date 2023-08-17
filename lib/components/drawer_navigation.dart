@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_wall/components/profile_picture.dart';
-import 'package:the_wall/pages/home_page.dart';
 import 'package:the_wall/pages/profile_page.dart';
 import '../pages/settings_page.dart';
 import 'list_tile.dart';
@@ -16,7 +15,7 @@ class DrawerNavigation extends StatelessWidget {
     final currentUser = FirebaseAuth.instance.currentUser;
 
     void goToPage(Widget page) {
-      // Navigator.of(context).pop();
+      Navigator.of(context).pop();
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => page,
@@ -55,7 +54,9 @@ class DrawerNavigation extends StatelessWidget {
                   MyListTile(
                     iconData: Icons.home,
                     text: 'H O M E',
-                    onTap: () => goToPage(const HomePage()),
+                    onTap: () {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    },
                   ),
                   MyListTile(
                     iconData: Icons.person,

@@ -202,9 +202,10 @@ class _WallPostHeaderState extends State<WallPostHeader> {
     }, SetOptions(merge: true));
   }
 
-  void deletePost() {
+  void deletePost() async {
     // TODO: bugfix: when deleting a post, you must first delete its comments, otherwise the
     // comments colection will remain even after the parent collection has been deleted
+
     // dismiss any keyboard
     FocusManager.instance.primaryFocus?.unfocus();
     if (context.mounted) Navigator.pop(context);
@@ -214,14 +215,15 @@ class _WallPostHeaderState extends State<WallPostHeader> {
           title: 'Nope!', content: 'You cannot delete posts made by someone else');
       return;
     }
-    // delete post from firebase storage
+
     try {
-      FirebaseStorage.instance.ref('Post Pictures/${widget.postId}').delete();
+      // delete post picture from firebase storage (if it exists)
+      await FirebaseStorage.instance.ref('Post Pictures/${widget.postId}').delete();
     } catch (e) {
       e;
     }
     // delete post from firebase firestore
-    FirebaseFirestore.instance.collection('User Posts').doc(widget.postId).delete();
+    await FirebaseFirestore.instance.collection('User Posts').doc(widget.postId).delete();
   }
 
   @override
