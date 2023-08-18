@@ -79,7 +79,7 @@ class _InputFieldState extends State<InputField> {
         mainAxisSize: MainAxisSize.min,
         children: [
           // const Divider(height: 0),
-          SizedBox(height: 15),
+          const SizedBox(height: 15),
           Padding(
             padding: const EdgeInsets.only(left: 25, right: 10),
             child: Row(

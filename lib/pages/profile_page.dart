@@ -177,13 +177,15 @@ class _ProfilePageState extends State<ProfilePage> {
             final pictureUrl = profileData['pictureUrl'];
 
             return Padding(
-              padding: const EdgeInsets.all(30),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // profile pic
-                  const SizedBox(height: 40),
+                  const Flexible(child: SizedBox(height: 40)),
                   FractionallySizedBox(
                     widthFactor: 0.5,
+                    // heightFactor: 0.2,
                     child: Stack(
                       alignment: Alignment.bottomRight,
                       children: [
@@ -204,31 +206,29 @@ class _ProfilePageState extends State<ProfilePage> {
                                 icon: CircleAvatar(
                                   backgroundColor: Colors.white,
                                   foregroundColor: Colors.grey[900],
-                                  radius: 25,
+                                  radius: MediaQuery.of(context).size.width * 0.045,
                                   child: const Icon(Icons.add_a_photo),
                                 ),
                               ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
-
+                  const Flexible(child: SizedBox(height: 20)),
                   // user email
                   Text(
                     widget.userEmail,
                     style: const TextStyle(fontSize: 20),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 70),
+                  const Flexible(child: SizedBox(height: 70)),
                   // user details
                   const Text(
                     'My details',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                     ),
                   ),
-                  const SizedBox(height: 20),
-
+                  const Flexible(child: SizedBox(height: 20)),
                   // username
                   ProfileField(
                     sectionName: 'username',
@@ -236,7 +236,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: editUsername,
                     editable: widget.userEmail == currentUser.email,
                   ),
-
+                  const Flexible(child: SizedBox(height: 15)),
                   // bio
                   ProfileField(
                     sectionName: 'bio',

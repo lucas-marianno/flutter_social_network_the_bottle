@@ -15,7 +15,6 @@ class Username extends StatelessWidget {
   final TextStyle? style;
   @override
   Widget build(BuildContext context) {
-    // TODO: bugfix: colorscheme problems when shown in options in lightmode
     if (!UserConfig().replaceEmailWithUsernameOnWallPost) {
       return Material(
         color: Colors.transparent,
