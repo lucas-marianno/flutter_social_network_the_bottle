@@ -9,6 +9,7 @@ import 'package:the_wall/components/wall_post.dart';
 import 'package:the_wall/components/wall_post_header.dart';
 import 'package:the_wall/components/wall_post_picture.dart';
 import 'package:the_wall/pages/image_visualizer_page.dart';
+import '../components/blurred_appbar.dart';
 import '../components/drawer_navigation.dart';
 
 class HomePage extends StatefulWidget {
@@ -60,10 +61,11 @@ class _HomePageState extends State<HomePage> {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       key: scaffoldKey,
       drawer: const DrawerNavigation(),
       endDrawer: const DrawerConversations(),
-      appBar: AppBar(
+      appBar: BlurredAppBar(
         title: const Text('T H E  W A L L'),
         actions: [
           IconButton(

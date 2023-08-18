@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:the_wall/components/blurred_appbar.dart';
 import 'package:the_wall/components/drawer_conversation.dart';
 import 'package:the_wall/components/input_field.dart';
 import 'package:the_wall/util/timestamp_to_string.dart';
@@ -91,7 +92,8 @@ class _ConversationPageState extends State<ConversationPage> {
     return Scaffold(
       key: scaffoldKey,
       endDrawer: const DrawerConversations(),
-      appBar: AppBar(
+      extendBodyBehindAppBar: true,
+      appBar: BlurredAppBar(
         centerTitle: false,
         title: widget.talkingTo,
         actions: [
