@@ -25,6 +25,7 @@ class _ConversationPageState extends State<ConversationPage> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController scrollController = ScrollController();
   final currentUser = FirebaseAuth.instance.currentUser!;
+  bool showOptions = false;
 
   void sendMessage(String text, Uint8List? loadedImage) async {
     final conversationRef =
@@ -78,6 +79,9 @@ class _ConversationPageState extends State<ConversationPage> {
   }
 
   void messageOptions() {
+    setState(() {
+      showOptions = !showOptions;
+    });
     // TODO: Implement options
 
     // delete message;
@@ -96,74 +100,97 @@ class _ConversationPageState extends State<ConversationPage> {
       appBar: BlurredAppBar(
         centerTitle: false,
         title: widget.talkingTo,
-        actions: [
-          IconButton(
-            onPressed: () {
-              scaffoldKey.currentState?.openEndDrawer();
-            },
-            icon: const Icon(Icons.message),
-          )
-        ],
+        actions: showOptions
+            ? [
+                // TODO: these icons should only show when the user taps options
+                IconButton(onPressed: () {}, icon: const Icon(Icons.reply)),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.star)),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.info_outline)),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.copy)),
+                Transform.flip(
+                  flipX: true,
+                  child: IconButton(onPressed: () {}, icon: const Icon(Icons.reply)),
+                ),
+                const Text('    '),
+                IconButton(
+                  onPressed: () {
+                    scaffoldKey.currentState?.openEndDrawer();
+                  },
+                  icon: const Icon(Icons.message),
+                ),
+              ]
+            : [
+                IconButton(
+                  onPressed: () {
+                    scaffoldKey.currentState?.openEndDrawer();
+                  },
+                  icon: const Icon(Icons.message),
+                ),
+              ],
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset('lib/assets/${Theme.of(context).brightness.name}doodle.jpg',
-              fit: BoxFit.cover),
-          Column(
-            children: [
-              // conversation
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection('Conversations')
-                        .doc(widget.conversationId)
-                        .collection('Messages')
-                        .orderBy('timestamp', descending: true)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        if (snapshot.data!.docs.isEmpty) {
-                          return const Center(child: Text('start a conversation'));
+      body: GestureDetector(
+        onTap: () => setState(() => showOptions = false),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset('lib/assets/${Theme.of(context).brightness.name}doodle.jpg',
+                fit: BoxFit.cover),
+            Column(
+              children: [
+                // conversation
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection('Conversations')
+                          .doc(widget.conversationId)
+                          .collection('Messages')
+                          .orderBy('timestamp', descending: true)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data!.docs.isEmpty) {
+                            return const Center(child: Text('start a conversation'));
+                          }
+                          final int itemCount = snapshot.data!.docs.length;
+                          return ListView.builder(
+                            controller: scrollController,
+                            shrinkWrap: true,
+                            reverse: true,
+                            itemCount: itemCount,
+                            itemBuilder: (context, index) {
+                              final message = snapshot.data!.docs[index];
+                              late final bool showsender;
+                              if (index == itemCount - 1 ||
+                                  snapshot.data!.docs[index + 1]['sender'] != message['sender']) {
+                                showsender = true;
+                              } else {
+                                showsender = false;
+                              }
+                              return MessageBaloon(
+                                sender: message['sender'],
+                                text: message['text'],
+                                timestamp: timestampToString(message['timestamp']),
+                                showSender: showsender,
+                                onLongPress: messageOptions,
+                              );
+                            },
+                          );
+                        } else {
+                          return const Center(child: CircularProgressIndicator());
                         }
-                        final int itemCount = snapshot.data!.docs.length;
-                        return ListView.builder(
-                          controller: scrollController,
-                          shrinkWrap: true,
-                          reverse: true,
-                          itemCount: itemCount,
-                          itemBuilder: (context, index) {
-                            final message = snapshot.data!.docs[index];
-                            late final bool showsender;
-                            if (index == itemCount - 1 ||
-                                snapshot.data!.docs[index + 1]['sender'] != message['sender']) {
-                              showsender = true;
-                            } else {
-                              showsender = false;
-                            }
-                            return MessageBaloon(
-                              sender: message['sender'],
-                              text: message['text'],
-                              timestamp: timestampToString(message['timestamp']),
-                              showSender: showsender,
-                              onLongPress: messageOptions,
-                            );
-                          },
-                        );
-                      } else {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                    },
+                      },
+                    ),
                   ),
                 ),
-              ),
-              // post message
-              InputField(onSendTap: sendMessage, dismissKeyboardOnSend: false),
-            ],
-          ),
-        ],
+                // post message
+                InputField(onSendTap: sendMessage, dismissKeyboardOnSend: false),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
