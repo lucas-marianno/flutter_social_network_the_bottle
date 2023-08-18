@@ -28,7 +28,6 @@ class DrawerNavigation extends StatelessWidget {
     }
 
     return Drawer(
-      backgroundColor: Theme.of(context).colorScheme.primary,
       child: Padding(
         padding: const EdgeInsets.all(25),
         child: Column(

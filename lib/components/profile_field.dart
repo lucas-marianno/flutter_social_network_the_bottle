@@ -23,7 +23,6 @@ class ProfileField extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 15),
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -36,15 +35,14 @@ class ProfileField extends StatelessWidget {
               children: [
                 Text(
                   sectionName,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 18),
+                  style: const TextStyle(fontSize: 18),
                 ),
                 !editable
                     ? Container()
                     : IconButton(
                         onPressed: onTap,
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.edit,
-                          color: Theme.of(context).colorScheme.onBackground,
                         ),
                       ),
               ],
@@ -54,7 +52,7 @@ class ProfileField extends StatelessWidget {
             // field value
             Text(
               text,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
           ],
         ),

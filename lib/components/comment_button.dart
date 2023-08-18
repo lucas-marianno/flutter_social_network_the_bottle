@@ -29,20 +29,17 @@ class ViewCommentsButton extends StatelessWidget {
             final String label = nOfComments == 1 ? 'comment' : 'comments';
             return Column(
               children: [
-                Icon(Icons.comment_outlined, color: Theme.of(context).colorScheme.secondary),
+                const Icon(Icons.comment_outlined),
                 Text(
                   '$nOfComments $label',
-                  style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
                 )
               ],
             );
           } else {
-            return SizedBox(
+            return const SizedBox(
               height: 50,
               width: 75,
               child: LinearProgressIndicator(
-                backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                color: Theme.of(context).colorScheme.surface,
                 minHeight: 50,
               ),
             );

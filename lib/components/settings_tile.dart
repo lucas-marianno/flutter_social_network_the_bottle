@@ -18,7 +18,6 @@ class SettingsTile extends StatelessWidget {
       children: [
         Text(title),
         Switch(
-          trackOutlineColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.secondary),
           value: value,
           onChanged: onChanged,
         ),

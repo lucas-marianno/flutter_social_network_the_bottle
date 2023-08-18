@@ -34,8 +34,8 @@ class MessageBaloon extends StatelessWidget {
               constraints: const BoxConstraints(minWidth: 130),
               decoration: BoxDecoration(
                 color: isIncoming
-                    ? Theme.of(context).colorScheme.tertiary
-                    : Theme.of(context).colorScheme.onSecondary,
+                    ? Theme.of(context).colorScheme.surface
+                    : Theme.of(context).colorScheme.inverseSurface,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(showSender && isIncoming ? 0 : 10),
                   topRight: Radius.circular(showSender && !isIncoming ? 0 : 10),

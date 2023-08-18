@@ -61,13 +61,9 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: Theme.of(context).colorScheme.background,
       drawer: const DrawerNavigation(),
       endDrawer: const DrawerConversations(),
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        centerTitle: true,
         title: const Text('T H E  W A L L'),
         actions: [
           IconButton(

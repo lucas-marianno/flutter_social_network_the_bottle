@@ -13,16 +13,18 @@ class PostPicture extends StatelessWidget {
   Widget build(BuildContext context) {
     if (postImageUrl == null) return Container();
     try {
-      return GestureDetector(
-        onTap: onTap,
-        child: CachedNetworkImage(
-          imageUrl: postImageUrl!,
-          fit: BoxFit.cover,
+      return ConstrainedBox(
+        constraints: BoxConstraints.loose(const Size.square(500)),
+        child: GestureDetector(
+          onTap: onTap,
+          child: CachedNetworkImage(
+            imageUrl: postImageUrl!,
+            fit: BoxFit.cover,
+          ),
         ),
       );
     } catch (e) {
-      return Container(
-        color: Theme.of(context).colorScheme.tertiary,
+      return SizedBox(
         height: 300,
         width: 300,
         child: Column(

@@ -19,22 +19,21 @@ class ProfilePicture extends StatelessWidget {
   Widget build(BuildContext context) {
     late double imgSize;
     late double iconSize;
-    late Color iconColor;
     switch (size) {
       case ProfilePictureSize.small:
         imgSize = 40;
         iconSize = 40;
-        iconColor = Theme.of(context).colorScheme.primary;
+
         break;
       case ProfilePictureSize.medium:
         imgSize = 120;
         iconSize = 75;
-        iconColor = Theme.of(context).colorScheme.onPrimary;
+
         break;
       case ProfilePictureSize.large:
         imgSize = 250;
         iconSize = 150;
-        iconColor = Theme.of(context).colorScheme.primary;
+
         break;
     }
     return Container(
@@ -66,16 +65,17 @@ class ProfilePicture extends StatelessWidget {
                     ),
                   );
                 }
-                return Icon(
-                  Icons.person,
-                  size: iconSize,
-                  color: iconColor,
+                return Container(
+                  color: Colors.grey,
+                  child: Icon(
+                    Icons.person,
+                    size: iconSize,
+                    color: Theme.of(context).colorScheme.surface,
+                  ),
                 );
               } else {
                 return Center(
                   child: LinearProgressIndicator(
-                    backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                    color: Theme.of(context).colorScheme.surface,
                     minHeight: imgSize,
                   ),
                 );

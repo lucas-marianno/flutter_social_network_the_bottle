@@ -21,16 +21,10 @@ class ConversationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color color = reverseColors
-        ? Theme.of(context).colorScheme.onBackground
-        : Theme.of(context).colorScheme.onPrimary;
-
     return ListTile(
-      iconColor: color,
-      textColor: color,
       leading: ProfilePicture(profileEmailId: userEmail),
       title: Username(userEmail: userEmail),
-      trailing: seen ? null : Icon(Icons.info, color: color),
+      trailing: seen ? null : const Icon(Icons.info),
       onTap: onTap,
     );
   }

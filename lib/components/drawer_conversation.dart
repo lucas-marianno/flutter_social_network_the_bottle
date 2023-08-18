@@ -20,7 +20,6 @@ class DrawerConversations extends StatelessWidget {
         .collection('Conversations');
 
     return Drawer(
-      backgroundColor: Theme.of(context).colorScheme.primary,
       child: Padding(
         padding: const EdgeInsets.all(25),
         child: Column(

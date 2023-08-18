@@ -76,8 +76,7 @@ class _InputFieldState extends State<InputField> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Divider(
-          color: Theme.of(context).colorScheme.surface,
+        const Divider(
           height: 32,
         ),
         Padding(

@@ -44,7 +44,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 40),
@@ -63,13 +62,12 @@ class _LoginPageState extends State<LoginPage> {
               const Flexible(child: SizedBox(height: 25)),
 
               // welcome back message
-              Flexible(
+              const Flexible(
                 child: Text(
                   'Welcome back, you\'ve been missed!',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
-                    color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
               ),
@@ -102,11 +100,10 @@ class _LoginPageState extends State<LoginPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Not a member? ',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Theme.of(context).colorScheme.onBackground,
                     ),
                   ),
                   GestureDetector(

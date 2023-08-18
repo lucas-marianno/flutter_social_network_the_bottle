@@ -41,10 +41,8 @@ class Username extends StatelessWidget {
               } else if (snapshot.data?.data() == null) {
                 return Text(userEmail, style: style);
               } else {
-                return Expanded(
+                return const Expanded(
                   child: LinearProgressIndicator(
-                    backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                    color: Theme.of(context).colorScheme.surface,
                     minHeight: 16,
                   ),
                 );

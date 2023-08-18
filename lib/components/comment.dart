@@ -104,18 +104,16 @@ class _CommentState extends State<Comment> {
                         commentData['CommentedBy'],
                         commentData['CommentText'],
                       ),
-                      leading: Icon(Icons.edit, color: Theme.of(context).colorScheme.onPrimary),
-                      title: Text(
+                      leading: const Icon(Icons.edit),
+                      title: const Text(
                         'Edit comment',
-                        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
                     ListTile(
                       onTap: () => deleteComment(commentData['CommentedBy']),
-                      leading: Icon(Icons.delete, color: Theme.of(context).colorScheme.onPrimary),
-                      title: Text(
+                      leading: const Icon(Icons.delete),
+                      title: const Text(
                         'Delete comment',
-                        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
                   ],
@@ -129,7 +127,7 @@ class _CommentState extends State<Comment> {
                   ),
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.tertiary,
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Column(
@@ -143,13 +141,11 @@ class _CommentState extends State<Comment> {
                           // user
                           Username(
                             userEmail: commentData['CommentedBy'],
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+                            style: const TextStyle(fontSize: 16),
                           ),
                           // timestamp
                           Text(
                             timestampToString(commentData['CommentTime']),
-                            style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
                           ),
                         ],
                       ),
@@ -157,8 +153,7 @@ class _CommentState extends State<Comment> {
                       Text(
                         isEdited ? 'edited' : '',
                         textAlign: TextAlign.end,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onBackground,
+                        style: const TextStyle(
                           fontStyle: FontStyle.italic,
                         ),
                       ),
@@ -174,9 +169,7 @@ class _CommentState extends State<Comment> {
             ],
           );
         } else {
-          return LinearProgressIndicator(
-            backgroundColor: Theme.of(context).colorScheme.onPrimary,
-            color: Theme.of(context).colorScheme.surface,
+          return const LinearProgressIndicator(
             minHeight: 50,
           );
         }

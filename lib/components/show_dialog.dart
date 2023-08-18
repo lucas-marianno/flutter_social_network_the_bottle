@@ -9,7 +9,6 @@ Future<dynamic> showMyDialog(
   return await showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      backgroundColor: Theme.of(context).colorScheme.surface,
       title: title != null ? Center(child: Text(title)) : null,
       content: content != null ? Text(content, style: const TextStyle(fontSize: 16)) : null,
       actions: !showActions
@@ -17,16 +16,14 @@ Future<dynamic> showMyDialog(
           : [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: Text(
+                child: const Text(
                   'Cancel',
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 ),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(
+                child: const Text(
                   'OK',
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 ),
               ),
             ],

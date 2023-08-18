@@ -12,7 +12,6 @@ Future<String?> getInputFromModalBottomSheet(
   controller.text = startingString;
 
   return await showModalBottomSheet(
-    backgroundColor: Theme.of(context).colorScheme.primary,
     context: context,
     builder: (context) {
       return Container(
@@ -29,15 +28,13 @@ Future<String?> getInputFromModalBottomSheet(
               child: Text(
                 title ?? '',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
+                style: const TextStyle(
                   fontSize: 20,
                 ),
               ),
             ),
-            Flexible(
+            const Flexible(
               child: Divider(
-                color: Theme.of(context).colorScheme.onBackground,
                 height: 30,
               ),
             ),
@@ -53,9 +50,8 @@ Future<String?> getInputFromModalBottomSheet(
                 ),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(controller.text),
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.send,
-                    color: Theme.of(context).colorScheme.onPrimary,
                     size: 40,
                   ),
                 ),

@@ -80,9 +80,7 @@ class _CommentsState extends State<Comments> {
                       },
                     );
                   } else {
-                    return LinearProgressIndicator(
-                      backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                      color: Theme.of(context).colorScheme.surface,
+                    return const LinearProgressIndicator(
                       minHeight: 50,
                     );
                   }

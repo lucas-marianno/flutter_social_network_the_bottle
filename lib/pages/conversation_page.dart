@@ -90,13 +90,11 @@ class _ConversationPageState extends State<ConversationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: Theme.of(context).colorScheme.background,
+
       // drawer: const DrawerNavigation(),
       endDrawer: const DrawerConversations(),
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        // centerTitle: true,
+        centerTitle: false,
         title: widget.talkingTo,
         actions: [
           IconButton(

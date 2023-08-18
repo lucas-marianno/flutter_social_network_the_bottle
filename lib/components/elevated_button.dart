@@ -14,16 +14,14 @@ class MyButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onSurface,
-          borderRadius: const BorderRadius.all(Radius.circular(5)),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(5)),
         ),
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
         child: Center(
           child: Text(
             text,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.surface,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),

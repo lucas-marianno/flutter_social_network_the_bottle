@@ -161,11 +161,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        centerTitle: true,
         title: const Text('P R O F I L E'),
       ),
       body: StreamBuilder(
@@ -217,16 +213,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   // user email
                   Text(
                     widget.userEmail,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 20),
+                    style: const TextStyle(fontSize: 20),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 70),
                   // user details
-                  Text(
+                  const Text(
                     'My details',
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 18,
                     ),
                   ),
@@ -265,10 +259,8 @@ class _ProfilePageState extends State<ProfilePage> {
           } else if (snapshot.data?.data() == null) {
             return const Center(child: Text('Error: User does not exist'));
           } else {
-            return Center(
-              child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.primary,
-              ),
+            return const Center(
+              child: CircularProgressIndicator(),
             );
           }
         },

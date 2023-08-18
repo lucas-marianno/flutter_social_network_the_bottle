@@ -117,17 +117,15 @@ class _WallPostHeaderState extends State<WallPostHeader> {
             ? Container()
             : ListTile(
                 onTap: messagePostOwner,
-                leading: Icon(Icons.message, color: Theme.of(context).colorScheme.onPrimary),
+                leading: const Icon(Icons.message),
                 title: Row(
                   children: [
-                    Text(
+                    const Text(
                       'Message ',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                     ),
                     Username(
                       userEmail: widget.postOwner,
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
@@ -145,10 +143,9 @@ class _WallPostHeaderState extends State<WallPostHeader> {
               ),
             );
           },
-          leading: Icon(Icons.person, color: Theme.of(context).colorScheme.onPrimary),
-          title: Text(
+          leading: const Icon(Icons.person),
+          title: const Text(
             'View Profile',
-            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
           ),
         ),
       ],
@@ -162,18 +159,16 @@ class _WallPostHeaderState extends State<WallPostHeader> {
       children: [
         ListTile(
           onTap: editPost,
-          leading: Icon(Icons.edit, color: Theme.of(context).colorScheme.onPrimary),
-          title: Text(
+          leading: const Icon(Icons.edit),
+          title: const Text(
             'Edit post',
-            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
           ),
         ),
         ListTile(
           onTap: deletePost,
-          leading: Icon(Icons.delete, color: Theme.of(context).colorScheme.onPrimary),
-          title: Text(
+          leading: const Icon(Icons.delete),
+          title: const Text(
             'Delete post',
-            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
           ),
         ),
       ],
@@ -263,12 +258,11 @@ class _WallPostHeaderState extends State<WallPostHeader> {
             Username(
               userEmail: widget.postOwner,
               onTap: profileTap,
-              style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
             // timestamp
             Text(
               timestampToString(widget.postTimeStamp),
-              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
             )
           ],
         ),
@@ -286,8 +280,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
             Text(
               widget.isEdited ? 'edited' : '',
               textAlign: TextAlign.end,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.secondary,
+              style: const TextStyle(
                 fontStyle: FontStyle.italic,
               ),
             ),

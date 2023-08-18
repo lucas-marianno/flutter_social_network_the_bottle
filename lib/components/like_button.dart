@@ -48,21 +48,18 @@ class _PostLikeButtonState extends State<PostLikeButton> {
               children: [
                 Icon(
                   isLiked ? Icons.favorite : Icons.favorite_outline,
-                  color: isLiked ? Colors.red : Theme.of(context).colorScheme.secondary,
+                  color: isLiked ? Colors.red : null,
                 ),
                 Text(
                   '$nOfLikes $label',
-                  style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
                 )
               ],
             );
           } else {
-            return SizedBox(
+            return const SizedBox(
               height: 50,
               width: 75,
               child: LinearProgressIndicator(
-                backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                color: Theme.of(context).colorScheme.surface,
                 minHeight: 50,
               ),
             );
@@ -125,7 +122,7 @@ class _CommentLikeButtonState extends State<CommentLikeButton> {
 
           isLiked = likes.contains(currentUser.email);
           return Material(
-            color: Theme.of(context).colorScheme.tertiary,
+            color: Theme.of(context).colorScheme.surfaceVariant,
             borderRadius: BorderRadius.circular(5),
             child: InkWell(
               borderRadius: BorderRadius.circular(5),
@@ -138,14 +135,12 @@ class _CommentLikeButtonState extends State<CommentLikeButton> {
                     const SizedBox(width: 5),
                     Icon(
                       isLiked ? Icons.favorite : Icons.favorite_outline,
-                      color: isLiked ? Colors.red : Theme.of(context).colorScheme.secondary,
+                      color: isLiked ? Colors.red : null,
                     ),
                     const SizedBox(width: 5),
                     Text(
                       likes.isEmpty ? '' : '${likes.length}',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
+                      style: const TextStyle(),
                     ),
                   ],
                 ),
@@ -153,12 +148,10 @@ class _CommentLikeButtonState extends State<CommentLikeButton> {
             ),
           );
         } else {
-          return SizedBox(
+          return const SizedBox(
             height: 50,
             width: 75,
             child: LinearProgressIndicator(
-              backgroundColor: Theme.of(context).colorScheme.onPrimary,
-              color: Theme.of(context).colorScheme.surface,
               minHeight: 50,
             ),
           );
