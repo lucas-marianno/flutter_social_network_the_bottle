@@ -73,69 +73,72 @@ class _InputFieldState extends State<InputField> {
   @override
   Widget build(BuildContext context) {
     // post message
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Divider(
-          height: 32,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 25, right: 10),
-          child: Row(
-            children: [
-              // preview of loaded image
-              if (loadedImage == null)
-                Container()
-              else
-                GestureDetector(
-                  onTap: viewSelectedImage,
-                  onLongPress: unSelectImage,
-                  child: SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: Image.memory(loadedImage!, fit: BoxFit.cover),
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // const Divider(height: 0),
+          SizedBox(height: 15),
+          Padding(
+            padding: const EdgeInsets.only(left: 25, right: 10),
+            child: Row(
+              children: [
+                // preview of loaded image
+                if (loadedImage == null)
+                  Container()
+                else
+                  GestureDetector(
+                    onTap: viewSelectedImage,
+                    onLongPress: unSelectImage,
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Image.memory(loadedImage!, fit: BoxFit.cover),
+                    ),
+                  ),
+                loadedImage == null ? Container() : const SizedBox(width: 10),
+                // input textfield
+                // TODO: Bugfix: either put a character limit or find a way to scroll through
+                // the written text. (Check Kazu's video message for details)
+                Expanded(
+                  child: MyTextField(
+                    controller: textEditingController,
+                    hintText: loadedImage == null ? 'Write your post' : 'Write your description',
+                    onSubmited: () =>
+                        widget.onSendTap?.call(textEditingController.text, loadedImage),
+                    autofocus: false,
                   ),
                 ),
-              loadedImage == null ? Container() : const SizedBox(width: 10),
-              // input textfield
-              // TODO: Bugfix: either put a character limit or find a way to scroll through
-              // the written text. (Check Kazu's video message for details)
-              Expanded(
-                child: MyTextField(
-                  controller: textEditingController,
-                  hintText: loadedImage == null ? 'Write your post' : 'Write your description',
-                  onSubmited: () => widget.onSendTap?.call(textEditingController.text, loadedImage),
-                  autofocus: false,
-                ),
-              ),
-              // post image button
-              IconButton(
-                onPressed: () {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  selectImage();
-                },
-                icon: const Icon(Icons.add_photo_alternate_outlined, size: 38),
-              ),
-              // post text button
-              IconButton(
-                onPressed: () {
-                  if (widget.dismissKeyboardOnSend) {
+                // post image button
+                IconButton(
+                  onPressed: () {
                     FocusManager.instance.primaryFocus?.unfocus();
-                  }
-                  widget.onSendTap?.call(textEditingController.text, loadedImage);
-                  textEditingController.clear();
-                },
-                icon: Icon(loadedImage == null ? Icons.post_add : Icons.send, size: 40),
-              ),
-            ],
+                    selectImage();
+                  },
+                  icon: const Icon(Icons.add_photo_alternate_outlined, size: 38),
+                ),
+                // post text button
+                IconButton(
+                  onPressed: () {
+                    if (widget.dismissKeyboardOnSend) {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    }
+                    widget.onSendTap?.call(textEditingController.text, loadedImage);
+                    textEditingController.clear();
+                  },
+                  icon: Icon(loadedImage == null ? Icons.post_add : Icons.send, size: 40),
+                ),
+              ],
+            ),
           ),
-        ),
-        // logged in as
-        Text(
-          'Logged in as ${FirebaseAuth.instance.currentUser!.email}',
-          textAlign: TextAlign.center,
-        ),
-      ],
+          // logged in as
+          Text(
+            'Logged in as ${FirebaseAuth.instance.currentUser!.email}',
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }

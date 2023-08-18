@@ -32,6 +32,8 @@ class _ProfilePageState extends State<ProfilePage> {
   String bio = '';
 
   void deleteAccount() async {
+    if (widget.userEmail != currentUser.email) return;
+
     final response = await showMyDialog(
       context,
       title: 'This action is irreversible!!!',
@@ -194,6 +196,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             onTap: () => viewPicture(pictureUrl),
                           ),
                         ),
+                        // add image button
                         widget.userEmail != currentUser.email
                             ? Container()
                             : IconButton(

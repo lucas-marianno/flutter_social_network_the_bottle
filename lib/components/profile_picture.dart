@@ -18,22 +18,15 @@ class ProfilePicture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     late double imgSize;
-    late double iconSize;
     switch (size) {
       case ProfilePictureSize.small:
         imgSize = 40;
-        iconSize = 40;
-
         break;
       case ProfilePictureSize.medium:
         imgSize = 120;
-        iconSize = 75;
-
         break;
       case ProfilePictureSize.large:
         imgSize = 250;
-        iconSize = 150;
-
         break;
     }
     return Container(
@@ -65,14 +58,7 @@ class ProfilePicture extends StatelessWidget {
                     ),
                   );
                 }
-                return Container(
-                  color: Colors.grey,
-                  child: Icon(
-                    Icons.person,
-                    size: iconSize,
-                    color: Theme.of(context).colorScheme.surface,
-                  ),
-                );
+                return Image.asset('lib/assets/avatar.jpg', fit: BoxFit.cover);
               } else {
                 return Center(
                   child: LinearProgressIndicator(

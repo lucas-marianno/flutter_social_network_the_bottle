@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 ThemeData lightTheme = ThemeData(
   useMaterial3: true,
   scaffoldBackgroundColor: Colors.grey[300]!,
-  appBarTheme: const AppBarTheme(centerTitle: true, backgroundColor: Colors.transparent),
+  appBarTheme: const AppBarTheme(
+    centerTitle: true,
+    backgroundColor: Colors.transparent,
+    scrolledUnderElevation: 0,
+  ),
   drawerTheme: DrawerThemeData(backgroundColor: Colors.grey[300]),
   dividerTheme: DividerThemeData(color: Colors.grey[400]!),
   colorScheme: ColorScheme.light(
@@ -18,7 +22,11 @@ ThemeData lightTheme = ThemeData(
 ThemeData darkTheme = ThemeData(
   useMaterial3: true,
   scaffoldBackgroundColor: Colors.grey[900],
-  appBarTheme: const AppBarTheme(centerTitle: true, backgroundColor: Colors.transparent),
+  appBarTheme: const AppBarTheme(
+    centerTitle: true,
+    backgroundColor: Colors.transparent,
+    scrolledUnderElevation: 0,
+  ),
   drawerTheme: DrawerThemeData(backgroundColor: Colors.grey[900]),
   dividerTheme: DividerThemeData(color: Colors.grey[700]!),
   colorScheme: ColorScheme.dark(

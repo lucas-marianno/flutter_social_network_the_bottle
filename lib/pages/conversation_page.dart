@@ -90,8 +90,6 @@ class _ConversationPageState extends State<ConversationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-
-      // drawer: const DrawerNavigation(),
       endDrawer: const DrawerConversations(),
       appBar: AppBar(
         centerTitle: false,
@@ -105,57 +103,64 @@ class _ConversationPageState extends State<ConversationPage> {
           )
         ],
       ),
-      body: Column(
+      body: Stack(
+        fit: StackFit.expand,
         children: [
-          // conversation
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('Conversations')
-                    .doc(widget.conversationId)
-                    .collection('Messages')
-                    .orderBy('timestamp', descending: true)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    if (snapshot.data!.docs.isEmpty) {
-                      return const Center(child: Text('start a conversation'));
-                    }
-                    final int itemCount = snapshot.data!.docs.length;
-                    return ListView.builder(
-                      controller: scrollController,
-                      shrinkWrap: true,
-                      reverse: true,
-                      itemCount: itemCount,
-                      itemBuilder: (context, index) {
-                        final message = snapshot.data!.docs[index];
-                        late final bool showsender;
-                        if (index == itemCount - 1 ||
-                            snapshot.data!.docs[index + 1]['sender'] != message['sender']) {
-                          showsender = true;
-                        } else {
-                          showsender = false;
+          Image.asset('lib/assets/${Theme.of(context).brightness.name}doodle.jpg',
+              fit: BoxFit.cover),
+          Column(
+            children: [
+              // conversation
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('Conversations')
+                        .doc(widget.conversationId)
+                        .collection('Messages')
+                        .orderBy('timestamp', descending: true)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data!.docs.isEmpty) {
+                          return const Center(child: Text('start a conversation'));
                         }
-                        return MessageBaloon(
-                          sender: message['sender'],
-                          text: message['text'],
-                          timestamp: timestampToString(message['timestamp']),
-                          showSender: showsender,
-                          onLongPress: messageOptions,
+                        final int itemCount = snapshot.data!.docs.length;
+                        return ListView.builder(
+                          controller: scrollController,
+                          shrinkWrap: true,
+                          reverse: true,
+                          itemCount: itemCount,
+                          itemBuilder: (context, index) {
+                            final message = snapshot.data!.docs[index];
+                            late final bool showsender;
+                            if (index == itemCount - 1 ||
+                                snapshot.data!.docs[index + 1]['sender'] != message['sender']) {
+                              showsender = true;
+                            } else {
+                              showsender = false;
+                            }
+                            return MessageBaloon(
+                              sender: message['sender'],
+                              text: message['text'],
+                              timestamp: timestampToString(message['timestamp']),
+                              showSender: showsender,
+                              onLongPress: messageOptions,
+                            );
+                          },
                         );
-                      },
-                    );
-                  } else {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                },
+                      } else {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                    },
+                  ),
+                ),
               ),
-            ),
+              // post message
+              InputField(onSendTap: sendMessage, dismissKeyboardOnSend: false),
+            ],
           ),
-          // post message
-          InputField(onSendTap: sendMessage, dismissKeyboardOnSend: false),
         ],
       ),
     );

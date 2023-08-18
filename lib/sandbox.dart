@@ -7,11 +7,20 @@ class Sandbox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView.builder(
-        itemCount: 20,
-        itemBuilder: (context, index) {
-          return MessageBaloon(text: 'bla' * index, timestamp: 'now', sender: 'sender');
-        },
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'lib/assets/darkdoodle.jpg',
+            fit: BoxFit.cover,
+          ),
+          ListView.builder(
+            itemCount: 20,
+            itemBuilder: (context, index) {
+              return MessageBaloon(text: 'bla' * index, timestamp: 'now', sender: 'sender');
+            },
+          ),
+        ],
       ),
     );
   }

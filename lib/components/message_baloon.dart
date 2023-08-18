@@ -21,7 +21,7 @@ class MessageBaloon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser;
-    final isIncoming = sender != currentUser!.email;
+    final isIncoming = sender != currentUser?.email;
     return Align(
       alignment: isIncoming ? Alignment.topLeft : Alignment.topRight,
       child: FractionallySizedBox(
@@ -34,7 +34,7 @@ class MessageBaloon extends StatelessWidget {
               constraints: const BoxConstraints(minWidth: 130),
               decoration: BoxDecoration(
                 color: isIncoming
-                    ? Theme.of(context).colorScheme.surface
+                    ? Theme.of(context).colorScheme.surfaceVariant
                     : Theme.of(context).colorScheme.inverseSurface,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(showSender && isIncoming ? 0 : 10),
