@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/comment.dart';
-import 'package:the_wall/components/elevated_button.dart';
-import 'package:the_wall/settings.dart';
+import 'package:the_bottle/components/comment.dart';
+import 'package:the_bottle/components/elevated_button.dart';
+import 'package:the_bottle/settings.dart';
 import 'input_from_modal_bottom_sheet.dart';
 
 class Comments extends StatefulWidget {

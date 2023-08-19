@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/conversation_tile.dart';
-import 'package:the_wall/components/profile_picture.dart';
-import 'package:the_wall/components/textfield.dart';
-import 'package:the_wall/components/username.dart';
-import 'package:the_wall/pages/conversation_page.dart';
+import 'package:the_bottle/components/conversation_tile.dart';
+import 'package:the_bottle/components/profile_picture.dart';
+import 'package:the_bottle/components/textfield.dart';
+import 'package:the_bottle/components/username.dart';
+import 'package:the_bottle/pages/conversation_page.dart';
 
 class DrawerConversations extends StatelessWidget {
   const DrawerConversations({super.key});

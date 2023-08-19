@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/profile_picture.dart';
-import 'package:the_wall/pages/profile_page.dart';
+import 'package:the_bottle/components/profile_picture.dart';
+import 'package:the_bottle/pages/profile_page.dart';
 import '../pages/settings_page.dart';
 import 'list_tile.dart';
 

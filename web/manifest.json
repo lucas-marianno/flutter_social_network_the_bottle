@@ -1,6 +1,6 @@
 {
-    "name": "the_wall",
-    "short_name": "the_wall",
+    "name": "the_bottle",
+    "short_name": "the_bottle",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

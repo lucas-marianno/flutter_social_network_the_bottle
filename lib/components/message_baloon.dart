@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/username.dart';
+import 'package:the_bottle/components/username.dart';
 
 class MessageBaloon extends StatefulWidget {
   const MessageBaloon({

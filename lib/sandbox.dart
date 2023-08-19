@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_wall/pages/conversation_page.dart';
+import 'package:the_bottle/pages/conversation_page.dart';
 
 class Sandbox extends StatelessWidget {
   const Sandbox({super.key});

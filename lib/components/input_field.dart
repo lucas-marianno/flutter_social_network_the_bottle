@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:the_wall/components/textfield.dart';
+import 'package:the_bottle/components/textfield.dart';
 
 import '../pages/image_visualizer_page.dart';
 import 'list_tile.dart';

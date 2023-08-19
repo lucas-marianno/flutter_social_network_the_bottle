@@ -4,12 +4,12 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:the_wall/components/input_from_modal_bottom_sheet.dart';
-import 'package:the_wall/components/list_tile.dart';
-import 'package:the_wall/components/options_modal_bottom_sheet.dart';
-import 'package:the_wall/components/profile_picture.dart';
-import 'package:the_wall/components/show_dialog.dart';
-import 'package:the_wall/pages/image_visualizer_page.dart';
+import 'package:the_bottle/components/input_from_modal_bottom_sheet.dart';
+import 'package:the_bottle/components/list_tile.dart';
+import 'package:the_bottle/components/options_modal_bottom_sheet.dart';
+import 'package:the_bottle/components/profile_picture.dart';
+import 'package:the_bottle/components/show_dialog.dart';
+import 'package:the_bottle/pages/image_visualizer_page.dart';
 import '../components/profile_field.dart';
 
 class ProfilePage extends StatefulWidget {

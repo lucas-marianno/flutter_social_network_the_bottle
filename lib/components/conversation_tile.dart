@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/profile_picture.dart';
-import 'package:the_wall/components/username.dart';
+import 'package:the_bottle/components/profile_picture.dart';
+import 'package:the_bottle/components/username.dart';
 
 class ConversationTile extends StatelessWidget {
   const ConversationTile({

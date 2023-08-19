@@ -2,10 +2,10 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/blurred_appbar.dart';
-import 'package:the_wall/components/drawer_conversation.dart';
-import 'package:the_wall/components/input_field.dart';
-import 'package:the_wall/util/timestamp_to_string.dart';
+import 'package:the_bottle/components/blurred_appbar.dart';
+import 'package:the_bottle/components/drawer_conversation.dart';
+import 'package:the_bottle/components/input_field.dart';
+import 'package:the_bottle/util/timestamp_to_string.dart';
 import '../components/message_baloon.dart';
 
 class ConversationPage extends StatefulWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_wall/settings.dart';
+import 'package:the_bottle/settings.dart';
 
 class MyTextField extends StatefulWidget {
   const MyTextField({

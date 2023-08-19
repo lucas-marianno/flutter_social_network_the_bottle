@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/firebase_options.dart';
-import 'package:the_wall/settings.dart';
-import 'package:the_wall/theme.dart';
+import 'package:the_bottle/firebase_options.dart';
+import 'package:the_bottle/settings.dart';
+import 'package:the_bottle/theme.dart';
 import 'auth/auth.dart';
 
 void main() async {

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/show_dialog.dart';
+import 'package:the_bottle/components/show_dialog.dart';
 import '../components/elevated_button.dart';
 import '../components/textfield.dart';
 

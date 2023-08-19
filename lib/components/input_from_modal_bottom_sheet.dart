@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/textfield.dart';
+import 'package:the_bottle/components/textfield.dart';
 
 Future<String?> getInputFromModalBottomSheet(
   BuildContext context, {

@@ -3,12 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:the_wall/components/drawer_conversation.dart';
-import 'package:the_wall/components/input_field.dart';
-import 'package:the_wall/components/wall_post.dart';
-import 'package:the_wall/components/wall_post_header.dart';
-import 'package:the_wall/components/wall_post_picture.dart';
-import 'package:the_wall/pages/image_visualizer_page.dart';
+import 'package:the_bottle/components/drawer_conversation.dart';
+import 'package:the_bottle/components/input_field.dart';
+import 'package:the_bottle/components/wall_post.dart';
+import 'package:the_bottle/components/wall_post_header.dart';
+import 'package:the_bottle/components/wall_post_picture.dart';
+import 'package:the_bottle/pages/image_visualizer_page.dart';
 import '../components/blurred_appbar.dart';
 import '../components/drawer_navigation.dart';
 
@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
       drawer: const DrawerNavigation(),
       endDrawer: const DrawerConversations(),
       appBar: BlurredAppBar(
-        title: const Text('T H E  W A L L'),
+        title: const Text('T H E  B O T T L E'),
         actions: [
           IconButton(
             onPressed: () {

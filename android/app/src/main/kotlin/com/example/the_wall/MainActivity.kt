@@ -1,4 +1,4 @@
-package com.example.the_wall
+package com.example.the_bottle
 
 import io.flutter.embedding.android.FlutterActivity
 
