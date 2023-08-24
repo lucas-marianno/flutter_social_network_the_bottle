@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,12 +24,14 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController confirmPasswordController = TextEditingController();
 
   void register() async {
-    if (emailController.text.isEmpty || passwordController.text.isEmpty) return;
-    if (passwordController.text != confirmPasswordController.text) {
+    final email = emailController.text;
+    final password = passwordController.text;
+    if (email.isEmpty || password.isEmpty) return;
+    if (password != confirmPasswordController.text) {
       showMyDialog(context, title: 'Nope!', content: 'Passwords don\'t match.');
       return;
     }
-    if (passwordController.text.length < 6) {
+    if (password.length < 6) {
       showMyDialog(
         context,
         title: 'Weak Passord!',
@@ -44,13 +47,13 @@ class _RegisterPageState extends State<RegisterPage> {
     try {
       // creates new user
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
+        email: email,
+        password: password,
       );
       if (context.mounted) Navigator.pop(context);
       // creates user profile
-      await FirebaseFirestore.instance.collection('User Profile').doc(emailController.text).set({
-        'username': emailController.text.split('@')[0],
+      await FirebaseFirestore.instance.collection('User Profile').doc(email).set({
+        'username': email.split('@')[0],
         'bio': 'Write about yourself here...',
       });
     } on FirebaseAuthException catch (e) {
@@ -70,25 +73,49 @@ class _RegisterPageState extends State<RegisterPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // logo
-              const Flexible(
+              //logo
+              Flexible(
                 flex: 2,
-                child: FittedBox(
-                  child: Icon(Icons.lock),
-                ),
-              ),
-              const Flexible(child: SizedBox(height: 25)),
-
-              // welcome back message
-              const Text(
-                'Let\'s create an account for you',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
+                child: Image.asset(
+                  'lib/assets/bottle-icon.png',
+                  fit: BoxFit.contain,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
               const Flexible(child: SizedBox(height: 50)),
-
+              // slogan
+              SizedBox(
+                height: 25,
+                child: DefaultTextStyle(
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  child: AnimatedTextKit(
+                    pause: Duration.zero,
+                    repeatForever: true,
+                    animatedTexts: [
+                      RotateAnimatedText(
+                        'write your message',
+                        duration: const Duration(milliseconds: 1000),
+                      ),
+                      RotateAnimatedText(
+                        'add a picture',
+                        duration: const Duration(milliseconds: 1000),
+                      ),
+                      RotateAnimatedText(
+                        'put it in a bottle',
+                        duration: const Duration(milliseconds: 1000),
+                      ),
+                      RotateAnimatedText(
+                        'throw it in the ocean',
+                        duration: const Duration(milliseconds: 1000),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Flexible(child: SizedBox(height: 50)),
               // email textfield
               MyTextField(
                 controller: emailController,

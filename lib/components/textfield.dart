@@ -33,6 +33,9 @@ class _MyTextFieldState extends State<MyTextField> {
       autofocus: widget.autofocus,
       controller: widget.controller,
       obscureText: widget.obscureText ? !isVisible : false,
+      onChanged: (value) {
+        widget.controller?.value = widget.controller!.value.copyWith(text: value.toLowerCase());
+      },
       onSubmitted: enterKeyPressSubmits ? (value) => widget.onSubmited?.call() : null,
       textInputAction: enterKeyPressSubmits ? null : TextInputAction.none,
       maxLines: widget.obscureText || enterKeyPressSubmits ? 1 : null,

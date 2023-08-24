@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:the_bottle/components/input_from_dialog.dart';
 import 'package:the_bottle/components/input_from_modal_bottom_sheet.dart';
 import 'package:the_bottle/components/list_tile.dart';
 import 'package:the_bottle/components/options_modal_bottom_sheet.dart';
@@ -34,37 +35,83 @@ class _ProfilePageState extends State<ProfilePage> {
   void deleteAccount() async {
     if (widget.userEmail != currentUser.email) return;
 
-    final response = await showMyDialog(
+    final confirmDeletion = await showMyDialog(
       context,
       title: 'This action is irreversible!!!',
       content: 'Are you sure you want to delete your account?',
       showActions: true,
     );
 
-    if (response != true) return;
+    if (confirmDeletion != true) return;
 
-    // delete data from auth
     final currentUserEmail = currentUser.email;
+
+    // ignore: use_build_context_synchronously
+    final password = await inputFromDialog(context, title: 'Confirm Password');
+
+    if (password == null || password == '') return;
+
     try {
-      await FirebaseAuth.instance.currentUser!.delete();
-    } on FirebaseAuthException catch (error) {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: currentUserEmail!,
+        password: password,
+      );
+    } on FirebaseException catch (e) {
       // ignore: use_build_context_synchronously
-      await showMyDialog(context, title: 'Error', content: error.code);
+      await showMyDialog(
+        context,
+        title: 'Authentication Failed',
+        content: e.code.replaceAll('-', ' '),
+      );
       return;
     }
 
-    // delete data from storage
-    final storage = FirebaseStorage.instance.ref();
-    storage.child('Profile Pictures/$currentUserEmail').delete();
-    storage.child('Profile Thumbnails/$currentUserEmail').delete();
+    try {
+      // delete data from auth
+      await currentUser.delete();
+      // logout
+      await FirebaseAuth.instance.signOut();
+    } on FirebaseException catch (error) {
+      // ignore: use_build_context_synchronously
+      await showMyDialog(
+        context,
+        title: 'Error',
+        content: error.code.replaceAll('-', ' '),
+      );
+      return;
+    }
 
-    // delete data from database
-    final database = FirebaseFirestore.instance;
-    database.collection('User Profile').doc(currentUserEmail).delete();
-    database.collection('User Settings').doc(currentUserEmail).delete();
+    try {
+      // delete data from storage
+      final storage = FirebaseStorage.instance.ref();
+      await storage.child('Profile Pictures/$currentUserEmail').delete();
+      await storage.child('Profile Thumbnails/$currentUserEmail').delete();
+    } on FirebaseException catch (error) {
+      if (error.code != 'object-not-found') {
+        // ignore: use_build_context_synchronously
+        await showMyDialog(
+          context,
+          title: 'Error',
+          content: error.code.replaceAll('-', ' '),
+        );
+      }
+    }
 
-    // logout
-    FirebaseAuth.instance.signOut();
+    try {
+      // delete data from database
+      final database = FirebaseFirestore.instance;
+      await database.collection('User Profile').doc(currentUserEmail).delete();
+      await database.collection('User Settings').doc(currentUserEmail).delete();
+    } on FirebaseException catch (error) {
+      if (error.code != 'object-not-found') {
+        // ignore: use_build_context_synchronously
+        await showMyDialog(
+          context,
+          title: 'Error',
+          content: error.code.replaceAll('-', ' '),
+        );
+      }
+    }
   }
 
   void viewPicture(String? imageUrl) {

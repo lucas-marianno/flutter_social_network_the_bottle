@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +38,11 @@ class _LoginPageState extends State<LoginPage> {
       if (context.mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
-      showMyDialog(context, title: 'Log in failed!', content: e.code);
+      showMyDialog(
+        context,
+        title: 'Log in failed!',
+        content: e.code.replaceAll('-', ' '),
+      );
     }
   }
 
@@ -53,26 +58,49 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // logo
-              const Flexible(
+
+              Flexible(
                 flex: 2,
-                child: FittedBox(
-                  child: Icon(Icons.lock),
+                child: Image.asset(
+                  'lib/assets/bottle-icon.png',
+                  fit: BoxFit.contain,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
-              const Flexible(child: SizedBox(height: 25)),
-
-              // welcome back message
-              const Flexible(
-                child: Text(
-                  'Welcome back, you\'ve been missed!',
-                  textAlign: TextAlign.center,
+              const Flexible(child: SizedBox(height: 50)),
+              // slogan
+              SizedBox(
+                height: 25,
+                child: DefaultTextStyle(
                   style: TextStyle(
                     fontSize: 18,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  child: AnimatedTextKit(
+                    pause: Duration.zero,
+                    repeatForever: true,
+                    animatedTexts: [
+                      RotateAnimatedText(
+                        'write your message',
+                        duration: const Duration(milliseconds: 1000),
+                      ),
+                      RotateAnimatedText(
+                        'add a picture',
+                        duration: const Duration(milliseconds: 1000),
+                      ),
+                      RotateAnimatedText(
+                        'put it in a bottle',
+                        duration: const Duration(milliseconds: 1000),
+                      ),
+                      RotateAnimatedText(
+                        'throw it in the ocean',
+                        duration: const Duration(milliseconds: 1000),
+                      ),
+                    ],
                   ),
                 ),
               ),
               const Flexible(child: SizedBox(height: 50)),
-
               // email textfield
               MyTextField(
                 controller: emailController,

@@ -44,6 +44,20 @@ dependencies:
   flutter_image_compress: ^2.0.4
   cached_network_image: ^3.2.3
   flutter_launcher_icons: ^0.13.1
+  animated_text_kit: ^4.2.2
+
+flutter_launcher_icons:
+  android: true
+  # adaptive_icon_background: "#5f7d8b"
+  # adaptive_icon_foreground: "lib/assets/bottle-icon.png"
+  ios: false
+  image_path: "lib/assets/bottle-icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "lib/assets/bottle-icon.png"
+    background_color: "#5f7d8b"
+    theme_color: "#5f7d8b"
 
 dev_dependencies:
   flutter_test:
