@@ -102,7 +102,6 @@ class _ConversationPageState extends State<ConversationPage> {
         title: widget.talkingTo,
         actions: showOptions
             ? [
-                // TODO: these icons should only show when the user taps options
                 IconButton(onPressed: () {}, icon: const Icon(Icons.reply)),
                 IconButton(onPressed: () {}, icon: const Icon(Icons.star)),
                 IconButton(onPressed: () {}, icon: const Icon(Icons.info_outline)),

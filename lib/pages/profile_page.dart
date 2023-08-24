@@ -178,12 +178,12 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void editUsername() async {
-    // TODO: bugfix: limit field to 20 characaters or something
     final newUsername = await getInputFromModalBottomSheet(
       context,
       title: 'New Username',
       startingString: username,
       hintText: 'Username',
+      maxLength: 20,
     );
     if (newUsername == null || newUsername == username) return;
 
@@ -199,6 +199,7 @@ class _ProfilePageState extends State<ProfilePage> {
       startingString: bio,
       hintText: 'Your new bio...',
       enterKeyPressSubmits: false,
+      maxLength: 500,
     );
 
     if (newBio == null || newBio == bio) return;

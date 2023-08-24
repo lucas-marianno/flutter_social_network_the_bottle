@@ -10,6 +10,8 @@ class MyTextField extends StatefulWidget {
     this.obscureText = false,
     this.autofocus = true,
     this.enterKeyPressSubmits = false,
+    this.allLowerCase = false,
+    this.maxLength,
   });
   final TextEditingController? controller;
   final String? hintText;
@@ -17,6 +19,8 @@ class MyTextField extends StatefulWidget {
   final bool obscureText;
   final bool autofocus;
   final bool enterKeyPressSubmits;
+  final bool allLowerCase;
+  final int? maxLength;
 
   @override
   State<MyTextField> createState() => _MyTextFieldState();
@@ -24,6 +28,7 @@ class MyTextField extends StatefulWidget {
 
 class _MyTextFieldState extends State<MyTextField> {
   bool isVisible = false;
+  int? maxLength;
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +38,17 @@ class _MyTextFieldState extends State<MyTextField> {
       autofocus: widget.autofocus,
       controller: widget.controller,
       obscureText: widget.obscureText ? !isVisible : false,
+      maxLength: maxLength,
       onChanged: (value) {
-        widget.controller?.value = widget.controller!.value.copyWith(text: value.toLowerCase());
+        if (widget.allLowerCase) {
+          widget.controller?.value = widget.controller!.value.copyWith(text: value.toLowerCase());
+        }
+        if (widget.maxLength != null) {
+          widget.controller!.text.length > widget.maxLength! / 2
+              ? maxLength = widget.maxLength
+              : null;
+          setState(() {});
+        }
       },
       onSubmitted: enterKeyPressSubmits ? (value) => widget.onSubmited?.call() : null,
       textInputAction: enterKeyPressSubmits ? null : TextInputAction.none,

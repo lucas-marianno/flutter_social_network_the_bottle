@@ -7,6 +7,7 @@ Future<String?> getInputFromModalBottomSheet(
   String? hintText,
   String startingString = '',
   bool enterKeyPressSubmits = true,
+  int? maxLength,
 }) async {
   TextEditingController controller = TextEditingController();
   controller.text = startingString;
@@ -39,12 +40,14 @@ Future<String?> getInputFromModalBottomSheet(
               ),
             ),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: MyTextField(
                     controller: controller,
                     hintText: hintText,
                     enterKeyPressSubmits: enterKeyPressSubmits,
+                    maxLength: maxLength,
                     onSubmited: () => Navigator.of(context).pop(controller.text),
                   ),
                 ),

@@ -206,9 +206,6 @@ class _WallPostHeaderState extends State<WallPostHeader> {
   }
 
   void deletePost() async {
-    // TODO: bugfix: when deleting a post, you must first delete its comments, otherwise the
-    // comments colection will remain even after the parent collection has been deleted
-
     // dismiss any keyboard
     FocusManager.instance.primaryFocus?.unfocus();
     if (context.mounted) Navigator.pop(context);
@@ -219,12 +216,31 @@ class _WallPostHeaderState extends State<WallPostHeader> {
       return;
     }
 
+    // delete post picture from firebase storage (if it exists)
     try {
-      // delete post picture from firebase storage (if it exists)
       await FirebaseStorage.instance.ref('Post Pictures/${widget.postId}').delete();
-    } catch (e) {
-      e;
+    } on Exception {
+      // skip
     }
+
+    // delete comments collection (if they exist)
+    try {
+      final commentsRef = FirebaseFirestore.instance
+          .collection('User Posts')
+          .doc(widget.postId)
+          .collection('Comments');
+      final comments = await commentsRef.get();
+      if (comments.docs.isNotEmpty) {
+        // delete comments
+        for (var comment in comments.docs) {
+          comment.reference.delete();
+        }
+        commentsRef.doc().delete();
+      }
+    } on Exception {
+      // skip
+    }
+
     // delete post from firebase firestore
     await FirebaseFirestore.instance.collection('User Posts').doc(widget.postId).delete();
   }

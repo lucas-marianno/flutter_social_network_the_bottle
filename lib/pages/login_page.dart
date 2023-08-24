@@ -78,7 +78,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: AnimatedTextKit(
                     pause: Duration.zero,
-                    repeatForever: true,
                     animatedTexts: [
                       RotateAnimatedText(
                         'write your message',
@@ -105,6 +104,7 @@ class _LoginPageState extends State<LoginPage> {
               MyTextField(
                 controller: emailController,
                 hintText: 'Email',
+                allLowerCase: true,
               ),
 
               const Flexible(child: SizedBox(height: 25)),

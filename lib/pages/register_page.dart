@@ -120,6 +120,7 @@ class _RegisterPageState extends State<RegisterPage> {
               MyTextField(
                 controller: emailController,
                 hintText: 'Email',
+                allLowerCase: true,
               ),
 
               const Flexible(child: SizedBox(height: 25)),

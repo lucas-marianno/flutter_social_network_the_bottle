@@ -83,6 +83,7 @@ class _InputFieldState extends State<InputField> {
           Padding(
             padding: const EdgeInsets.only(left: 25, right: 10),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // preview of loaded image
                 if (loadedImage == null)
@@ -99,11 +100,10 @@ class _InputFieldState extends State<InputField> {
                   ),
                 loadedImage == null ? Container() : const SizedBox(width: 10),
                 // input textfield
-                // TODO: Bugfix: either put a character limit or find a way to scroll through
-                // the written text. (Check Kazu's video message for details)
                 Expanded(
                   child: MyTextField(
                     controller: textEditingController,
+                    maxLength: 500,
                     hintText: loadedImage == null ? 'Write your post' : 'Write your description',
                     onSubmited: () =>
                         widget.onSendTap?.call(textEditingController.text, loadedImage),

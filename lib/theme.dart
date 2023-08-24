@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 ThemeData lightTheme = ThemeData(
   useMaterial3: true,
   scaffoldBackgroundColor: Colors.grey[300]!,
+  progressIndicatorTheme: ProgressIndicatorThemeData(
+    color: Colors.grey[100],
+    linearTrackColor: Colors.grey[200],
+  ),
   appBarTheme: const AppBarTheme(
     centerTitle: true,
     backgroundColor: Colors.transparent,
@@ -22,6 +26,10 @@ ThemeData lightTheme = ThemeData(
 ThemeData darkTheme = ThemeData(
   useMaterial3: true,
   scaffoldBackgroundColor: Colors.grey[900],
+  progressIndicatorTheme: ProgressIndicatorThemeData(
+    color: Colors.grey[800],
+    linearTrackColor: Colors.grey[900],
+  ),
   appBarTheme: const AppBarTheme(
     centerTitle: true,
     backgroundColor: Colors.transparent,

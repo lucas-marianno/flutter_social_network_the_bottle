@@ -31,7 +31,6 @@ class _MainState extends State<Main> {
           .snapshots(),
       builder: (context, snapshot) {
         ThemeMode themeMode() {
-          // TODO: bugfix: darkmode is throwing null errors on first start
           if (snapshot.hasData && snapshot.data!.data() != null) {
             if (snapshot.data!.data()!['darkMode'] == null) return ThemeMode.system;
             return snapshot.data!.data()!['darkMode'] ? ThemeMode.dark : ThemeMode.light;
