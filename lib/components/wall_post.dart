@@ -63,13 +63,11 @@ class _WallPostState extends State<WallPost> {
         children: [
           // post header
           widget.header,
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           // post text
           Text(widget.message, textAlign: TextAlign.justify),
-          const SizedBox(height: 15),
           // post picture
           widget.postPicture,
-          const SizedBox(height: 15),
           // like + comment buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

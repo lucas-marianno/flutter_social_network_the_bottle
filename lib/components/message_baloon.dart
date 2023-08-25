@@ -5,16 +5,18 @@ import 'package:the_bottle/components/username.dart';
 class MessageBaloon extends StatefulWidget {
   const MessageBaloon({
     super.key,
+    required this.sender,
     required this.text,
     required this.timestamp,
-    required this.sender,
+    required this.messagePicture,
     this.onLongPress,
     this.showSender = true,
   });
 
+  final String sender;
   final String text;
   final String timestamp;
-  final String sender;
+  final Widget? messagePicture;
   final bool showSender;
   final void Function()? onLongPress;
 
@@ -67,6 +69,22 @@ class _MessageBaloonState extends State<MessageBaloon> {
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
+                    // body
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // sender
+                        widget.showSender
+                            ? Username(userEmail: widget.sender)
+                            : const SizedBox.square(dimension: 0),
+                        // picture
+                        widget.messagePicture ?? Container(),
+                        // message
+                        Text(widget.text),
+                      ],
+                    ),
+                    // options button (web only)
                     Positioned(
                       top: -10,
                       right: -10,
@@ -76,18 +94,6 @@ class _MessageBaloonState extends State<MessageBaloon> {
                               icon: const Icon(Icons.keyboard_arrow_down),
                             )
                           : Container(),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // sender
-                        widget.showSender
-                            ? Username(userEmail: widget.sender)
-                            : const SizedBox.square(dimension: 0),
-                        // message
-                        Text(widget.text),
-                      ],
                     ),
                     // timestamp
                     Positioned(

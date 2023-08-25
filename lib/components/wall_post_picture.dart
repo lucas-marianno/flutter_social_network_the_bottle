@@ -1,32 +1,48 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../pages/image_visualizer_page.dart';
+
 class PostPicture extends StatelessWidget {
   const PostPicture({
     super.key,
+    required this.context,
     required this.postImageUrl,
-    required this.onTap,
+    this.padding,
+    this.imageHeight = 300,
+    this.onTap,
   });
+  final BuildContext context;
   final String? postImageUrl;
+  final EdgeInsetsGeometry? padding;
   final void Function()? onTap;
+  final double imageHeight;
+
   @override
   Widget build(BuildContext context) {
     if (postImageUrl == null) return Container();
     try {
-      return ConstrainedBox(
-        constraints: BoxConstraints.loose(const Size.square(500)),
+      return Padding(
+        padding: padding ?? EdgeInsets.zero,
         child: GestureDetector(
-          onTap: onTap,
+          onTap: onTap ??
+              () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ImageVisualizerPage(imageUrl: postImageUrl),
+                    ),
+                  ),
           child: CachedNetworkImage(
             imageUrl: postImageUrl!,
+            height: imageHeight,
+            width: imageHeight,
+            memCacheHeight: imageHeight.toInt(),
             fit: BoxFit.cover,
           ),
         ),
       );
     } catch (e) {
       return SizedBox(
-        height: 300,
-        width: 300,
+        height: imageHeight,
         child: Column(
           children: [
             const Text('There was a problem fetching the image!'),

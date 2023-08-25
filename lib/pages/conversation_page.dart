@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:the_bottle/components/blurred_appbar.dart';
 import 'package:the_bottle/components/drawer_conversation.dart';
 import 'package:the_bottle/components/input_field.dart';
+import 'package:the_bottle/components/wall_post_picture.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
 import '../components/message_baloon.dart';
 
@@ -194,6 +195,13 @@ class _ConversationPageState extends State<ConversationPage> {
                                 sender: message['sender'],
                                 text: message['text'],
                                 timestamp: timestampToString(message['timestamp']),
+                                messagePicture: PostPicture(
+                                  imageHeight: 200,
+                                  context: context,
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  postImageUrl:
+                                      'https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?cs=srgb&dl=pexels-pixabay-268533.jpg&fm=jpg',
+                                ),
                                 showSender: showsender,
                                 onLongPress: messageOptions,
                               );

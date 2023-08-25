@@ -8,7 +8,6 @@ import 'package:the_bottle/components/input_field.dart';
 import 'package:the_bottle/components/wall_post.dart';
 import 'package:the_bottle/components/wall_post_header.dart';
 import 'package:the_bottle/components/wall_post_picture.dart';
-import 'package:the_bottle/pages/image_visualizer_page.dart';
 import '../components/blurred_appbar.dart';
 import '../components/drawer_navigation.dart';
 
@@ -114,16 +113,9 @@ class _HomePageState extends State<HomePage> {
                           message: post['Message'],
                           postId: post.id,
                           postPicture: PostPicture(
+                            context: context,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
                             postImageUrl: postPictureUrl,
-                            onTap: () {
-                              if (postPictureUrl == null) return;
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ImageVisualizerPage(imageUrl: postPictureUrl!),
-                                ),
-                              );
-                            },
                           ),
                         );
                       },
