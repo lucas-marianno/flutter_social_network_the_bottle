@@ -61,38 +61,10 @@ class _WallPostHeaderState extends State<WallPostHeader> {
         ),
       );
     } else {
-      // if theres no conversation, create a new one and notify participants
+      // if theres no conversation, create a new one
       final newConversation = FirebaseFirestore.instance.collection('Conversations').doc();
       newConversation.set({
         'participants': [currentUser.email, widget.postOwner]
-      });
-
-      // notify currentUser
-      await FirebaseFirestore.instance
-          .collection('User Profile')
-          .doc(currentUser.email)
-          .collection('Conversations')
-          .doc(widget.postOwner)
-          .set({
-        'conversationId': newConversation.id,
-        'lastUpdated': Timestamp.now(),
-        'seen': true,
-      });
-
-      // TODO: bugfix: only notify postOwner when currentUser sends a message
-      // if currentUser doesnt send a starting message:
-      // delete the conversation and never notify postOwner
-
-      // notify postOwner
-      await FirebaseFirestore.instance
-          .collection('User Profile')
-          .doc(widget.postOwner)
-          .collection('Conversations')
-          .doc(currentUser.email)
-          .set({
-        'conversationId': newConversation.id,
-        'lastUpdated': Timestamp.now(),
-        'seen': false,
       });
 
       // ignore: use_build_context_synchronously

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/conversation_tile.dart';
+import 'package:the_bottle/components/options_modal_bottom_sheet.dart';
 import 'package:the_bottle/components/profile_picture.dart';
 import 'package:the_bottle/components/textfield.dart';
 import 'package:the_bottle/components/username.dart';
@@ -18,6 +19,50 @@ class DrawerConversations extends StatelessWidget {
         .collection('User Profile')
         .doc(currentUser!.email)
         .collection('Conversations');
+
+    deleteConversation(String conversationId) async {
+      final conversationRef =
+          FirebaseFirestore.instance.collection('Conversations').doc(conversationId);
+
+      // get participants
+      final participants = (await conversationRef.get())['participants'] as List;
+
+      // remove conversation from participants profile
+      await FirebaseFirestore.instance
+          .collection('User Profile')
+          .doc(participants[0])
+          .collection('Conversations')
+          .doc(participants[1])
+          .delete();
+      await FirebaseFirestore.instance
+          .collection('User Profile')
+          .doc(participants[1])
+          .collection('Conversations')
+          .doc(participants[0])
+          .delete();
+
+      // delete conversation messages
+      final messages = (await conversationRef.collection('Messages').get()).docs;
+      for (final message in messages) {
+        await conversationRef.collection('Messages').doc(message.id).delete();
+      }
+
+      // delete conversation document
+      conversationRef.delete();
+    }
+
+    conversationOptions(String conversationId) async {
+      await optionsFromModalBottomSheet(
+        context,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.delete),
+            title: const Text('Delete Conversation'),
+            onTap: () => deleteConversation(conversationId),
+          )
+        ],
+      );
+    }
 
     return Drawer(
       child: Padding(
@@ -55,6 +100,8 @@ class DrawerConversations extends StatelessWidget {
                         seen: conversation['seen'],
                         userEmail: conversation.id,
                         lastUpdated: conversation['lastUpdated'],
+                        onLongPress: () =>
+                            conversationOptions(conversations[index].data()['conversationId']),
                         onTap: () {
                           // mark as seen
                           conversationsCollectionRef

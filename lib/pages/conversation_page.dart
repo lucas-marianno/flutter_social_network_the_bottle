@@ -52,26 +52,42 @@ class _ConversationPageState extends State<ConversationPage> {
     for (String participant in participants) {
       if (participant != currentUser.email) {
         final updateTime = Timestamp.now();
+        // notify participant
         FirebaseFirestore.instance
             .collection('User Profile')
             .doc(participant)
             .collection('Conversations')
             .doc(currentUser.email)
             .set({
+          'conversationId': widget.conversationId,
           'lastUpdated': updateTime,
           'seen': false,
         }, SetOptions(merge: true));
 
+        // notify  current user
         FirebaseFirestore.instance
             .collection('User Profile')
             .doc(currentUser.email)
             .collection('Conversations')
             .doc(participant)
             .set({
+          'conversationId': widget.conversationId,
           'lastUpdated': updateTime,
+          'seen': true,
         }, SetOptions(merge: true));
       }
     }
+  }
+
+  deleteEmptyConversation() async {
+    final ref = FirebaseFirestore.instance.collection('Conversations').doc(widget.conversationId);
+
+    // verify if conversation has messages
+    final hasMessages = (await ref.collection('Messages').get()).docs.isNotEmpty;
+    if (hasMessages) return;
+
+    // delete conversation if empty
+    await ref.delete();
   }
 
   void addImageToMessage(String messageId, Uint8List image) {
@@ -89,6 +105,12 @@ class _ConversationPageState extends State<ConversationPage> {
     // edit messagge;
 
     // atach to message;
+  }
+
+  @override
+  void dispose() {
+    deleteEmptyConversation();
+    super.dispose();
   }
 
   @override

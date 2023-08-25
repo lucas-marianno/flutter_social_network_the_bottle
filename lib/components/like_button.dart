@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-// TODO: Feature: show likes list when like button is long pressed
+import 'package:the_bottle/components/profile_picture.dart';
+import 'package:the_bottle/components/username.dart';
+import 'package:the_bottle/pages/profile_page.dart';
 
 class PostLikeButton extends StatefulWidget {
   const PostLikeButton({super.key, required this.postId});
@@ -32,10 +33,50 @@ class _PostLikeButtonState extends State<PostLikeButton> {
     }
   }
 
+  showLikes() async {
+    // get likes list
+    final likesList =
+        (await FirebaseFirestore.instance.collection('User Posts').doc(widget.postId).get())
+            .data()?['Likes'] as List;
+
+    // ignore: use_build_context_synchronously
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Likes'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height / 2,
+            ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: likesList.length,
+              itemBuilder: (context, index) {
+                final userEmail = likesList[index].toString();
+                return ListTile(
+                  leading: ProfilePicture(profileEmailId: userEmail),
+                  title: Username(userEmail: userEmail),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ProfilePage(userEmail: userEmail),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: toggleLike,
+      onLongPress: showLikes,
       child: StreamBuilder(
         stream: FirebaseFirestore.instance.collection('User Posts').doc(widget.postId).snapshots(),
         builder: (context, snapshot) {

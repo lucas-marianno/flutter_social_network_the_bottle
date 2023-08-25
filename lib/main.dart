@@ -3,12 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/firebase_options.dart';
+import 'package:the_bottle/settings.dart';
 import 'package:the_bottle/theme.dart';
 import 'auth/auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await UserConfig().init();
   runApp(const Main());
 }
 
@@ -35,7 +37,7 @@ class _MainState extends State<Main> {
             if (snapshot.data!.data()!['darkMode'] == null) return ThemeMode.system;
             return snapshot.data!.data()!['darkMode'] ? ThemeMode.dark : ThemeMode.light;
           } else {
-            return ThemeMode.system;
+            return UserConfig().darkMode ? ThemeMode.dark : ThemeMode.light;
           }
         }
 

@@ -11,6 +11,7 @@ class ConversationTile extends StatelessWidget {
     required this.seen,
     required this.lastUpdated,
     this.reverseColors = false,
+    this.onLongPress,
   });
 
   final String userEmail;
@@ -18,7 +19,7 @@ class ConversationTile extends StatelessWidget {
   final bool reverseColors;
   final bool seen;
   final Timestamp lastUpdated;
-
+  final Function()? onLongPress;
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -26,6 +27,7 @@ class ConversationTile extends StatelessWidget {
       title: Username(userEmail: userEmail),
       trailing: seen ? null : const Icon(Icons.info),
       onTap: onTap,
+      onLongPress: onLongPress,
     );
   }
 }
