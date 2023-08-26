@@ -118,15 +118,11 @@ class _ConversationPageState extends State<ConversationPage> {
   }
 
   void selectMessage(String messageId) {
+    // TODO: Implement multiple selection
     setState(() {
       showOptions = true;
       selectedMessageId = messageId;
     });
-    // TODO: Implement options
-
-    // delete message;
-
-    // edit messagge;
   }
 
   void unSelectMessages() {
@@ -137,9 +133,20 @@ class _ConversationPageState extends State<ConversationPage> {
   }
 
   void deleteMessage() async {
-    // delete message image
-
-    // delete image
+    // delete message image (if exists)
+    try {
+      await FirebaseStorage.instance.ref('Conversation Files/$selectedMessageId').delete();
+    } on FirebaseException {
+      // skip
+    }
+    // delete message
+    FirebaseFirestore.instance
+        .collection('Conversations')
+        .doc(widget.conversationId)
+        .collection('Messages')
+        .doc(selectedMessageId)
+        .delete();
+    unSelectMessages();
   }
 
   @override
@@ -162,19 +169,13 @@ class _ConversationPageState extends State<ConversationPage> {
                 IconButton(onPressed: () {}, icon: const Icon(Icons.reply)),
                 IconButton(onPressed: () {}, icon: const Icon(Icons.star)),
                 IconButton(onPressed: () {}, icon: const Icon(Icons.info_outline)),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
+                IconButton(onPressed: deleteMessage, icon: const Icon(Icons.delete)),
                 IconButton(onPressed: () {}, icon: const Icon(Icons.copy)),
                 Transform.flip(
                   flipX: true,
                   child: IconButton(onPressed: () {}, icon: const Icon(Icons.reply)),
                 ),
-                const Text('    '),
-                IconButton(
-                  onPressed: () {
-                    scaffoldKey.currentState?.openEndDrawer();
-                  },
-                  icon: const Icon(Icons.message),
-                ),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.edit)),
               ]
             : [
                 IconButton(
@@ -185,19 +186,25 @@ class _ConversationPageState extends State<ConversationPage> {
                 ),
               ],
       ),
-      body: GestureDetector(
-        onTap: unSelectMessages,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset('lib/assets/${Theme.of(context).brightness.name}doodle.jpg',
-                fit: BoxFit.cover),
-            Column(
-              children: [
-                // conversation
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
+      body: WillPopScope(
+        onWillPop: () async {
+          if (selectedMessageId != null) {
+            unSelectMessages();
+            return false;
+          }
+          return true;
+        },
+        child: GestureDetector(
+          onTap: unSelectMessages,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset('lib/assets/${Theme.of(context).brightness.name}doodle.jpg',
+                  fit: BoxFit.cover),
+              Column(
+                children: [
+                  // conversation
+                  Expanded(
                     child: StreamBuilder(
                       stream: FirebaseFirestore.instance
                           .collection('Conversations')
@@ -219,13 +226,13 @@ class _ConversationPageState extends State<ConversationPage> {
                             itemBuilder: (context, index) {
                               final message = snapshot.data!.docs[index];
                               late final bool showsender;
+                              late final String? imageUrl;
                               if (index == itemCount - 1 ||
                                   snapshot.data!.docs[index + 1]['sender'] != message['sender']) {
                                 showsender = true;
                               } else {
                                 showsender = false;
                               }
-                              late final String? imageUrl;
                               try {
                                 imageUrl = message['image'];
                               } catch (e) {
@@ -241,6 +248,7 @@ class _ConversationPageState extends State<ConversationPage> {
                                   padding: const EdgeInsets.only(bottom: 10),
                                   postImageUrl: imageUrl,
                                 ),
+                                isSelected: selectedMessageId == message.id,
                                 showSender: showsender,
                                 onLongPress: () => selectMessage(message.id),
                               );
@@ -252,12 +260,12 @@ class _ConversationPageState extends State<ConversationPage> {
                       },
                     ),
                   ),
-                ),
-                // post message
-                InputField(onSendTap: sendMessage, dismissKeyboardOnSend: false),
-              ],
-            ),
-          ],
+                  // post message
+                  InputField(onSendTap: sendMessage, dismissKeyboardOnSend: false),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -117,7 +117,6 @@ class DrawerConversations extends StatelessWidget {
                                 talkingTo: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const SizedBox(width: 10),
                                     ProfilePicture(
                                       profileEmailId: conversations[index].id,
                                       size: ProfilePictureSize.small,

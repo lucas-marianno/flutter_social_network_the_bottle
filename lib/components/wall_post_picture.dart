@@ -20,7 +20,7 @@ class PostPicture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (postImageUrl == null) return Container();
+    if (postImageUrl == null) return const SizedBox(width: 0, height: 0);
     try {
       return Padding(
         padding: padding ?? EdgeInsets.zero,
