@@ -8,7 +8,9 @@ import 'package:the_bottle/components/drawer_conversation.dart';
 import 'package:the_bottle/components/input_field.dart';
 import 'package:the_bottle/components/wall_post_picture.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
+import '../components/input_from_modal_bottom_sheet.dart';
 import '../components/message_baloon.dart';
+import '../components/show_dialog.dart';
 
 class ConversationPage extends StatefulWidget {
   const ConversationPage({
@@ -133,6 +135,8 @@ class _ConversationPageState extends State<ConversationPage> {
   }
 
   void deleteMessage() async {
+    if (selectedMessageId == null) return;
+
     // delete message image (if exists)
     try {
       await FirebaseStorage.instance.ref('Conversation Files/$selectedMessageId').delete();
@@ -146,6 +150,111 @@ class _ConversationPageState extends State<ConversationPage> {
         .collection('Messages')
         .doc(selectedMessageId)
         .delete();
+    unSelectMessages();
+  }
+
+  void editMessage() async {
+    if (selectedMessageId == null) return;
+
+    final messageRef = FirebaseFirestore.instance
+        .collection('Conversations')
+        .doc(widget.conversationId)
+        .collection('Messages')
+        .doc(selectedMessageId);
+
+    // retrieve current message data
+    final messageData = (await messageRef.get()).data()!;
+    final messageSender = messageData['sender']! as String;
+    final oldText = messageData['text']! as String;
+    final oldTimeStamp = messageData['timestamp']! as Timestamp;
+    final bool isFirstEdit = !(messageData['isEdited'] ?? false);
+
+    // ignore edit request
+    if (messageSender != currentUser.email) {
+      // TODO: bugfix: replace this dialog for only showing edit option if sender is currentuser
+      // ignore: use_build_context_synchronously
+      showMyDialog(
+        context,
+        title: 'Nope!',
+        content: 'You can only edit your own messages',
+      );
+      return;
+    }
+
+    // get new text from user
+    // ignore: use_build_context_synchronously
+    String? newText = await getInputFromModalBottomSheet(
+      context,
+      startingString: oldText,
+      enterKeyPressSubmits: false,
+    );
+
+    if (newText == null || newText.isEmpty || newText == oldText) return;
+
+    // set new text value and tag as edited
+    messageRef.set({
+      'text': newText,
+      'isEdited': true,
+    }, SetOptions(merge: true));
+
+    // save changes to history
+    if (isFirstEdit) {
+      await messageRef.collection('Edit History').add({
+        'previousText': null,
+        'newText': oldText,
+        'timestamp': oldTimeStamp,
+      });
+    }
+    await messageRef.collection('Edit History').add({
+      'previousText': oldText,
+      'newText': newText,
+      'timestamp': Timestamp.now(),
+    });
+    unSelectMessages();
+  }
+
+  void messageInfo() async {
+    if (selectedMessageId == null) return;
+    //TODO: Feature: implement show edit history
+
+    final messageRef = FirebaseFirestore.instance
+        .collection('Conversations')
+        .doc(widget.conversationId)
+        .collection('Messages')
+        .doc(selectedMessageId);
+
+    final history = (await messageRef.collection('Edit History').get()).docs;
+
+    // ignore: use_build_context_synchronously
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Message Info'),
+        content: SizedBox(
+          height: MediaQuery.of(context).size.height / 2,
+          width: double.maxFinite,
+          child: ListView.builder(
+            itemCount: history.length,
+            itemBuilder: (context, index) {
+              // TODO: bugfix: Create a message info widget to be displayed here
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('before'),
+                  Text(history[index]['previousText'] ?? ''),
+                  const Text('after'),
+                  Text(history[index]['newText']),
+                  const Text('Modified at'),
+                  Text(timestampToString(history[index]['timestamp'])),
+                  const Text(''),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
     unSelectMessages();
   }
 
@@ -168,14 +277,14 @@ class _ConversationPageState extends State<ConversationPage> {
             ? [
                 IconButton(onPressed: () {}, icon: const Icon(Icons.reply)),
                 IconButton(onPressed: () {}, icon: const Icon(Icons.star)),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.info_outline)),
+                IconButton(onPressed: messageInfo, icon: const Icon(Icons.info_outline)),
                 IconButton(onPressed: deleteMessage, icon: const Icon(Icons.delete)),
                 IconButton(onPressed: () {}, icon: const Icon(Icons.copy)),
                 Transform.flip(
                   flipX: true,
                   child: IconButton(onPressed: () {}, icon: const Icon(Icons.reply)),
                 ),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.edit)),
+                IconButton(onPressed: editMessage, icon: const Icon(Icons.edit)),
               ]
             : [
                 IconButton(
@@ -227,6 +336,7 @@ class _ConversationPageState extends State<ConversationPage> {
                               final message = snapshot.data!.docs[index];
                               late final bool showsender;
                               late final String? imageUrl;
+                              late final bool isEdited;
                               if (index == itemCount - 1 ||
                                   snapshot.data!.docs[index + 1]['sender'] != message['sender']) {
                                 showsender = true;
@@ -237,6 +347,11 @@ class _ConversationPageState extends State<ConversationPage> {
                                 imageUrl = message['image'];
                               } catch (e) {
                                 imageUrl = null;
+                              }
+                              try {
+                                isEdited = message['isEdited'];
+                              } catch (e) {
+                                isEdited = false;
                               }
                               return MessageBaloon(
                                 sender: message['sender'],
@@ -250,6 +365,7 @@ class _ConversationPageState extends State<ConversationPage> {
                                 ),
                                 isSelected: selectedMessageId == message.id,
                                 showSender: showsender,
+                                isEdited: isEdited,
                                 onLongPress: () => selectMessage(message.id),
                               );
                             },

@@ -11,6 +11,7 @@ class MessageBaloon extends StatefulWidget {
     required this.messagePicture,
     this.isSelected = false,
     this.showSender = true,
+    this.isEdited = false,
     this.onLongPress,
   });
 
@@ -20,6 +21,7 @@ class MessageBaloon extends StatefulWidget {
   final Widget messagePicture;
   final bool isSelected;
   final bool showSender;
+  final bool isEdited;
   final void Function()? onLongPress;
 
   @override
@@ -102,9 +104,17 @@ class _MessageBaloonState extends State<MessageBaloon> {
                           Positioned(
                             right: 0,
                             bottom: -15,
-                            child: Text(
-                              widget.timestamp,
+                            child: DefaultTextStyle(
                               style: const TextStyle(fontSize: 10),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    widget.isEdited ? 'edited  •  ' : '',
+                                    style: const TextStyle(fontStyle: FontStyle.italic),
+                                  ),
+                                  Text(widget.timestamp),
+                                ],
+                              ),
                             ),
                           ),
                         ],
