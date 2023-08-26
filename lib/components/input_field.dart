@@ -78,12 +78,11 @@ class _InputFieldState extends State<InputField> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // const Divider(height: 0),
           const SizedBox(height: 15),
           Padding(
             padding: const EdgeInsets.only(left: 25, right: 10),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // preview of loaded image
                 if (loadedImage == null)
@@ -105,8 +104,10 @@ class _InputFieldState extends State<InputField> {
                     controller: textEditingController,
                     maxLength: 500,
                     hintText: loadedImage == null ? 'Write your post' : 'Write your description',
-                    onSubmited: () =>
-                        widget.onSendTap?.call(textEditingController.text, loadedImage),
+                    onSubmited: () {
+                      widget.onSendTap?.call(textEditingController.text, loadedImage);
+                      unSelectImage();
+                    },
                     autofocus: false,
                   ),
                 ),
@@ -126,6 +127,7 @@ class _InputFieldState extends State<InputField> {
                     }
                     widget.onSendTap?.call(textEditingController.text, loadedImage);
                     textEditingController.clear();
+                    unSelectImage();
                   },
                   icon: Icon(loadedImage == null ? Icons.post_add : Icons.send, size: 40),
                 ),

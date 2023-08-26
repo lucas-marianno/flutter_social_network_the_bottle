@@ -24,17 +24,20 @@ class _HomePageState extends State<HomePage> {
 
   void postMessage(String text, Uint8List? loadedImage) async {
     if (text.isEmpty && loadedImage == null) return;
+
+    // scroll to most recent post
     scrollController.animateTo(0,
         duration: const Duration(milliseconds: 1500), curve: Curves.decelerate);
 
-    final post = await FirebaseFirestore.instance
-        .collection('User Posts')
-        .add({'UserEmail': user.email, 'Message': text, 'TimeStamp': Timestamp.now(), 'Likes': []});
-
-    setState(() {});
+    // send post
+    final post = await FirebaseFirestore.instance.collection('User Posts').add({
+      'UserEmail': user.email,
+      'Message': text,
+      'TimeStamp': Timestamp.now(),
+      'Likes': [],
+    });
 
     if (loadedImage == null) return;
-
     addImageToPost(post.id, loadedImage);
   }
 
@@ -46,7 +49,7 @@ class _HomePageState extends State<HomePage> {
             .getDownloadURL();
 
     // upload pictureUrl to firebase database
-    FirebaseFirestore.instance.collection('User Posts').doc(postId).set(
+    await FirebaseFirestore.instance.collection('User Posts').doc(postId).set(
       {'Post Picture': storageUrl},
       SetOptions(merge: true),
     );

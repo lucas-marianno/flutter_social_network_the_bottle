@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/blurred_appbar.dart';
 import 'package:the_bottle/components/drawer_conversation.dart';
@@ -27,6 +28,7 @@ class _ConversationPageState extends State<ConversationPage> {
   final ScrollController scrollController = ScrollController();
   final currentUser = FirebaseAuth.instance.currentUser!;
   bool showOptions = false;
+  String? selectedMessageId;
 
   void sendMessage(String text, Uint8List? loadedImage) async {
     final conversationRef =
@@ -37,6 +39,8 @@ class _ConversationPageState extends State<ConversationPage> {
       'text': text,
       'timestamp': Timestamp.now(),
     });
+
+    // adds image to message
     if (loadedImage != null) {
       addImageToMessage(messageRef.id, loadedImage);
     }
@@ -80,7 +84,7 @@ class _ConversationPageState extends State<ConversationPage> {
     }
   }
 
-  deleteEmptyConversation() async {
+  void deleteEmptyConversation() async {
     final ref = FirebaseFirestore.instance.collection('Conversations').doc(widget.conversationId);
 
     // verify if conversation has messages
@@ -91,21 +95,51 @@ class _ConversationPageState extends State<ConversationPage> {
     await ref.delete();
   }
 
-  void addImageToMessage(String messageId, Uint8List image) {
-    // TODO: implement: add image
+  void addImageToMessage(String messageId, Uint8List image) async {
+    // upload picture to firebase storage and retrieve download URL
+    final String storageUrl =
+        await (await FirebaseStorage.instance.ref('Conversation Files/$messageId').putData(image))
+            .ref
+            .getDownloadURL();
+
+    // upload pictureUrl to firebase database
+    await FirebaseFirestore.instance
+        .collection('Conversations')
+        .doc(widget.conversationId)
+        .collection('Messages')
+        .doc(messageId)
+        .set(
+      {'image': storageUrl},
+      SetOptions(merge: true),
+    );
+
+    // unload image after post
+    setState(() {});
   }
 
-  void messageOptions() {
+  void selectMessage(String messageId) {
     setState(() {
-      showOptions = !showOptions;
+      showOptions = true;
+      selectedMessageId = messageId;
     });
     // TODO: Implement options
 
     // delete message;
 
     // edit messagge;
+  }
 
-    // atach to message;
+  void unSelectMessages() {
+    setState(() {
+      showOptions = false;
+      selectedMessageId = null;
+    });
+  }
+
+  void deleteMessage() async {
+    // delete message image
+
+    // delete image
   }
 
   @override
@@ -152,7 +186,7 @@ class _ConversationPageState extends State<ConversationPage> {
               ],
       ),
       body: GestureDetector(
-        onTap: () => setState(() => showOptions = false),
+        onTap: unSelectMessages,
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -191,6 +225,12 @@ class _ConversationPageState extends State<ConversationPage> {
                               } else {
                                 showsender = false;
                               }
+                              late final String? imageUrl;
+                              try {
+                                imageUrl = message['image'];
+                              } catch (e) {
+                                imageUrl = null;
+                              }
                               return MessageBaloon(
                                 sender: message['sender'],
                                 text: message['text'],
@@ -199,11 +239,10 @@ class _ConversationPageState extends State<ConversationPage> {
                                   imageHeight: 200,
                                   context: context,
                                   padding: const EdgeInsets.only(bottom: 10),
-                                  postImageUrl:
-                                      'https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?cs=srgb&dl=pexels-pixabay-268533.jpg&fm=jpg',
+                                  postImageUrl: imageUrl,
                                 ),
                                 showSender: showsender,
-                                onLongPress: messageOptions,
+                                onLongPress: () => selectMessage(message.id),
                               );
                             },
                           );

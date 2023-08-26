@@ -43,12 +43,12 @@ class _MyTextFieldState extends State<MyTextField> {
         if (widget.allLowerCase) {
           widget.controller?.value = widget.controller!.value.copyWith(text: value.toLowerCase());
         }
-        if (widget.maxLength != null) {
-          widget.controller!.text.length > widget.maxLength! / 2
-              ? maxLength = widget.maxLength
-              : null;
-          setState(() {});
+        if (widget.maxLength != null && widget.controller!.text.length > widget.maxLength! / 2) {
+          maxLength = widget.maxLength;
+        } else {
+          maxLength = null;
         }
+        setState(() {});
       },
       onSubmitted: enterKeyPressSubmits ? (value) => widget.onSubmited?.call() : null,
       textInputAction: enterKeyPressSubmits ? null : TextInputAction.none,
