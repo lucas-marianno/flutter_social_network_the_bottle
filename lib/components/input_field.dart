@@ -72,6 +72,7 @@ class _InputFieldState extends State<InputField> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: refactor both buttons to improve user exp
     // post message
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
