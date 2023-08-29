@@ -26,3 +26,6 @@ Find me here:
 - Like comments
 - Edit your profile page
 - Send individual messages
+##
+### Read the latest [Release Notes](https://github.com/lucas-marianno/The-Bottle/releases) for detailed and up to date info on features!
+##
