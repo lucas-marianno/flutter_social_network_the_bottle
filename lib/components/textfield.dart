@@ -1,5 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_bottle/settings.dart';
 
 class MyTextField extends StatefulWidget {
   const MyTextField({
@@ -29,10 +30,26 @@ class MyTextField extends StatefulWidget {
 class _MyTextFieldState extends State<MyTextField> {
   bool isVisible = false;
   int? maxLength;
+  bool enterSendsPost = false;
+
+  getSettings() async {
+    final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+    enterSendsPost =
+        (await FirebaseFirestore.instance.collection('User Settings').doc(currentUserEmail).get())
+                .data()?['enterSendsPost'] ??
+            false;
+    // setState(() {});
+  }
+
+  @override
+  void initState() {
+    getSettings();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    bool enterKeyPressSubmits = widget.enterKeyPressSubmits || UserConfig().enterSendsPost;
+    bool enterKeyPressSubmits = widget.enterKeyPressSubmits || enterSendsPost;
 
     return TextField(
       autofocus: widget.autofocus,

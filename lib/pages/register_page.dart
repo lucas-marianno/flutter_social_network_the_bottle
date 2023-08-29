@@ -50,7 +50,6 @@ class _RegisterPageState extends State<RegisterPage> {
         email: email,
         password: password,
       );
-      if (context.mounted) Navigator.pop(context);
       // creates user profile
       await FirebaseFirestore.instance.collection('User Profile').doc(email).set({
         'username': email.split('@')[0],

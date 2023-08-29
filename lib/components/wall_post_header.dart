@@ -230,13 +230,10 @@ class _WallPostHeaderState extends State<WallPostHeader> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // profile thumbnail
-        Hero(
-          tag: widget.postId,
-          child: ProfilePicture(
-            profileEmailId: widget.postOwner,
-            size: ProfilePictureSize.small,
-            onTap: profileTap,
-          ),
+        ProfilePicture(
+          profileEmailId: widget.postOwner,
+          size: ProfilePictureSize.small,
+          onTap: profileTap,
         ),
         const SizedBox(width: 15),
         Column(
@@ -246,7 +243,6 @@ class _WallPostHeaderState extends State<WallPostHeader> {
             Username(
               userEmail: widget.postOwner,
               onTap: profileTap,
-              style: const TextStyle(fontSize: 16),
             ),
             // timestamp
             Text(

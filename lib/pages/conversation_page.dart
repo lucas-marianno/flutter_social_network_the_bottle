@@ -31,8 +31,12 @@ class _ConversationPageState extends State<ConversationPage> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   bool showOptions = false;
   String? selectedMessageId;
+  DocumentReference<Map<String, dynamic>>? selectedMessageRef;
+  Map<String, dynamic>? selectedMessageData;
 
   void sendMessage(String text, Uint8List? loadedImage) async {
+    if (text.isEmpty && loadedImage == null) return;
+
     final conversationRef =
         FirebaseFirestore.instance.collection('Conversations').doc(widget.conversationId);
     // update conversation
@@ -119,18 +123,25 @@ class _ConversationPageState extends State<ConversationPage> {
     setState(() {});
   }
 
-  void selectMessage(String messageId) {
+  void selectMessage(String messageId) async {
     // TODO: Implement multiple selection
-    setState(() {
-      showOptions = true;
-      selectedMessageId = messageId;
-    });
+    showOptions = true;
+    selectedMessageId = messageId;
+    selectedMessageRef = FirebaseFirestore.instance
+        .collection('Conversations')
+        .doc(widget.conversationId)
+        .collection('Messages')
+        .doc(selectedMessageId);
+    selectedMessageData = (await selectedMessageRef!.get()).data()!;
+    setState(() {});
   }
 
   void unSelectMessages() {
     setState(() {
       showOptions = false;
       selectedMessageId = null;
+      selectedMessageRef = null;
+      selectedMessageData = null;
     });
   }
 
@@ -143,31 +154,34 @@ class _ConversationPageState extends State<ConversationPage> {
     } on FirebaseException {
       // skip
     }
-    // delete message
-    FirebaseFirestore.instance
-        .collection('Conversations')
-        .doc(widget.conversationId)
-        .collection('Messages')
-        .doc(selectedMessageId)
-        .delete();
+
+    final messageSender = selectedMessageData!['sender']! as String;
+
+    // ignore edit request
+    if (messageSender != currentUser.email) {
+      // TODO: bugfix: replace this dialog for only showing edit option if sender is currentuser
+      // ignore: use_build_context_synchronously
+      showMyDialog(
+        context,
+        title: 'Nope!',
+        content: 'You can only delete your own messages',
+      );
+      return;
+    }
+
+    selectedMessageRef!.delete();
+
     unSelectMessages();
   }
 
   void editMessage() async {
     if (selectedMessageId == null) return;
 
-    final messageRef = FirebaseFirestore.instance
-        .collection('Conversations')
-        .doc(widget.conversationId)
-        .collection('Messages')
-        .doc(selectedMessageId);
-
     // retrieve current message data
-    final messageData = (await messageRef.get()).data()!;
-    final messageSender = messageData['sender']! as String;
-    final oldText = messageData['text']! as String;
-    final oldTimeStamp = messageData['timestamp']! as Timestamp;
-    final bool isFirstEdit = !(messageData['isEdited'] ?? false);
+    final messageSender = selectedMessageData!['sender']! as String;
+    final oldText = selectedMessageData!['text']! as String;
+    final oldTimeStamp = selectedMessageData!['timestamp']! as Timestamp;
+    final bool isFirstEdit = !(selectedMessageData!['isEdited'] ?? false);
 
     // ignore edit request
     if (messageSender != currentUser.email) {
@@ -192,20 +206,20 @@ class _ConversationPageState extends State<ConversationPage> {
     if (newText == null || newText.isEmpty || newText == oldText) return;
 
     // set new text value and tag as edited
-    messageRef.set({
+    selectedMessageRef!.set({
       'text': newText,
       'isEdited': true,
     }, SetOptions(merge: true));
 
     // save changes to history
     if (isFirstEdit) {
-      await messageRef.collection('Edit History').add({
+      await selectedMessageRef!.collection('Edit History').add({
         'previousText': null,
         'newText': oldText,
         'timestamp': oldTimeStamp,
       });
     }
-    await messageRef.collection('Edit History').add({
+    await selectedMessageRef!.collection('Edit History').add({
       'previousText': oldText,
       'newText': newText,
       'timestamp': Timestamp.now(),
@@ -217,13 +231,7 @@ class _ConversationPageState extends State<ConversationPage> {
     if (selectedMessageId == null) return;
     //TODO: Feature: implement show edit history
 
-    final messageRef = FirebaseFirestore.instance
-        .collection('Conversations')
-        .doc(widget.conversationId)
-        .collection('Messages')
-        .doc(selectedMessageId);
-
-    final history = (await messageRef.collection('Edit History').get()).docs;
+    final history = (await selectedMessageRef!.collection('Edit History').get()).docs;
 
     // ignore: use_build_context_synchronously
     await showDialog(
@@ -234,8 +242,12 @@ class _ConversationPageState extends State<ConversationPage> {
           height: MediaQuery.of(context).size.height / 2,
           width: double.maxFinite,
           child: ListView.builder(
-            itemCount: history.length,
+            itemCount: history.isEmpty ? 1 : history.length,
+            shrinkWrap: true,
             itemBuilder: (context, index) {
+              if (history.isEmpty) {
+                return const Text('This message has never been edited');
+              }
               // TODO: bugfix: Create a message info widget to be displayed here
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

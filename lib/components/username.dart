@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../settings.dart';
-
 class Username extends StatelessWidget {
   const Username({
     super.key,
@@ -15,19 +13,9 @@ class Username extends StatelessWidget {
   final TextStyle? style;
   @override
   Widget build(BuildContext context) {
-    if (!UserConfig().replaceEmailWithUsernameOnWallPost) {
-      return Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          child: Text(
-            userEmail,
-            style: style,
-          ),
-        ),
-      );
-    } else {
-      return Material(
+    return ConstrainedBox(
+      constraints: BoxConstraints.loose(Size(MediaQuery.of(context).size.width - 200, 50)),
+      child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
@@ -36,9 +24,21 @@ class Username extends StatelessWidget {
                 FirebaseFirestore.instance.collection('User Profile').doc(userEmail).snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data!.data() != null) {
-                return Text(snapshot.data!.data()!['username'] ?? userEmail, style: style);
+                return Text(
+                  snapshot.data!.data()!['username'] ?? userEmail,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
               } else if (snapshot.data?.data() == null) {
-                return Text(userEmail, style: style);
+                return Text(
+                  userEmail,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
               } else {
                 return const Expanded(
                   child: LinearProgressIndicator(
@@ -49,7 +49,7 @@ class Username extends StatelessWidget {
             },
           ),
         ),
-      );
-    }
+      ),
+    );
   }
 }

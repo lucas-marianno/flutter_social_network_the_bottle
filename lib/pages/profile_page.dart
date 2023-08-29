@@ -112,6 +112,8 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       }
     }
+    // ignore: use_build_context_synchronously
+    Navigator.of(context).pop();
   }
 
   void viewPicture(String? imageUrl) {
@@ -183,7 +185,7 @@ class _ProfilePageState extends State<ProfilePage> {
       title: 'New Username',
       startingString: username,
       hintText: 'Username',
-      maxLength: 20,
+      maxLength: 35,
     );
     if (newUsername == null || newUsername == username) return;
 
@@ -220,10 +222,9 @@ class _ProfilePageState extends State<ProfilePage> {
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data!.data() != null) {
             final profileData = snapshot.data!.data()!;
-            username = profileData['username'];
-            bio = profileData['bio'];
+            username = profileData['username'] ?? widget.userEmail.split('@')[0];
+            bio = profileData['bio'] ?? 'Write about yourself here...';
             final pictureUrl = profileData['pictureUrl'];
-
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Column(
