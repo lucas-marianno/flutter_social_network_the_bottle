@@ -8,6 +8,7 @@ import 'package:the_bottle/components/drawer_conversation.dart';
 import 'package:the_bottle/components/input_field.dart';
 import 'package:the_bottle/components/post_picture.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
+import '../components/edit_history.dart';
 import '../components/input_from_modal_bottom_sheet.dart';
 import '../components/message_baloon.dart';
 import '../components/show_dialog.dart';
@@ -232,7 +233,6 @@ class _ConversationPageState extends State<ConversationPage> {
 
   void messageInfo() async {
     if (selectedMessageId == null) return;
-    //TODO: Feature: implement show edit history
 
     final history = (await selectedMessageRef!.collection('Edit History').get()).docs;
 
@@ -251,19 +251,10 @@ class _ConversationPageState extends State<ConversationPage> {
               if (history.isEmpty) {
                 return const Text('This message has never been edited');
               }
-              // TODO: bugfix: Create a message info widget to be displayed here
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('before'),
-                  Text(history[index]['previousText'] ?? ''),
-                  const Text('after'),
-                  Text(history[index]['newText']),
-                  const Text('Modified at'),
-                  Text(timestampToString(history[index]['timestamp'])),
-                  const Text(''),
-                ],
+              return EditHistory(
+                previousText: history[index]['previousText'] ?? '',
+                newText: history[index]['newText'],
+                timestamp: history[index]['timestamp'],
               );
             },
           ),
