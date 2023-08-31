@@ -5,9 +5,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/drawer_conversation.dart';
 import 'package:the_bottle/components/input_field.dart';
-import 'package:the_bottle/components/wall_post.dart';
-import 'package:the_bottle/components/wall_post_header.dart';
-import 'package:the_bottle/components/wall_post_picture.dart';
+import 'package:the_bottle/components/post.dart';
+import 'package:the_bottle/components/post_header.dart';
+import 'package:the_bottle/components/post_picture.dart';
 import '../components/blurred_appbar.dart';
 import '../components/drawer_navigation.dart';
 

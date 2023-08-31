@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/like_button.dart';
 import 'package:the_bottle/components/show_dialog.dart';
 import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
+import 'comment_like_button.dart';
 import 'input_from_modal_bottom_sheet.dart';
 import 'options_modal_bottom_sheet.dart';
 

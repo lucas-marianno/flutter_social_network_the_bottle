@@ -6,11 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:the_bottle/components/blurred_appbar.dart';
 import 'package:the_bottle/components/drawer_conversation.dart';
 import 'package:the_bottle/components/input_field.dart';
-import 'package:the_bottle/components/wall_post_picture.dart';
+import 'package:the_bottle/components/post_picture.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
 import '../components/input_from_modal_bottom_sheet.dart';
 import '../components/message_baloon.dart';
 import '../components/show_dialog.dart';
+
+// TODO: implement reaction to messages
+// TODO: implement reply to messages
 
 class ConversationPage extends StatefulWidget {
   const ConversationPage({

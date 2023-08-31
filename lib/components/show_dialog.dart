@@ -9,7 +9,7 @@ Future<dynamic> showMyDialog(
   return await showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: title != null ? Center(child: Text(title)) : null,
+      title: title != null ? Text(title) : null,
       content: content != null ? Text(content, style: const TextStyle(fontSize: 16)) : null,
       actions: !showActions
           ? []

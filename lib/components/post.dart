@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/comment_button.dart';
 import 'package:the_bottle/components/comments.dart';
-import 'package:the_bottle/components/like_button.dart';
+import 'package:the_bottle/components/post_like_button.dart';
 
 class WallPost extends StatefulWidget {
   const WallPost({

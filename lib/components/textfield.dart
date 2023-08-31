@@ -8,6 +8,7 @@ class MyTextField extends StatefulWidget {
     this.controller,
     this.hintText,
     this.onSubmited,
+    this.onChanged,
     this.obscureText = false,
     this.autofocus = true,
     this.enterKeyPressSubmits = false,
@@ -17,6 +18,7 @@ class MyTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String? hintText;
   final void Function()? onSubmited;
+  final void Function()? onChanged;
   final bool obscureText;
   final bool autofocus;
   final bool enterKeyPressSubmits;
@@ -65,12 +67,14 @@ class _MyTextFieldState extends State<MyTextField> {
         } else {
           maxLength = null;
         }
+        widget.onChanged?.call();
         setState(() {});
       },
       onSubmitted: enterKeyPressSubmits ? (value) => widget.onSubmited?.call() : null,
       textInputAction: enterKeyPressSubmits ? null : TextInputAction.none,
       maxLines: widget.obscureText || enterKeyPressSubmits ? 1 : null,
       decoration: InputDecoration(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
         hintText: widget.hintText,
         hintStyle: const TextStyle(color: Colors.grey),
         suffixIcon: widget.obscureText
