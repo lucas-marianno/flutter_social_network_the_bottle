@@ -11,9 +11,11 @@ class InputField extends StatefulWidget {
     super.key,
     required this.onSendTap,
     this.dismissKeyboardOnSend = true,
+    this.enterKeyPressSubmits = false,
   });
   final void Function(String text, Uint8List? loadedImage)? onSendTap;
   final bool dismissKeyboardOnSend;
+  final bool enterKeyPressSubmits;
 
   @override
   State<InputField> createState() => _InputFieldState();
@@ -112,8 +114,10 @@ class _InputFieldState extends State<InputField> {
                     onSubmited: () {
                       widget.onSendTap?.call(textEditingController.text, loadedImage);
                       unSelectImage();
+                      textEditingController.clear();
                     },
                     autofocus: false,
+                    enterKeyPressSubmits: widget.enterKeyPressSubmits,
                   ),
                 ),
 

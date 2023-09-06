@@ -58,6 +58,7 @@ class _MyTextFieldState extends State<MyTextField> {
       controller: widget.controller,
       obscureText: widget.obscureText ? !isVisible : false,
       maxLength: maxLength,
+      autocorrect: !widget.obscureText,
       onChanged: (value) {
         if (widget.allLowerCase) {
           widget.controller?.value = widget.controller!.value.copyWith(text: value.toLowerCase());
@@ -72,7 +73,7 @@ class _MyTextFieldState extends State<MyTextField> {
       },
       onSubmitted: enterKeyPressSubmits ? (value) => widget.onSubmited?.call() : null,
       textInputAction: enterKeyPressSubmits ? null : TextInputAction.none,
-      maxLines: widget.obscureText || enterKeyPressSubmits ? 1 : null,
+      maxLines: widget.obscureText ? 1 : null,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(horizontal: 10),
         hintText: widget.hintText,

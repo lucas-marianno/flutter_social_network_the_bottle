@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:the_bottle/pages/auth_page.dart';
 import 'package:the_bottle/firebase_options.dart';
 import 'package:the_bottle/pages/home_page.dart';
+import 'package:the_bottle/sandbox.dart';
+import 'package:the_bottle/settings.dart';
 import 'package:the_bottle/theme.dart';
 
 void main() async {
@@ -26,6 +28,8 @@ class Main extends StatefulWidget {
 class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
+    if (sandboxEnabled) return const Sandbox();
+
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, authSnapshot) {
