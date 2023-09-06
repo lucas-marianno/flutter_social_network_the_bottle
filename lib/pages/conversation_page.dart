@@ -10,7 +10,6 @@ import 'package:the_bottle/components/post_picture.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
 import '../components/input_from_modal_bottom_sheet.dart';
 import '../components/message_baloon.dart';
-import '../components/show_dialog.dart';
 
 // TODO: implement reaction to messages
 // TODO: implement reply to messages
@@ -36,6 +35,7 @@ class _ConversationPageState extends State<ConversationPage> {
   String? selectedMessageId;
   DocumentReference<Map<String, dynamic>>? selectedMessageRef;
   Map<String, dynamic>? selectedMessageData;
+  List<Widget> messageOptions = [];
 
   void sendMessage(String text, Uint8List? loadedImage) async {
     if (text.isEmpty && loadedImage == null) return;
@@ -136,7 +136,36 @@ class _ConversationPageState extends State<ConversationPage> {
         .collection('Messages')
         .doc(selectedMessageId);
     selectedMessageData = (await selectedMessageRef!.get()).data()!;
+    createMessageOptions();
     setState(() {});
+  }
+
+  void createMessageOptions() {
+    bool isUserSender = selectedMessageData!['sender']! as String == currentUser.email;
+
+    messageOptions = [];
+
+    // can reply
+    messageOptions.add(const IconButton(onPressed: null, icon: Icon(Icons.reply)));
+    // can favorite
+    messageOptions.add(const IconButton(onPressed: null, icon: Icon(Icons.star)));
+    // can show info
+    messageOptions.add(IconButton(onPressed: messageInfo, icon: const Icon(Icons.info_outline)));
+    // can delete
+    if (isUserSender) {
+      messageOptions.add(IconButton(onPressed: deleteMessage, icon: const Icon(Icons.delete)));
+    }
+    // can copy
+    messageOptions.add(const IconButton(onPressed: null, icon: Icon(Icons.copy)));
+    // can reply
+    messageOptions.add(Transform.flip(
+      flipX: true,
+      child: const IconButton(onPressed: null, icon: Icon(Icons.reply)),
+    ));
+    // can edit
+    if (isUserSender) {
+      messageOptions.add(IconButton(onPressed: editMessage, icon: const Icon(Icons.edit)));
+    }
   }
 
   void unSelectMessages() {
@@ -145,6 +174,7 @@ class _ConversationPageState extends State<ConversationPage> {
       selectedMessageId = null;
       selectedMessageRef = null;
       selectedMessageData = null;
+      messageOptions = [];
     });
   }
 
@@ -158,20 +188,6 @@ class _ConversationPageState extends State<ConversationPage> {
       // skip
     }
 
-    final messageSender = selectedMessageData!['sender']! as String;
-
-    // ignore edit request
-    if (messageSender != currentUser.email) {
-      // TODO: bugfix: replace this dialog for only showing edit option if sender is currentuser
-      // ignore: use_build_context_synchronously
-      showMyDialog(
-        context,
-        title: 'Nope!',
-        content: 'You can only delete your own messages',
-      );
-      return;
-    }
-
     selectedMessageRef!.delete();
 
     unSelectMessages();
@@ -181,22 +197,9 @@ class _ConversationPageState extends State<ConversationPage> {
     if (selectedMessageId == null) return;
 
     // retrieve current message data
-    final messageSender = selectedMessageData!['sender']! as String;
     final oldText = selectedMessageData!['text']! as String;
     final oldTimeStamp = selectedMessageData!['timestamp']! as Timestamp;
     final bool isFirstEdit = !(selectedMessageData!['isEdited'] ?? false);
-
-    // ignore edit request
-    if (messageSender != currentUser.email) {
-      // TODO: bugfix: replace this dialog for only showing edit option if sender is currentuser
-      // ignore: use_build_context_synchronously
-      showMyDialog(
-        context,
-        title: 'Nope!',
-        content: 'You can only edit your own messages',
-      );
-      return;
-    }
 
     // get new text from user
     // ignore: use_build_context_synchronously
@@ -282,18 +285,7 @@ class _ConversationPageState extends State<ConversationPage> {
         centerTitle: false,
         title: widget.talkingTo,
         actions: showOptions
-            ? [
-                IconButton(onPressed: () {}, icon: const Icon(Icons.reply)),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.star)),
-                IconButton(onPressed: messageInfo, icon: const Icon(Icons.info_outline)),
-                IconButton(onPressed: deleteMessage, icon: const Icon(Icons.delete)),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.copy)),
-                Transform.flip(
-                  flipX: true,
-                  child: IconButton(onPressed: () {}, icon: const Icon(Icons.reply)),
-                ),
-                IconButton(onPressed: editMessage, icon: const Icon(Icons.edit)),
-              ]
+            ? messageOptions
             : [
                 IconButton(
                   onPressed: () {
