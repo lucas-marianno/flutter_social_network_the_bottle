@@ -8,6 +8,7 @@ import 'package:the_bottle/components/drawer_conversation.dart';
 import 'package:the_bottle/components/input_field.dart';
 import 'package:the_bottle/components/post_picture.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
+import '../components/conversation_reply.dart';
 import '../components/input_from_modal_bottom_sheet.dart';
 import '../components/message_baloon.dart';
 
@@ -36,6 +37,7 @@ class _ConversationPageState extends State<ConversationPage> {
   DocumentReference<Map<String, dynamic>>? selectedMessageRef;
   Map<String, dynamic>? selectedMessageData;
   List<Widget> messageOptions = [];
+  bool showReply = false;
 
   void sendMessage(String text, Uint8List? loadedImage) async {
     if (text.isEmpty && loadedImage == null) return;
@@ -146,7 +148,7 @@ class _ConversationPageState extends State<ConversationPage> {
     messageOptions = [];
 
     // can reply
-    messageOptions.add(const IconButton(onPressed: null, icon: Icon(Icons.reply)));
+    messageOptions.add(IconButton(onPressed: replyToMessage, icon: const Icon(Icons.reply)));
     // can favorite
     messageOptions.add(const IconButton(onPressed: null, icon: Icon(Icons.star)));
     // can show info
@@ -168,6 +170,12 @@ class _ConversationPageState extends State<ConversationPage> {
     }
   }
 
+  void replyToMessage() {
+    setState(() {
+      showReply = true;
+    });
+  }
+
   void unSelectMessages() {
     setState(() {
       showOptions = false;
@@ -175,6 +183,7 @@ class _ConversationPageState extends State<ConversationPage> {
       selectedMessageRef = null;
       selectedMessageData = null;
       messageOptions = [];
+      showReply = false;
     });
   }
 
@@ -303,17 +312,19 @@ class _ConversationPageState extends State<ConversationPage> {
           }
           return true;
         },
-        child: GestureDetector(
-          onTap: unSelectMessages,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Image.asset('lib/assets/${Theme.of(context).brightness.name}doodle.jpg',
-                  fit: BoxFit.cover),
-              Column(
-                children: [
-                  // conversation
-                  Expanded(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              'lib/assets/${Theme.of(context).brightness.name}doodle.jpg',
+              fit: BoxFit.cover,
+            ),
+            Column(
+              children: [
+                // conversation
+                Expanded(
+                  child: GestureDetector(
+                    onTap: unSelectMessages,
                     child: StreamBuilder(
                       stream: FirebaseFirestore.instance
                           .collection('Conversations')
@@ -376,12 +387,18 @@ class _ConversationPageState extends State<ConversationPage> {
                       },
                     ),
                   ),
-                  // post message
-                  InputField(onSendTap: sendMessage, dismissKeyboardOnSend: false),
-                ],
-              ),
-            ],
-          ),
+                ),
+                // reply field
+                ConversationReply(
+                  showReply,
+                  selectedMessageData: selectedMessageData,
+                  onCancel: unSelectMessages,
+                ),
+                // post message
+                InputField(onSendTap: sendMessage, dismissKeyboardOnSend: false),
+              ],
+            ),
+          ],
         ),
       ),
     );
