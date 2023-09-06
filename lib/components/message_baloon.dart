@@ -110,9 +110,13 @@ class _MessageBaloonState extends State<MessageBaloon> {
                                 children: [
                                   Text(
                                     widget.isEdited ? 'edited  •  ' : '',
-                                    style: const TextStyle(fontStyle: FontStyle.italic),
+                                    style: const TextStyle(
+                                        color: Colors.grey, fontStyle: FontStyle.italic),
                                   ),
-                                  Text(widget.timestamp),
+                                  Text(
+                                    widget.timestamp,
+                                    style: const TextStyle(color: Colors.grey),
+                                  ),
                                 ],
                               ),
                             ),
