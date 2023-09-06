@@ -8,7 +8,6 @@ import 'package:the_bottle/components/drawer_conversation.dart';
 import 'package:the_bottle/components/input_field.dart';
 import 'package:the_bottle/components/post_picture.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
-import '../components/edit_history.dart';
 import '../components/input_from_modal_bottom_sheet.dart';
 import '../components/message_baloon.dart';
 import '../components/show_dialog.dart';
@@ -234,7 +233,8 @@ class _ConversationPageState extends State<ConversationPage> {
   void messageInfo() async {
     if (selectedMessageId == null) return;
 
-    final history = (await selectedMessageRef!.collection('Edit History').get()).docs;
+    final history =
+        (await selectedMessageRef!.collection('Edit History').orderBy('timestamp').get()).docs;
 
     // ignore: use_build_context_synchronously
     await showDialog(
@@ -251,10 +251,12 @@ class _ConversationPageState extends State<ConversationPage> {
               if (history.isEmpty) {
                 return const Text('This message has never been edited');
               }
-              return EditHistory(
-                previousText: history[index]['previousText'] ?? '',
-                newText: history[index]['newText'],
-                timestamp: history[index]['timestamp'],
+              return MessageBaloon(
+                sender: selectedMessageData!['sender'],
+                showSender: false,
+                text: history[index]['newText'],
+                timestamp: timestampToString(history[index]['timestamp']),
+                messagePicture: const SizedBox(height: 0, width: 0),
               );
             },
           ),
