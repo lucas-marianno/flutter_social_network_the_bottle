@@ -52,7 +52,7 @@ class _MessageBaloonState extends State<MessageBaloon> {
                   child: GestureDetector(
                     onLongPress: widget.onLongPress,
                     child: Container(
-                      constraints: const BoxConstraints(minWidth: 130),
+                      constraints: const BoxConstraints(minWidth: 150),
                       decoration: BoxDecoration(
                         color: isIncoming
                             ? Theme.of(context).colorScheme.surfaceVariant
@@ -100,7 +100,7 @@ class _MessageBaloonState extends State<MessageBaloon> {
                                   )
                                 : Container(),
                           ),
-                          // timestamp
+                          // edited tag + timestamp
                           Positioned(
                             right: 0,
                             bottom: -15,

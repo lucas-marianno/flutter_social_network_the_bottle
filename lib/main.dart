@@ -28,12 +28,12 @@ class Main extends StatefulWidget {
 class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
-    if (sandboxEnabled) return const Sandbox();
-
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, authSnapshot) {
         if (authSnapshot.hasData) {
+          if (sandboxEnabled) return const Sandbox();
+
           return StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection('User Settings')

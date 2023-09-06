@@ -11,7 +11,7 @@ class Sandbox extends StatelessWidget {
       debugShowCheckedModeBanner: true,
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light,
       home: const ConversationPage(
         conversationId: 'yMYCeAAqQY2ALm10WIr2',
         talkingTo: Text('Vania'),

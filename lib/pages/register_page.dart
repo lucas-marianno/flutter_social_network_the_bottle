@@ -24,6 +24,9 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController confirmPasswordController = TextEditingController();
 
   void register() async {
+    // TODO: Feature: Security: Only allow verified emails
+    // https://firebase.google.com/docs/auth/flutter/email-link-auth
+
     final email = emailController.text;
     final password = passwordController.text;
     if (email.isEmpty || password.isEmpty) return;
