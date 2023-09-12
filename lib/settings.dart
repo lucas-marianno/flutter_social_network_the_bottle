@@ -1,1 +1,1 @@
-const sandboxEnabled = true;
+const sandboxEnabled = false;

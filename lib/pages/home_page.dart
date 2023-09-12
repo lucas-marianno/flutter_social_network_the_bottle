@@ -11,6 +11,9 @@ import 'package:the_bottle/components/post_picture.dart';
 import '../components/blurred_appbar.dart';
 import '../components/drawer_navigation.dart';
 
+//TODO: Feature: implement copy text function
+//TODO: Feature: implement download image
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 

@@ -9,6 +9,8 @@ import 'package:the_bottle/sandbox.dart';
 import 'package:the_bottle/settings.dart';
 import 'package:the_bottle/theme.dart';
 
+// TODO: implement notifications
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

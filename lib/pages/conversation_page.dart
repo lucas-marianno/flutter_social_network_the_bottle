@@ -12,8 +12,13 @@ import '../components/conversation_reply.dart';
 import '../components/input_from_modal_bottom_sheet.dart';
 import '../components/message_baloon.dart';
 
-// TODO: implement reaction to messages
-// TODO: implement reply to messages
+// TODO: Feature: implement reply to messages - WIP
+// TODO: Feature: implement copy text button
+// TODO: Feature: implement favorite message
+// TODO: Feature: implement forward message
+// TODO: Feature: implement message like
+// TODO: Feature: implement multiple message selection
+// TODO: Feature: implement download image
 
 class ConversationPage extends StatefulWidget {
   const ConversationPage({
@@ -129,7 +134,6 @@ class _ConversationPageState extends State<ConversationPage> {
   }
 
   void selectMessage(String messageId) async {
-    // TODO: Implement multiple selection
     showOptions = true;
     selectedMessageId = messageId;
     selectedMessageRef = FirebaseFirestore.instance
