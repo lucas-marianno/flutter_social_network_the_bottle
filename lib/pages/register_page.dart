@@ -1,10 +1,8 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/show_dialog.dart';
 import '../components/elevated_button.dart';
 import '../components/textfield.dart';
+import '../firebase/account/create_account.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({
@@ -23,46 +21,12 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
 
-  void register() async {
-    // TODO: Feature: Security: Only allow verified emails
-    // https://firebase.google.com/docs/auth/flutter/email-link-auth
-
-    final email = emailController.text;
-    final password = passwordController.text;
-    if (email.isEmpty || password.isEmpty) return;
-    if (password != confirmPasswordController.text) {
-      showMyDialog(context, title: 'Nope!', content: 'Passwords don\'t match.');
-      return;
-    }
-    if (password.length < 6) {
-      showMyDialog(
+  register() => createAccount(
+        emailController.text,
+        passwordController.text,
+        confirmPasswordController.text,
         context,
-        title: 'Weak Passord!',
-        content: 'Password must be at least 6 characters long',
       );
-      return;
-    }
-
-    showDialog(
-      context: context,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-    try {
-      // creates new user
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      // creates user profile
-      await FirebaseFirestore.instance.collection('User Profile').doc(email).set({
-        'username': email.split('@')[0],
-        'bio': 'Write about yourself here...',
-      });
-    } on FirebaseAuthException catch (e) {
-      if (context.mounted) Navigator.pop(context);
-      showMyDialog(context, content: e.code);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -16,7 +16,7 @@ class ProfileField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: editable ? onTap : null,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(15),

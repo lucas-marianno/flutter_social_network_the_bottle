@@ -1,13 +1,12 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/drawer_conversation.dart';
 import 'package:the_bottle/components/input_field.dart';
 import 'package:the_bottle/components/post.dart';
 import 'package:the_bottle/components/post_header.dart';
 import 'package:the_bottle/components/post_picture.dart';
+import 'package:the_bottle/firebase/post/create_post.dart';
 import '../components/blurred_appbar.dart';
 import '../components/drawer_navigation.dart';
 
@@ -23,39 +22,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   ScrollController scrollController = ScrollController();
-  final User user = FirebaseAuth.instance.currentUser!;
 
-  void postMessage(String text, Uint8List? loadedImage) async {
-    if (text.isEmpty && loadedImage == null) return;
-
+  void postMessage(String text, Uint8List? loadedImage) {
+    createPost(text, loadedImage);
     // scroll to most recent post
     scrollController.animateTo(0,
         duration: const Duration(milliseconds: 1500), curve: Curves.decelerate);
-
-    // send post
-    final post = await FirebaseFirestore.instance.collection('User Posts').add({
-      'UserEmail': user.email,
-      'Message': text,
-      'TimeStamp': Timestamp.now(),
-      'Likes': [],
-    });
-
-    if (loadedImage == null) return;
-    addImageToPost(post.id, loadedImage);
-  }
-
-  void addImageToPost(String postId, Uint8List image) async {
-    // upload picture to firebase storage and retrieve download URL
-    final String storageUrl =
-        await (await FirebaseStorage.instance.ref('Post Pictures/$postId').putData(image))
-            .ref
-            .getDownloadURL();
-
-    // upload pictureUrl to firebase database
-    await FirebaseFirestore.instance.collection('User Posts').doc(postId).set(
-      {'Post Picture': storageUrl},
-      SetOptions(merge: true),
-    );
 
     // unload image after post
     setState(() {});
@@ -110,9 +82,9 @@ class _HomePageState extends State<HomePage> {
                         }
                         return WallPost(
                           header: WallPostHeader(
-                            message: post['Message'],
+                            postText: post['Message'],
                             postId: post.id,
-                            postOwner: post['UserEmail'],
+                            opEmail: post['UserEmail'],
                             postTimeStamp: post['TimeStamp'],
                             isEdited: isEdited,
                           ),

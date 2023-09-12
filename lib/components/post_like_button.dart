@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/show_likes_list.dart';
+import 'package:the_bottle/firebase/post/like_post.dart';
 
 class PostLikeButton extends StatefulWidget {
   const PostLikeButton({super.key, required this.postId});
@@ -18,17 +19,7 @@ class _PostLikeButtonState extends State<PostLikeButton> {
 
   void toggleLike() {
     setState(() => isLiked = !isLiked);
-
-    final postReference = FirebaseFirestore.instance.collection('User Posts').doc(widget.postId);
-    if (isLiked) {
-      postReference.update({
-        'Likes': FieldValue.arrayUnion([currentUser.email]),
-      });
-    } else {
-      postReference.update({
-        'Likes': FieldValue.arrayRemove([currentUser.email]),
-      });
-    }
+    likePost(widget.postId, isLiked);
   }
 
   showLikes() async {

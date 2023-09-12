@@ -1,29 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/profile_picture.dart';
-import 'package:the_bottle/components/show_dialog.dart';
 import 'package:the_bottle/components/username.dart';
-import 'package:the_bottle/pages/conversation_page.dart';
+import 'package:the_bottle/firebase/is_current_user.dart';
+import 'package:the_bottle/firebase/post/message_op.dart';
+import '../firebase/post/delete_post.dart';
+import '../firebase/post/edit_post.dart';
 import '../pages/profile_page.dart';
 import '../util/timestamp_to_string.dart';
-import 'input_from_modal_bottom_sheet.dart';
 import 'options_modal_bottom_sheet.dart';
 
 class WallPostHeader extends StatefulWidget {
   const WallPostHeader({
     super.key,
-    required this.message,
+    required this.postText,
     required this.postId,
-    required this.postOwner,
+    required this.opEmail,
     required this.postTimeStamp,
     this.isEdited = false,
     this.isFullScreen = false,
   });
-  final String message;
+  final String postText;
   final String postId;
-  final String postOwner;
+  final String opEmail;
   final Timestamp postTimeStamp;
   final bool isEdited;
   final bool isFullScreen;
@@ -33,62 +32,14 @@ class WallPostHeader extends StatefulWidget {
 }
 
 class _WallPostHeaderState extends State<WallPostHeader> {
-  final User currentUser = FirebaseAuth.instance.currentUser!;
-  late final bool userOwnsPost;
-
-  void messagePostOwner() async {
-    if (currentUser.email == widget.postOwner) return;
-
-    // check profile for a previous conversation
-    final conversation = await FirebaseFirestore.instance
-        .collection('User Profile')
-        .doc(currentUser.email)
-        .collection('Conversations')
-        .doc(widget.postOwner)
-        .get();
-
-    // if theres a conversation, navigate to conversation
-    if (conversation.exists) {
-      // ignore: use_build_context_synchronously
-      Navigator.pop(context);
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ConversationPage(
-            conversationId: conversation['conversationId'],
-            talkingTo: Username(userEmail: widget.postOwner),
-          ),
-        ),
-      );
-    } else {
-      // if theres no conversation, create a new one
-      final newConversation = FirebaseFirestore.instance.collection('Conversations').doc();
-      newConversation.set({
-        'participants': [currentUser.email, widget.postOwner]
-      });
-
-      // ignore: use_build_context_synchronously
-      Navigator.pop(context);
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ConversationPage(
-            conversationId: newConversation.id,
-            talkingTo: Username(userEmail: widget.postOwner),
-          ),
-        ),
-      );
-    }
-  }
-
   void profileTap() {
     optionsFromModalBottomSheet(
       context,
       children: [
-        currentUser.email == widget.postOwner
+        isCurrentUser(widget.opEmail)
             ? Container()
             : ListTile(
-                onTap: messagePostOwner,
+                onTap: () => messageOriginalPoster(widget.opEmail, context),
                 leading: const Icon(Icons.message),
                 title: Row(
                   children: [
@@ -96,7 +47,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
                       'Message ',
                     ),
                     Username(
-                      userEmail: widget.postOwner,
+                      userEmail: widget.opEmail,
                       style: const TextStyle(fontSize: 16),
                     ),
                   ],
@@ -109,7 +60,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => ProfilePage(
-                  userEmail: widget.postOwner,
+                  userEmail: widget.opEmail,
                   heroTag: widget.postId,
                 ),
               ),
@@ -130,14 +81,14 @@ class _WallPostHeaderState extends State<WallPostHeader> {
       context,
       children: [
         ListTile(
-          onTap: editPost,
+          onTap: () => editPost(widget.postId, widget.opEmail, widget.postText, context),
           leading: const Icon(Icons.edit),
           title: const Text(
             'Edit post',
           ),
         ),
         ListTile(
-          onTap: deletePost,
+          onTap: () => deletePost(widget.postId, widget.opEmail, context),
           leading: const Icon(Icons.delete),
           title: const Text(
             'Delete post',
@@ -145,82 +96,6 @@ class _WallPostHeaderState extends State<WallPostHeader> {
         ),
       ],
     );
-  }
-
-  void editPost() async {
-    // dismiss any keyboard
-    FocusManager.instance.primaryFocus?.unfocus();
-    if (context.mounted) Navigator.pop(context);
-
-    if (widget.postOwner != currentUser.email) {
-      showMyDialog(
-        context,
-        title: 'Nope!',
-        content: 'You cannot edit posts made by someone else',
-      );
-      return;
-    }
-
-    // get new text from user
-    String? newPostText = await getInputFromModalBottomSheet(
-      context,
-      startingString: widget.message,
-      enterKeyPressSubmits: false,
-    );
-
-    if (newPostText == null || newPostText.isEmpty || newPostText == widget.message) return;
-
-    // edit post in firebase firestore
-    FirebaseFirestore.instance.collection('User Posts').doc(widget.postId).set({
-      'Message': newPostText,
-      'Edited': true,
-    }, SetOptions(merge: true));
-  }
-
-  void deletePost() async {
-    // dismiss any keyboard
-    FocusManager.instance.primaryFocus?.unfocus();
-    if (context.mounted) Navigator.pop(context);
-
-    if (widget.postOwner != currentUser.email) {
-      showMyDialog(context,
-          title: 'Nope!', content: 'You cannot delete posts made by someone else');
-      return;
-    }
-
-    // delete post picture from firebase storage (if it exists)
-    try {
-      await FirebaseStorage.instance.ref('Post Pictures/${widget.postId}').delete();
-    } on Exception {
-      // skip
-    }
-
-    // delete comments collection (if they exist)
-    try {
-      final commentsRef = FirebaseFirestore.instance
-          .collection('User Posts')
-          .doc(widget.postId)
-          .collection('Comments');
-      final comments = await commentsRef.get();
-      if (comments.docs.isNotEmpty) {
-        // delete comments
-        for (var comment in comments.docs) {
-          comment.reference.delete();
-        }
-        commentsRef.doc().delete();
-      }
-    } on Exception {
-      // skip
-    }
-
-    // delete post from firebase firestore
-    await FirebaseFirestore.instance.collection('User Posts').doc(widget.postId).delete();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    userOwnsPost = widget.postOwner == currentUser.email;
   }
 
   @override
@@ -231,7 +106,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
       children: [
         // profile thumbnail
         ProfilePicture(
-          profileEmailId: widget.postOwner,
+          profileEmailId: widget.opEmail,
           size: ProfilePictureSize.small,
           onTap: profileTap,
         ),
@@ -241,7 +116,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
           children: [
             // username
             Username(
-              userEmail: widget.postOwner,
+              userEmail: widget.opEmail,
               onTap: profileTap,
             ),
             // timestamp
@@ -255,7 +130,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             // more
-            userOwnsPost
+            isCurrentUser(widget.opEmail)
                 ? Material(
                     color: Colors.transparent,
                     child: InkWell(onTap: postOptions, child: const Icon(Icons.more_horiz)))
