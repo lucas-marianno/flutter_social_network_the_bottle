@@ -12,14 +12,15 @@ class ConversationController {
     required this.conversationId,
     required this.setStateCallback,
     required this.context,
-  }) {
-    _initController();
-  }
-  List<Widget> get messageOptions => _messageOptions;
-  Map<String, dynamic>? get selectedMessageData => _selectedMessageData;
-  String? get selectedMessageId => _selectedMessageId;
-  bool get showOptions => _showOptions;
-  bool get showReply => _showReply;
+  });
+
+  /// [getParticipants] will always return the current user as index 0, and talkingTo as index 1
+  List<Widget> get getMessageOptions => _messageOptions;
+  Map<String, dynamic>? get getSelectedMessageData => _selectedMessageData;
+  List<String> get getParticipants => _conversationParticipants;
+  String? get getSelectedMessageId => _selectedMessageId;
+  bool get hasSelectedMessages => _hasSelectedMessages;
+  bool get getShowReply => _showReply;
 
   Stream conversationStream() {
     return FirebaseFirestore.instance
@@ -34,8 +35,10 @@ class ConversationController {
     return (await _conversationRef.collection('Messages').get()).docs.isNotEmpty;
   }
 
-  void deleteConversationIfEmpty({bool forceDelete = false}) async {
-    /// TODO: Bugfix: change deletion to only hiding the conversation, the conversation should
+  Future<void> deleteConversationIfEmpty({bool forceDelete = false}) async {
+    if (!_initialized) await initController();
+
+    /// TODO: Optional Bugfix: change deletion to only hiding the conversation, the conversation should
     ///  only be deleted from server if both participants choose to delete the conversation;
     ///  Add a field 'markedForDeletion' that stores a list of the users who asked for deletion;
     ///  Notify a participant that the conversation will only be deleted if both decide to delete
@@ -69,6 +72,19 @@ class ConversationController {
     _conversationRef.delete();
   }
 
+  Future<void> initController() async {
+    if (_initialized) return;
+    _conversationRef = FirebaseFirestore.instance.collection('Conversations').doc(conversationId);
+    _conversationParticipants = List<String>.from((await _conversationRef.get())['participants']);
+
+    if (_conversationParticipants[0] != _currentUser.email!) {
+      _conversationParticipants = _conversationParticipants.reversed.toList();
+    }
+
+    _initialized = true;
+    setStateCallback(() {});
+  }
+
   void markConversationAsSeenForCurrentUser() {
     FirebaseFirestore.instance
         .collection('User Profile')
@@ -78,8 +94,8 @@ class ConversationController {
         .set({'seen': true}, SetOptions(merge: true));
   }
 
-  void selectMessage(String messageId) async {
-    _showOptions = true;
+  Future<void> selectMessage(String messageId) async {
+    _hasSelectedMessages = true;
     _selectedMessageId = messageId;
     _selectedMessageRef = FirebaseFirestore.instance
         .collection('Conversations')
@@ -91,7 +107,8 @@ class ConversationController {
     setStateCallback(() {});
   }
 
-  void sendMessage(String text, Uint8List? image) async {
+  Future<void> sendMessage(String text, Uint8List? image) async {
+    if (!_initialized) await initController();
     if (text.isEmpty && image == null) return;
 
     // send text message
@@ -154,7 +171,7 @@ class ConversationController {
 
   void unSelectMessages() {
     setStateCallback(() {
-      _showOptions = false;
+      _hasSelectedMessages = false;
       _selectedMessageId = null;
       _selectedMessageRef = null;
       _selectedMessageData = null;
@@ -194,7 +211,7 @@ class ConversationController {
     }
   }
 
-  void _deleteMessage() async {
+  Future<void> _deleteMessage() async {
     if (_selectedMessageId == null) return;
 
     // delete message image (if exists)
@@ -207,7 +224,8 @@ class ConversationController {
     unSelectMessages();
   }
 
-  void _editMessage() async {
+  Future<void> _editMessage() async {
+    if (context == null) throw "'context' must be provided";
     if (_selectedMessageId == null) return;
 
     // retrieve current message data
@@ -217,7 +235,7 @@ class ConversationController {
 
     // get new text from user
     String? newText = await getInputFromModalBottomSheet(
-      context,
+      context!,
       startingString: oldText,
       enterKeyPressSubmits: false,
     );
@@ -246,12 +264,9 @@ class ConversationController {
     unSelectMessages();
   }
 
-  void _initController() async {
-    _conversationRef = FirebaseFirestore.instance.collection('Conversations').doc(conversationId);
-    _conversationParticipants = (await _conversationRef.get())['participants'];
-  }
+  Future<void> _messageInfo() async {
+    if (context == null) throw "'context' must be provided";
 
-  void _messageInfo() async {
     if (_selectedMessageId == null) return;
 
     final history =
@@ -259,7 +274,7 @@ class ConversationController {
 
     // ignore: use_build_context_synchronously
     await showDialog(
-      context: context,
+      context: context!,
       builder: (context) => AlertDialog(
         title: const Text('Message Info'),
         content: SizedBox(
@@ -291,16 +306,17 @@ class ConversationController {
     setStateCallback(() => _showReply = true);
   }
 
-  final BuildContext context;
+  final BuildContext? context;
   final String conversationId;
   final void Function(void Function() callback) setStateCallback;
-  late final List _conversationParticipants;
+  late List<String> _conversationParticipants;
   late final DocumentReference<Map<String, dynamic>> _conversationRef;
   final _currentUser = FirebaseAuth.instance.currentUser!;
   List<Widget> _messageOptions = [];
   Map<String, dynamic>? _selectedMessageData;
   String? _selectedMessageId;
   DocumentReference<Map<String, dynamic>>? _selectedMessageRef;
-  bool _showOptions = false;
+  bool _hasSelectedMessages = false;
+  bool _initialized = false;
   bool _showReply = false;
 }

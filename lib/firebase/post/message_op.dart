@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/firebase/is_current_user.dart';
-import '../../components/username.dart';
 import '../../pages/conversation_page.dart';
 
 void messageOriginalPoster(String opEmail, BuildContext context) async {
@@ -27,7 +26,6 @@ void messageOriginalPoster(String opEmail, BuildContext context) async {
       MaterialPageRoute(
         builder: (context) => ConversationPage(
           conversationId: conversation['conversationId'],
-          talkingTo: Username(userEmail: opEmail),
         ),
       ),
     );
@@ -45,7 +43,6 @@ void messageOriginalPoster(String opEmail, BuildContext context) async {
       MaterialPageRoute(
         builder: (context) => ConversationPage(
           conversationId: newConversation.id,
-          talkingTo: Username(userEmail: opEmail),
         ),
       ),
     );

@@ -30,7 +30,15 @@ class MessageBaloon extends StatefulWidget {
 
 class _MessageBaloonState extends State<MessageBaloon> {
   final currentUser = FirebaseAuth.instance.currentUser;
+  late final Widget senderUsername;
   bool isHovering = false;
+
+  @override
+  void initState() {
+    senderUsername = Username(userEmail: widget.sender);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final isIncoming = widget.sender != currentUser?.email;
@@ -81,7 +89,7 @@ class _MessageBaloonState extends State<MessageBaloon> {
                             children: [
                               // sender
                               widget.showSender
-                                  ? Username(userEmail: widget.sender)
+                                  ? senderUsername
                                   : const SizedBox.square(dimension: 0),
                               // picture
                               widget.messagePicture,

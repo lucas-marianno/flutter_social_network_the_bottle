@@ -30,13 +30,8 @@ class _CommentsState extends State<Comments> {
 
     if (commentText == null) return;
 
-    scrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 1500),
-      curve: Curves.decelerate,
-    );
     // write the comment to firestore under the comments collection for this post
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('User Posts')
         .doc(widget.postId)
         .collection('Comments')
@@ -46,6 +41,12 @@ class _CommentsState extends State<Comments> {
       'CommentTime': Timestamp.now(),
       'CommentLikes': [],
     });
+
+    await scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 1500),
+      curve: Curves.decelerate,
+    );
   }
 
   @override

@@ -3,9 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/conversation_tile.dart';
 import 'package:the_bottle/components/options_modal_bottom_sheet.dart';
-import 'package:the_bottle/components/profile_picture.dart';
 import 'package:the_bottle/components/textfield.dart';
-import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
 import 'package:the_bottle/pages/conversation_page.dart';
 
@@ -20,6 +18,8 @@ class DrawerConversations extends StatelessWidget {
         setStateCallback: (_) {},
         context: context,
       );
+      await conversationController.initController();
+      // ignore: use_build_context_synchronously
       await optionsFromModalBottomSheet(
         context,
         children: [
@@ -81,17 +81,17 @@ class DrawerConversations extends StatelessWidget {
                             MaterialPageRoute(
                               builder: (context) => ConversationPage(
                                 conversationId: conversations[index].data()['conversationId'],
-                                talkingTo: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    ProfilePicture(
-                                      profileEmailId: conversations[index].id,
-                                      size: ProfilePictureSize.small,
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Username(userEmail: conversations[index].id),
-                                  ],
-                                ),
+                                // talkingTo: Row(
+                                //   mainAxisSize: MainAxisSize.min,
+                                //   children: [
+                                //     ProfilePicture(
+                                //       profileEmailId: conversations[index].id,
+                                //       size: ProfilePictureSize.small,
+                                //     ),
+                                //     const SizedBox(width: 10),
+                                //     Username(userEmail: conversations[index].id),
+                                //   ],
+                                // ),
                               ),
                             ),
                           );

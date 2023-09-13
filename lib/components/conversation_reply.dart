@@ -12,8 +12,8 @@ class ConversationReply extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool showField = conversationController.showReply;
-    final Map<String, dynamic>? selectedMessageData = conversationController.selectedMessageData;
+    final bool showField = conversationController.getShowReply;
+    final Map<String, dynamic>? selectedMessageData = conversationController.getSelectedMessageData;
 
     if (!showField || selectedMessageData == null) return Container();
 

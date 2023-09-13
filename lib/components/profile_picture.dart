@@ -11,7 +11,7 @@ class ProfilePicture extends StatelessWidget {
     this.size = ProfilePictureSize.small,
     this.onTap,
   });
-  final String? profileEmailId;
+  final String profileEmailId;
   final ProfilePictureSize size;
   final void Function()? onTap;
 
@@ -29,6 +29,7 @@ class ProfilePicture extends StatelessWidget {
         imgSize = 250;
         break;
     }
+
     return Container(
       height: imgSize,
       width: imgSize,

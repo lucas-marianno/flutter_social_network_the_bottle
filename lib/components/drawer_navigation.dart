@@ -39,7 +39,7 @@ class DrawerNavigation extends StatelessWidget {
                     child: Hero(
                       tag: 'profilePic',
                       child: ProfilePicture(
-                        profileEmailId: currentUser!.email,
+                        profileEmailId: currentUser!.email!,
                         size: ProfilePictureSize.medium,
                         onTap: () => goToPage(
                           ProfilePage(

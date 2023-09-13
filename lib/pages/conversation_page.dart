@@ -6,10 +6,12 @@ import 'package:the_bottle/components/input_field.dart';
 import 'package:the_bottle/components/post_picture.dart';
 import 'package:the_bottle/components/conversation_reply.dart';
 import 'package:the_bottle/components/message_baloon.dart';
+import 'package:the_bottle/components/profile_picture.dart';
+import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
+import 'package:the_bottle/pages/profile_page.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
 
-// TODO: Bugfix: Message options is overflowing 'talking to'
 // TODO: Feature: implement reply to messages - WIP
 // TODO: Feature: implement copy text button
 // TODO: Feature: implement favorite message
@@ -19,13 +21,8 @@ import 'package:the_bottle/util/timestamp_to_string.dart';
 // TODO: Feature: implement download image
 
 class ConversationPage extends StatefulWidget {
-  const ConversationPage({
-    super.key,
-    required this.conversationId,
-    required this.talkingTo,
-  });
+  const ConversationPage({super.key, required this.conversationId});
   final String conversationId;
-  final Widget talkingTo;
 
   @override
   State<ConversationPage> createState() => _ConversationPageState();
@@ -35,27 +32,57 @@ class _ConversationPageState extends State<ConversationPage> {
   late final ConversationController conversationController;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController scrollController = ScrollController();
+  late final Widget currentUserUsername;
+  late final Widget talkingToUsername;
+  late final Widget talkingToProfilePicture;
+  bool initialized = false;
 
   void sendMessage(String text, Uint8List? loadedImage) async {
-    conversationController.sendMessage(text, loadedImage);
-    if (await conversationController.hasMessages()) {
-      // scroll to most recent message
-      scrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.decelerate,
-      );
-    }
+    await conversationController.sendMessage(text, loadedImage);
+
+    // scroll to most recent message
+    await scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.decelerate,
+    );
   }
 
-  @override
-  void initState() {
+  asyncInit() async {
+    // init controller
     conversationController = ConversationController(
       conversationId: widget.conversationId,
       setStateCallback: setState,
       context: context,
     );
+    await conversationController.initController();
     conversationController.markConversationAsSeenForCurrentUser;
+
+    // init widgets
+    currentUserUsername = Username(
+      userEmail: conversationController.getParticipants[0],
+    );
+    talkingToUsername = Username(
+      userEmail: conversationController.getParticipants[1],
+    );
+    talkingToProfilePicture = ProfilePicture(
+      profileEmailId: conversationController.getParticipants[1],
+    );
+
+    setState(() {
+      initialized = true;
+    });
+  }
+
+  void navigateToProfile() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => ProfilePage(userEmail: conversationController.getParticipants[1]),
+    ));
+  }
+
+  @override
+  void initState() {
+    asyncInit();
     super.initState();
   }
 
@@ -67,15 +94,25 @@ class _ConversationPageState extends State<ConversationPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!initialized) return Container();
     return Scaffold(
       key: scaffoldKey,
       endDrawer: const DrawerConversations(),
       extendBodyBehindAppBar: true,
       appBar: BlurredAppBar(
         centerTitle: false,
-        title: widget.talkingTo,
-        actions: conversationController.showOptions
-            ? conversationController.messageOptions
+        onTap: !conversationController.hasSelectedMessages ? navigateToProfile : null,
+        title: conversationController.hasSelectedMessages
+            ? Container()
+            : Row(
+                children: [
+                  talkingToProfilePicture,
+                  const SizedBox(width: 10),
+                  talkingToUsername,
+                ],
+              ),
+        actions: conversationController.hasSelectedMessages
+            ? conversationController.getMessageOptions
             : [
                 IconButton(
                   onPressed: () {
@@ -87,7 +124,7 @@ class _ConversationPageState extends State<ConversationPage> {
       ),
       body: WillPopScope(
         onWillPop: () async {
-          if (conversationController.selectedMessageId != null) {
+          if (conversationController.getSelectedMessageId != null) {
             conversationController.unSelectMessages();
             return false;
           }
@@ -150,7 +187,8 @@ class _ConversationPageState extends State<ConversationPage> {
                                   padding: const EdgeInsets.only(bottom: 10),
                                   postImageUrl: imageUrl,
                                 ),
-                                isSelected: conversationController.selectedMessageId == message.id,
+                                isSelected:
+                                    conversationController.getSelectedMessageId == message.id,
                                 showSender: showsender,
                                 isEdited: isEdited,
                                 onLongPress: () => conversationController.selectMessage(message.id),

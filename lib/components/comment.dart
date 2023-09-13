@@ -23,7 +23,6 @@ class Comment extends StatefulWidget {
 
 class _CommentState extends State<Comment> {
   final currentUser = FirebaseAuth.instance.currentUser;
-  // late String commentText;
 
   void editComment(String postOwner, String currentCommentText) async {
     // dismiss any keyboard

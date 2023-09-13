@@ -6,7 +6,6 @@ import 'package:the_bottle/pages/auth_page.dart';
 import 'package:the_bottle/firebase_options.dart';
 import 'package:the_bottle/pages/home_page.dart';
 import 'package:the_bottle/sandbox.dart';
-import 'package:the_bottle/settings.dart';
 import 'package:the_bottle/theme.dart';
 
 // TODO: Feature: implement notifications

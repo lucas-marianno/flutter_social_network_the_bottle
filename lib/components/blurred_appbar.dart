@@ -8,11 +8,13 @@ class BlurredAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.title,
     this.centerTitle,
     this.actions,
+    this.onTap,
   });
 
   final Widget? title;
   final List<Widget>? actions;
   final bool? centerTitle;
+  final void Function()? onTap;
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
@@ -22,10 +24,13 @@ class BlurredAppBar extends StatelessWidget implements PreferredSizeWidget {
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 15),
-        child: AppBar(
-          centerTitle: centerTitle,
-          title: title,
-          actions: actions,
+        child: GestureDetector(
+          onTap: onTap,
+          child: AppBar(
+            centerTitle: centerTitle,
+            title: title,
+            actions: actions,
+          ),
         ),
       ),
     );
