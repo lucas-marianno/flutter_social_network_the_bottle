@@ -6,6 +6,7 @@ import 'package:the_bottle/components/options_modal_bottom_sheet.dart';
 import 'package:the_bottle/components/profile_picture.dart';
 import 'package:the_bottle/components/textfield.dart';
 import 'package:the_bottle/components/username.dart';
+import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
 import 'package:the_bottle/pages/conversation_page.dart';
 
 class DrawerConversations extends StatelessWidget {
@@ -13,53 +14,23 @@ class DrawerConversations extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = FirebaseAuth.instance.currentUser;
-
-    final conversationsCollectionRef = FirebaseFirestore.instance
-        .collection('User Profile')
-        .doc(currentUser!.email)
-        .collection('Conversations');
-
-    deleteConversation(String conversationId) async {
-      final conversationRef =
-          FirebaseFirestore.instance.collection('Conversations').doc(conversationId);
-
-      // get participants
-      final participants = (await conversationRef.get())['participants'] as List;
-
-      // remove conversation from participants profile
-      await FirebaseFirestore.instance
-          .collection('User Profile')
-          .doc(participants[0])
-          .collection('Conversations')
-          .doc(participants[1])
-          .delete();
-      await FirebaseFirestore.instance
-          .collection('User Profile')
-          .doc(participants[1])
-          .collection('Conversations')
-          .doc(participants[0])
-          .delete();
-
-      // delete conversation messages
-      final messages = (await conversationRef.collection('Messages').get()).docs;
-      for (final message in messages) {
-        await conversationRef.collection('Messages').doc(message.id).delete();
-      }
-
-      // delete conversation document
-      conversationRef.delete();
-    }
-
     conversationOptions(String conversationId) async {
+      ConversationController conversationController = ConversationController(
+        conversationId: conversationId,
+        setStateCallback: (_) {},
+        context: context,
+      );
       await optionsFromModalBottomSheet(
         context,
         children: [
           ListTile(
             leading: const Icon(Icons.delete),
             title: const Text('Delete Conversation'),
-            onTap: () => deleteConversation(conversationId),
-          )
+            onTap: () {
+              conversationController.deleteConversationIfEmpty(forceDelete: true);
+              Navigator.of(context).pop();
+            },
+          ),
         ],
       );
     }
@@ -82,11 +53,11 @@ class DrawerConversations extends StatelessWidget {
               ),
             ),
             StreamBuilder(
-              stream: conversationsCollectionRef
-                  .orderBy(
-                    'lastUpdated',
-                    descending: true,
-                  )
+              stream: FirebaseFirestore.instance
+                  .collection('User Profile')
+                  .doc(FirebaseAuth.instance.currentUser!.email)
+                  .collection('Conversations')
+                  .orderBy('lastUpdated', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -103,10 +74,6 @@ class DrawerConversations extends StatelessWidget {
                         onLongPress: () =>
                             conversationOptions(conversations[index].data()['conversationId']),
                         onTap: () {
-                          // mark as seen
-                          conversationsCollectionRef
-                              .doc(conversation.id)
-                              .set({'seen': true}, SetOptions(merge: true));
                           // go to conversation
                           Navigator.pop(context);
                           Navigator.of(context).popUntil((route) => route.isFirst);

@@ -73,7 +73,8 @@ void deleteAccount(String accountEmail, BuildContext context) async {
   }
 
   try {
-    // TODO: delete all conversations from user, this might throw a bug later on
+    /// TODO: BugFix: 'markForDeletion' all conversations from user, including data and images,
+    ///  only delete the full conversation when both users mark it for deletion
     // delete data from database
     final database = FirebaseFirestore.instance;
     await database.collection('User Profile').doc(currentUserEmail).delete();
