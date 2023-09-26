@@ -3,8 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:the_bottle/components/input_from_modal_bottom_sheet.dart';
 import 'package:the_bottle/components/message_baloon.dart';
+import 'package:the_bottle/util/copy_text_to_clipboard.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
 
 class ConversationController {
@@ -199,16 +201,24 @@ class ConversationController {
       ));
     }
     // can copy
-    _messageOptions.add(const IconButton(onPressed: null, icon: Icon(Icons.copy)));
+    _messageOptions.add(IconButton(onPressed: _copyMessageText, icon: const Icon(Icons.copy)));
     // can reply
     _messageOptions.add(Transform.flip(
       flipX: true,
-      child: const IconButton(onPressed: null, icon: Icon(Icons.reply)),
+      child: IconButton(onPressed: _replyToMessage, icon: const Icon(Icons.reply)),
     ));
     // can edit
     if (isUserSender) {
       _messageOptions.add(IconButton(onPressed: _editMessage, icon: const Icon(Icons.edit)));
     }
+  }
+
+  Future<void> _copyMessageText() async {
+    if (context == null) throw "'context' must be provided";
+
+    await copyTextToClipboard(_selectedMessageData!['text'], context!);
+
+    unSelectMessages();
   }
 
   Future<void> _deleteMessage() async {
@@ -291,7 +301,7 @@ class ConversationController {
                 sender: _selectedMessageData!['sender'],
                 showSender: false,
                 text: history[index]['newText'],
-                timestamp: timestampToString(history[index]['timestamp']),
+                timestamp: timestampToStringRelative(history[index]['timestamp']),
                 messagePicture: const SizedBox(height: 0, width: 0),
               );
             },

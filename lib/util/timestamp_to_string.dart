@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-String timestampToString(Timestamp timestamp) {
+String timestampToStringRelative(Timestamp timestamp) {
   final deltaT = Timestamp.now().millisecondsSinceEpoch - timestamp.millisecondsSinceEpoch;
 
   String toTwoDigitString(int n) {

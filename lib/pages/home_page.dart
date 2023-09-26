@@ -10,7 +10,6 @@ import 'package:the_bottle/firebase/post/create_post.dart';
 import '../components/blurred_appbar.dart';
 import '../components/drawer_navigation.dart';
 
-//TODO: Feature: implement copy text function
 //TODO: Feature: implement download image
 
 class HomePage extends StatefulWidget {

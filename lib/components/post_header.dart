@@ -4,6 +4,7 @@ import 'package:the_bottle/components/profile_picture.dart';
 import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/is_current_user.dart';
 import 'package:the_bottle/firebase/post/message_op.dart';
+import 'package:the_bottle/util/copy_text_to_clipboard.dart';
 import '../firebase/post/delete_post.dart';
 import '../firebase/post/edit_post.dart';
 import '../pages/profile_page.dart';
@@ -94,6 +95,16 @@ class _WallPostHeaderState extends State<WallPostHeader> {
             'Delete post',
           ),
         ),
+        ListTile(
+          onTap: () {
+            Navigator.of(context).pop();
+            copyTextToClipboard(widget.postText, context);
+          },
+          leading: const Icon(Icons.copy),
+          title: const Text(
+            'Copy post text',
+          ),
+        ),
       ],
     );
   }
@@ -121,7 +132,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
             ),
             // timestamp
             Text(
-              timestampToString(widget.postTimeStamp),
+              timestampToStringRelative(widget.postTimeStamp),
             )
           ],
         ),
