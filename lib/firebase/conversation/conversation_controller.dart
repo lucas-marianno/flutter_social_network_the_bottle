@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:the_bottle/components/input_from_modal_bottom_sheet.dart';
 import 'package:the_bottle/components/message_baloon.dart';
+import 'package:the_bottle/firebase/conversation/keys.dart';
 import 'package:the_bottle/util/copy_text_to_clipboard.dart';
 import 'package:the_bottle/firebase/account/get_username.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
@@ -15,6 +16,7 @@ class ConversationController {
     required this.conversationId,
     required this.setStateCallback,
     required this.context,
+    required this.scrollController,
   });
 
   /// [getParticipants] will always return the current user as index 0, and talkingTo as index 1
@@ -75,6 +77,34 @@ class ConversationController {
     _conversationRef.delete();
   }
 
+  void findAndShowItem(String messageId) {
+    // TODO: finish implementing findAndShowItem
+    late final GlobalKey<State<StatefulWidget>>? foundKey;
+
+    try {
+      foundKey = itemDataMap.entries
+          .firstWhere(
+            (entry) => entry.value == messageId,
+            // orElse: () => null,
+          )
+          .key;
+    } catch (e) {
+      foundKey = null;
+    }
+    print(foundKey);
+
+    if (foundKey != null) {
+      final RenderBox renderBox = foundKey.currentContext!.findRenderObject() as RenderBox;
+      final position = renderBox.localToGlobal(Offset.zero);
+
+      scrollController.animateTo(
+        position.dy, // Scroll to the item's position
+        duration: const Duration(milliseconds: 500), // Adjust as needed
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   Future<void> initController() async {
     if (_initialized) return;
     _conversationRef = FirebaseFirestore.instance.collection('Conversations').doc(conversationId);
@@ -120,6 +150,14 @@ class ConversationController {
       'text': text,
       'timestamp': Timestamp.now(),
     });
+
+    // add reply info (if exists)
+    if (_showReply) {
+      await messageRef.set({
+        'replyto': _selectedMessageId!,
+      }, SetOptions(merge: true));
+      unSelectMessages();
+    }
 
     // notify participants that there's a new message and the update's time
     for (String participant in _conversationParticipants) {
@@ -312,6 +350,7 @@ $timestamp
                 text: history[index]['newText'],
                 timestamp: timestampToString(history[index]['timestamp']),
                 messagePicture: const SizedBox(height: 0, width: 0),
+                replyTo: _selectedMessageData!.putIfAbsent('replyto', () => null),
               );
             },
           ),
@@ -328,6 +367,7 @@ $timestamp
   final BuildContext? context;
   final String conversationId;
   final void Function(void Function() callback) setStateCallback;
+  final ScrollController scrollController;
   late List<String> _conversationParticipants;
   late final DocumentReference<Map<String, dynamic>> _conversationRef;
   final _currentUser = FirebaseAuth.instance.currentUser!;

@@ -9,6 +9,7 @@ class MessageBaloon extends StatefulWidget {
     required this.text,
     required this.timestamp,
     required this.messagePicture,
+    required this.replyTo,
     this.isSelected = false,
     this.showSender = true,
     this.isEdited = false,
@@ -19,6 +20,7 @@ class MessageBaloon extends StatefulWidget {
   final String text;
   final String timestamp;
   final Widget messagePicture;
+  final Widget? replyTo;
   final bool isSelected;
   final bool showSender;
   final bool isEdited;
@@ -87,10 +89,12 @@ class _MessageBaloonState extends State<MessageBaloon> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              Text('${widget.key}'),
+                              Text(''),
                               // sender
-                              widget.showSender
-                                  ? senderUsername
-                                  : const SizedBox.square(dimension: 0),
+                              widget.showSender ? senderUsername : const SizedBox(),
+                              // reply
+                              widget.replyTo ?? const SizedBox(),
                               // picture
                               widget.messagePicture,
                               // message

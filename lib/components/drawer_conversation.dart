@@ -17,6 +17,7 @@ class DrawerConversations extends StatelessWidget {
         conversationId: conversationId,
         setStateCallback: (_) {},
         context: context,
+        scrollController: ScrollController(),
       );
       await conversationController.initController();
       // ignore: use_build_context_synchronously

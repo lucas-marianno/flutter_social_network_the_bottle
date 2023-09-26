@@ -3,17 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:the_bottle/components/blurred_appbar.dart';
 import 'package:the_bottle/components/drawer_conversation.dart';
 import 'package:the_bottle/components/input_field.dart';
+import 'package:the_bottle/components/message_reply.dart';
 import 'package:the_bottle/components/post_picture.dart';
 import 'package:the_bottle/components/conversation_reply.dart';
 import 'package:the_bottle/components/message_baloon.dart';
 import 'package:the_bottle/components/profile_picture.dart';
 import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
+import 'package:the_bottle/firebase/conversation/keys.dart';
 import 'package:the_bottle/pages/profile_page.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
 
 // TODO: Feature: implement reply to messages - WIP
-// TODO: Feature: implement copy text button
 // TODO: Feature: implement favorite message
 // TODO: Feature: implement forward message
 // TODO: Feature: implement message like
@@ -54,6 +55,7 @@ class _ConversationPageState extends State<ConversationPage> {
       conversationId: widget.conversationId,
       setStateCallback: setState,
       context: context,
+      scrollController: scrollController,
     );
     await conversationController.initController();
     conversationController.markConversationAsSeenForCurrentUser;
@@ -158,9 +160,14 @@ class _ConversationPageState extends State<ConversationPage> {
                             itemCount: itemCount,
                             itemBuilder: (context, index) {
                               final message = snapshot.data!.docs[index];
+
+                              final messageKey = GlobalKey();
+                              itemDataMap[messageKey] = message.id;
+
                               late final bool showsender;
                               late final String? imageUrl;
                               late final bool isEdited;
+                              late final String? replyTo;
                               if (index == itemCount - 1 ||
                                   snapshot.data!.docs[index + 1]['sender'] != message['sender']) {
                                 showsender = true;
@@ -177,7 +184,13 @@ class _ConversationPageState extends State<ConversationPage> {
                               } catch (e) {
                                 isEdited = false;
                               }
+                              try {
+                                replyTo = message['replyto'];
+                              } catch (e) {
+                                replyTo = null;
+                              }
                               return MessageBaloon(
+                                key: messageKey,
                                 sender: message['sender'],
                                 text: message['text'],
                                 timestamp: timestampToString(message['timestamp']),
@@ -186,6 +199,12 @@ class _ConversationPageState extends State<ConversationPage> {
                                   context: context,
                                   padding: const EdgeInsets.only(bottom: 10),
                                   postImageUrl: imageUrl,
+                                ),
+                                replyTo: MessageBaloonReply(
+                                  conversationId: widget.conversationId,
+                                  replyToId: replyTo,
+                                  conversationController: conversationController,
+                                  scrollController: scrollController,
                                 ),
                                 isSelected:
                                     conversationController.getSelectedMessageId == message.id,
