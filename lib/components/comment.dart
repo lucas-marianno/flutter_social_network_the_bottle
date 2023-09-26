@@ -144,7 +144,7 @@ class _CommentState extends State<Comment> {
                           ),
                           // timestamp
                           Text(
-                            timestampToStringRelative(commentData['CommentTime']),
+                            timestampToString(commentData['CommentTime']),
                           ),
                         ],
                       ),

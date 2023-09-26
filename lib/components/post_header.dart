@@ -132,7 +132,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
             ),
             // timestamp
             Text(
-              timestampToStringRelative(widget.postTimeStamp),
+              timestampToString(widget.postTimeStamp),
             )
           ],
         ),

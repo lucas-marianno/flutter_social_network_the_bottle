@@ -180,7 +180,7 @@ class _ConversationPageState extends State<ConversationPage> {
                               return MessageBaloon(
                                 sender: message['sender'],
                                 text: message['text'],
-                                timestamp: timestampToStringRelative(message['timestamp']),
+                                timestamp: timestampToString(message['timestamp']),
                                 messagePicture: PostPicture(
                                   imageHeight: 200,
                                   context: context,

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-String timestampToStringRelative(Timestamp timestamp) {
+String timestampToString(Timestamp timestamp, {bool absolute = false}) {
   final deltaT = Timestamp.now().millisecondsSinceEpoch - timestamp.millisecondsSinceEpoch;
 
   String toTwoDigitString(int n) {
@@ -13,6 +13,10 @@ String timestampToStringRelative(Timestamp timestamp) {
   int day = timestamp.toDate().day;
   int month = timestamp.toDate().month;
   int year = timestamp.toDate().year;
+
+  if (absolute) {
+    return '$year/${toTwoDigitString(month)}/${toTwoDigitString(day)} at $hour:$minute';
+  }
 
   Map<int, String> toMonth = {
     1: 'Jan',

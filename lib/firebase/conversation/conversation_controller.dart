@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:the_bottle/components/input_from_modal_bottom_sheet.dart';
 import 'package:the_bottle/components/message_baloon.dart';
 import 'package:the_bottle/util/copy_text_to_clipboard.dart';
+import 'package:the_bottle/firebase/account/get_username.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
 
 class ConversationController {
@@ -215,8 +216,16 @@ class ConversationController {
 
   Future<void> _copyMessageText() async {
     if (context == null) throw "'context' must be provided";
+    final sender = await getUserName(_selectedMessageData!['sender']);
+    final text = _selectedMessageData!['text'];
+    final timestamp = timestampToString(_selectedMessageData!['timestamp'], absolute: true);
+    await copyTextToClipboard("""
+$sender
 
-    await copyTextToClipboard(_selectedMessageData!['text'], context!);
+$text
+
+$timestamp
+""", context!);
 
     unSelectMessages();
   }
@@ -301,7 +310,7 @@ class ConversationController {
                 sender: _selectedMessageData!['sender'],
                 showSender: false,
                 text: history[index]['newText'],
-                timestamp: timestampToStringRelative(history[index]['timestamp']),
+                timestamp: timestampToString(history[index]['timestamp']),
                 messagePicture: const SizedBox(height: 0, width: 0),
               );
             },
