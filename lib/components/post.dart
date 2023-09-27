@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:the_bottle/components/comment_button.dart';
 import 'package:the_bottle/components/comments.dart';
 import 'package:the_bottle/components/post_like_button.dart';
+import 'package:the_bottle/util/copy_text_to_clipboard.dart';
 
 class WallPost extends StatefulWidget {
   const WallPost({
@@ -49,6 +50,7 @@ class _WallPostState extends State<WallPost> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: viewComments,
+      onLongPress: () => copyTextToClipboard(widget.message, context),
       child: Container(
         margin: const EdgeInsets.all(10),
         padding: const EdgeInsets.all(20),

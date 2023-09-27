@@ -38,7 +38,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
       context,
       children: [
         isCurrentUser(widget.opEmail)
-            ? Container()
+            ? const SizedBox()
             : ListTile(
                 onTap: () => messageOriginalPoster(widget.opEmail, context),
                 leading: const Icon(Icons.message),
