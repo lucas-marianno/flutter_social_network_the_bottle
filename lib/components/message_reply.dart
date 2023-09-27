@@ -11,12 +11,10 @@ class MessageBaloonReply extends StatelessWidget {
     required this.conversationId,
     required this.replyToId,
     required this.conversationController,
-    required this.scrollController,
   });
   final String conversationId;
   final String? replyToId;
   final ConversationController conversationController;
-  final ScrollController scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -37,51 +35,50 @@ class MessageBaloonReply extends StatelessWidget {
           bool selfReply =
               snapshot.data!.data()?['sender'] == FirebaseAuth.instance.currentUser!.email!;
 
-          if (sender == null || text == null) return const SizedBox();
-
           return GestureDetector(
-            onTap: () {
-              conversationController.selectMessage(replyToId!);
-
-              // conversationController.findAndShowItem(replyToId!);
-            },
+            onTap: () => conversationController.findAndShowMessage(replyToId!),
             child: Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: Container(
                 color: Theme.of(context).colorScheme.surface,
                 height: 60,
-                child: Stack(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // reply line
-                        Container(
-                          color: selfReply ? Colors.blue[800] : Colors.blueGrey,
-                          width: 5,
-                        ),
-                        const SizedBox(width: 5),
-                        // message data
-                        ConstrainedBox(
-                          constraints: BoxConstraints.loose(
-                              Size(MediaQuery.of(context).size.width - 150, 60)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              const SizedBox(height: 5),
-                              // sender
-                              Username(userEmail: sender),
-                              // message text
-                              Text(text, overflow: TextOverflow.ellipsis),
-                              const SizedBox(height: 5),
-                            ],
-                          ),
-                        ),
-                      ],
+                    // reply line
+                    Container(
+                      color: selfReply ? Colors.blue[800] : Colors.blueGrey,
+                      width: 5,
                     ),
-                    // message picture
+                    // message data
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: ConstrainedBox(
+                        constraints:
+                            BoxConstraints.loose(Size(MediaQuery.of(context).size.width - 150, 60)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: sender == null || text == null
+                              ? [
+                                  const Text(
+                                    'This message was deleted',
+                                    style: TextStyle(fontStyle: FontStyle.italic),
+                                  ),
+                                ]
+                              : [
+                                  //min size
+                                  const SizedBox(width: 150),
+                                  // sender
+                                  Username(userEmail: sender),
+                                  // message text
+                                  Text(text, overflow: TextOverflow.ellipsis),
+                                ],
+                        ),
+                      ),
+                    ),
                     imageUrl == null
-                        ? Container()
+                        ? const SizedBox()
                         : Positioned(
                             right: 0,
                             child: SizedBox(

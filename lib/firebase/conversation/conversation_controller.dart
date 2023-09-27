@@ -4,9 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:the_bottle/components/input_from_modal_bottom_sheet.dart';
 import 'package:the_bottle/components/message_baloon.dart';
-import 'package:the_bottle/firebase/conversation/keys.dart';
 import 'package:the_bottle/util/copy_text_to_clipboard.dart';
 import 'package:the_bottle/firebase/account/get_username.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
@@ -16,16 +16,25 @@ class ConversationController {
     required this.conversationId,
     required this.setStateCallback,
     required this.context,
-    required this.scrollController,
+    required this.itemScrollController,
   });
+
+  final BuildContext? context;
+  final String conversationId;
+  final void Function(void Function() callback) setStateCallback;
+  final ItemScrollController? itemScrollController;
 
   /// [getParticipants] will always return the current user as index 0, and talkingTo as index 1
   List<Widget> get getMessageOptions => _messageOptions;
-  Map<String, dynamic>? get getSelectedMessageData => _selectedMessageData;
   List<String> get getParticipants => _conversationParticipants;
+  Map<String, dynamic>? get getSelectedMessageData => _selectedMessageData;
   String? get getSelectedMessageId => _selectedMessageId;
-  bool get hasSelectedMessages => _hasSelectedMessages;
   bool get getShowReply => _showReply;
+  bool get hasSelectedMessages => _hasSelectedMessages;
+
+  void addMessageIndexToMemory(String messageId, int messageIndex) {
+    _conversationMessagesIndexes[messageId] = messageIndex;
+  }
 
   Stream conversationStream() {
     return FirebaseFirestore.instance
@@ -34,10 +43,6 @@ class ConversationController {
         .collection('Messages')
         .orderBy('timestamp', descending: true)
         .snapshots();
-  }
-
-  Future<bool> hasMessages() async {
-    return (await _conversationRef.collection('Messages').get()).docs.isNotEmpty;
   }
 
   Future<void> deleteConversationIfEmpty({bool forceDelete = false}) async {
@@ -77,32 +82,23 @@ class ConversationController {
     _conversationRef.delete();
   }
 
-  void findAndShowItem(String messageId) {
-    // TODO: finish implementing findAndShowItem
-    late final GlobalKey<State<StatefulWidget>>? foundKey;
+  void dispose() {
+    deleteConversationIfEmpty();
+    _conversationMessagesIndexes.clear();
+  }
 
-    try {
-      foundKey = itemDataMap.entries
-          .firstWhere(
-            (entry) => entry.value == messageId,
-            // orElse: () => null,
-          )
-          .key;
-    } catch (e) {
-      foundKey = null;
-    }
-    print(foundKey);
+  void findAndShowMessage(String messageId) async {
+    final foundMessage = _conversationMessagesIndexes[messageId];
 
-    if (foundKey != null) {
-      final RenderBox renderBox = foundKey.currentContext!.findRenderObject() as RenderBox;
-      final position = renderBox.localToGlobal(Offset.zero);
+    if (foundMessage == null) return;
 
-      scrollController.animateTo(
-        position.dy, // Scroll to the item's position
-        duration: const Duration(milliseconds: 500), // Adjust as needed
-        curve: Curves.easeInOut,
-      );
-    }
+    await itemScrollController?.scrollTo(
+      index: foundMessage,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.decelerate,
+      alignment: 0.5,
+    );
+    selectMessage(messageId);
   }
 
   Future<void> initController() async {
@@ -116,6 +112,10 @@ class ConversationController {
 
     _initialized = true;
     setStateCallback(() {});
+  }
+
+  Future<bool> hasMessages() async {
+    return (await _conversationRef.collection('Messages').get()).docs.isNotEmpty;
   }
 
   void markConversationAsSeenForCurrentUser() {
@@ -208,6 +208,13 @@ class ConversationController {
       {'image': storageUrl},
       SetOptions(merge: true),
     );
+    itemScrollController?.jumpTo(index: 0);
+    // scroll to most recent message
+    // itemScrollController?.scrollTo(
+    //   index: 0,
+    //   duration: const Duration(milliseconds: 300),
+    //   curve: Curves.decelerate,
+    // );
   }
 
   void unSelectMessages() {
@@ -364,13 +371,10 @@ $timestamp
     setStateCallback(() => _showReply = true);
   }
 
-  final BuildContext? context;
-  final String conversationId;
-  final void Function(void Function() callback) setStateCallback;
-  final ScrollController scrollController;
   late List<String> _conversationParticipants;
   late final DocumentReference<Map<String, dynamic>> _conversationRef;
   final _currentUser = FirebaseAuth.instance.currentUser!;
+  final Map<String, int> _conversationMessagesIndexes = {};
   List<Widget> _messageOptions = [];
   Map<String, dynamic>? _selectedMessageData;
   String? _selectedMessageId;

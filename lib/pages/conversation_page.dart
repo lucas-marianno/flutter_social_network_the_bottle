@@ -1,5 +1,5 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:the_bottle/components/blurred_appbar.dart';
 import 'package:the_bottle/components/drawer_conversation.dart';
 import 'package:the_bottle/components/input_field.dart';
@@ -10,11 +10,9 @@ import 'package:the_bottle/components/message_baloon.dart';
 import 'package:the_bottle/components/profile_picture.dart';
 import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
-import 'package:the_bottle/firebase/conversation/keys.dart';
 import 'package:the_bottle/pages/profile_page.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
 
-// TODO: Feature: implement reply to messages - WIP
 // TODO: Feature: implement favorite message
 // TODO: Feature: implement forward message
 // TODO: Feature: implement message like
@@ -32,22 +30,11 @@ class ConversationPage extends StatefulWidget {
 class _ConversationPageState extends State<ConversationPage> {
   late final ConversationController conversationController;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  final ScrollController scrollController = ScrollController();
+  final ItemScrollController itemScrollController = ItemScrollController();
   late final Widget currentUserUsername;
   late final Widget talkingToUsername;
   late final Widget talkingToProfilePicture;
   bool initialized = false;
-
-  void sendMessage(String text, Uint8List? loadedImage) async {
-    await conversationController.sendMessage(text, loadedImage);
-
-    // scroll to most recent message
-    await scrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.decelerate,
-    );
-  }
 
   asyncInit() async {
     // init controller
@@ -55,10 +42,10 @@ class _ConversationPageState extends State<ConversationPage> {
       conversationId: widget.conversationId,
       setStateCallback: setState,
       context: context,
-      scrollController: scrollController,
+      itemScrollController: itemScrollController,
     );
     await conversationController.initController();
-    conversationController.markConversationAsSeenForCurrentUser;
+    conversationController.markConversationAsSeenForCurrentUser();
 
     // init widgets
     currentUserUsername = Username(
@@ -71,9 +58,7 @@ class _ConversationPageState extends State<ConversationPage> {
       profileEmailId: conversationController.getParticipants[1],
     );
 
-    setState(() {
-      initialized = true;
-    });
+    setState(() => initialized = true);
   }
 
   void navigateToProfile() {
@@ -90,7 +75,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
   @override
   void dispose() {
-    conversationController.deleteConversationIfEmpty(forceDelete: false);
+    conversationController.dispose();
     super.dispose();
   }
 
@@ -121,6 +106,16 @@ class _ConversationPageState extends State<ConversationPage> {
                     scaffoldKey.currentState?.openEndDrawer();
                   },
                   icon: const Icon(Icons.message),
+                ),
+                IconButton(
+                  onPressed: () {
+                    itemScrollController.scrollTo(
+                      index: 0,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.decelerate,
+                    );
+                  },
+                  icon: const Icon(Icons.find_in_page),
                 ),
               ],
       ),
@@ -153,17 +148,14 @@ class _ConversationPageState extends State<ConversationPage> {
                             return const Center(child: Text('start a conversation'));
                           }
                           final int itemCount = snapshot.data!.docs.length;
-                          return ListView.builder(
-                            controller: scrollController,
+                          return ScrollablePositionedList.builder(
+                            itemScrollController: itemScrollController,
                             shrinkWrap: true,
                             reverse: true,
                             itemCount: itemCount,
                             itemBuilder: (context, index) {
                               final message = snapshot.data!.docs[index];
-
-                              final messageKey = GlobalKey();
-                              itemDataMap[messageKey] = message.id;
-
+                              conversationController.addMessageIndexToMemory(message.id, index);
                               late final bool showsender;
                               late final String? imageUrl;
                               late final bool isEdited;
@@ -189,28 +181,43 @@ class _ConversationPageState extends State<ConversationPage> {
                               } catch (e) {
                                 replyTo = null;
                               }
-                              return MessageBaloon(
-                                key: messageKey,
-                                sender: message['sender'],
-                                text: message['text'],
-                                timestamp: timestampToString(message['timestamp']),
-                                messagePicture: PostPicture(
-                                  imageHeight: 200,
-                                  context: context,
-                                  padding: const EdgeInsets.only(bottom: 10),
-                                  postImageUrl: imageUrl,
-                                ),
-                                replyTo: MessageBaloonReply(
-                                  conversationId: widget.conversationId,
-                                  replyToId: replyTo,
-                                  conversationController: conversationController,
-                                  scrollController: scrollController,
-                                ),
-                                isSelected:
-                                    conversationController.getSelectedMessageId == message.id,
-                                showSender: showsender,
-                                isEdited: isEdited,
-                                onLongPress: () => conversationController.selectMessage(message.id),
+                              return Column(
+                                children: [
+                                  index == itemCount - 1
+                                      ? SizedBox(
+                                          height: MediaQuery.of(context).size.height / 6,
+                                          child: const Align(
+                                              alignment: Alignment.bottomCenter,
+                                              child: Text('This is where the conversation starts')),
+                                        )
+                                      : const SizedBox(),
+                                  MessageBaloon(
+                                    sender: message['sender'],
+                                    text: message['text'],
+                                    timestamp: timestampToString(message['timestamp']),
+                                    messagePicture: PostPicture(
+                                      imageHeight: 200,
+                                      context: context,
+                                      padding: const EdgeInsets.only(bottom: 10),
+                                      postImageUrl: imageUrl,
+                                    ),
+                                    replyTo: Column(
+                                      children: [
+                                        MessageBaloonReply(
+                                          conversationId: widget.conversationId,
+                                          replyToId: replyTo,
+                                          conversationController: conversationController,
+                                        ),
+                                      ],
+                                    ),
+                                    isSelected:
+                                        conversationController.getSelectedMessageId == message.id,
+                                    showSender: showsender,
+                                    isEdited: isEdited,
+                                    onLongPress: () =>
+                                        conversationController.selectMessage(message.id),
+                                  ),
+                                ],
                               );
                             },
                           );
@@ -224,7 +231,10 @@ class _ConversationPageState extends State<ConversationPage> {
                 // reply field
                 ConversationReply(conversationController),
                 // post message
-                InputField(onSendTap: sendMessage, dismissKeyboardOnSend: false),
+                InputField(
+                  onSendTap: conversationController.sendMessage,
+                  dismissKeyboardOnSend: false,
+                ),
               ],
             ),
           ],

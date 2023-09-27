@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
@@ -20,6 +21,7 @@ class ConversationReply extends StatelessWidget {
     String sender = selectedMessageData['sender'];
     String messageText = selectedMessageData['text'];
     String? imageUrl = selectedMessageData['image'];
+    bool selfReply = sender == FirebaseAuth.instance.currentUser!.email;
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       padding: const EdgeInsets.all(10),
@@ -31,7 +33,7 @@ class ConversationReply extends StatelessWidget {
             Row(
               children: [
                 // reply line
-                Container(color: Colors.amber, width: 5),
+                Container(color: selfReply ? Colors.blue[800] : Colors.blueGrey, width: 5),
                 const SizedBox(width: 5),
                 // message data
                 ConstrainedBox(

@@ -89,8 +89,6 @@ class _MessageBaloonState extends State<MessageBaloon> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('${widget.key}'),
-                              Text(''),
                               // sender
                               widget.showSender ? senderUsername : const SizedBox(),
                               // reply
