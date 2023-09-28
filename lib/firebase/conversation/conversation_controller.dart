@@ -26,7 +26,8 @@ class ConversationController {
 
   /// [getParticipants] will always return the current user as index 0, and talkingTo as index 1
   List<Widget> get getMessageOptions => _messageOptions;
-  List<String> get getParticipants => _conversationParticipants;
+  List<String> get getParticipants => _conversationParticipantsEmail;
+  Map<String, String> get getUsernames => _conversationParticipantsUsernames;
   Map<String, dynamic>? get getSelectedMessageData => _selectedMessageData;
   String? get getSelectedMessageId => _selectedMessageId;
   bool get getShowReply => _showReply;
@@ -61,15 +62,15 @@ class ConversationController {
     // remove conversation from participants profile
     await FirebaseFirestore.instance
         .collection('User Profile')
-        .doc(_conversationParticipants[0])
+        .doc(_conversationParticipantsEmail[0])
         .collection('Conversations')
-        .doc(_conversationParticipants[1])
+        .doc(_conversationParticipantsEmail[1])
         .delete();
     await FirebaseFirestore.instance
         .collection('User Profile')
-        .doc(_conversationParticipants[1])
+        .doc(_conversationParticipantsEmail[1])
         .collection('Conversations')
-        .doc(_conversationParticipants[0])
+        .doc(_conversationParticipantsEmail[0])
         .delete();
 
     // delete conversation messages
@@ -103,15 +104,22 @@ class ConversationController {
 
   Future<void> initController() async {
     if (_initialized) return;
-    _conversationRef = FirebaseFirestore.instance.collection('Conversations').doc(conversationId);
-    _conversationParticipants = List<String>.from((await _conversationRef.get())['participants']);
 
-    if (_conversationParticipants[0] != _currentUser.email!) {
-      _conversationParticipants = _conversationParticipants.reversed.toList();
+    _conversationRef = FirebaseFirestore.instance.collection('Conversations').doc(conversationId);
+
+    _conversationParticipantsEmail =
+        List<String>.from((await _conversationRef.get())['participants']);
+
+    if (_conversationParticipantsEmail[0] != _currentUser.email!) {
+      _conversationParticipantsEmail = _conversationParticipantsEmail.reversed.toList();
     }
 
-    _initialized = true;
-    setStateCallback(() {});
+    _conversationParticipantsUsernames = {
+      _conversationParticipantsEmail[0]: await getUserName(_conversationParticipantsEmail[0]),
+      _conversationParticipantsEmail[1]: await getUserName(_conversationParticipantsEmail[1]),
+    };
+
+    setStateCallback(() => _initialized = true);
   }
 
   Future<bool> hasMessages() async {
@@ -125,6 +133,15 @@ class ConversationController {
         .collection('Conversations')
         .doc(conversationId)
         .set({'seen': true}, SetOptions(merge: true));
+  }
+
+  Future<void> scrollToLatestMessage() async {
+    await itemScrollController!.scrollTo(
+      index: 0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.decelerate,
+    );
+    setStateCallback(() {});
   }
 
   Future<void> selectMessage(String messageId) async {
@@ -160,7 +177,7 @@ class ConversationController {
     }
 
     // notify participants that there's a new message and the update's time
-    for (String participant in _conversationParticipants) {
+    for (String participant in _conversationParticipantsEmail) {
       if (participant != _currentUser.email) {
         final updateTime = Timestamp.now();
         // notify participant
@@ -189,6 +206,8 @@ class ConversationController {
       }
     }
 
+    scrollToLatestMessage();
+
     if (image == null) return;
 
     // upload picture to firebase storage and retrieve download URL
@@ -208,13 +227,6 @@ class ConversationController {
       {'image': storageUrl},
       SetOptions(merge: true),
     );
-    itemScrollController?.jumpTo(index: 0);
-    // scroll to most recent message
-    // itemScrollController?.scrollTo(
-    //   index: 0,
-    //   duration: const Duration(milliseconds: 300),
-    //   curve: Curves.decelerate,
-    // );
   }
 
   void unSelectMessages() {
@@ -234,7 +246,7 @@ class ConversationController {
     _messageOptions = [];
 
     // can reply
-    _messageOptions.add(IconButton(onPressed: _replyToMessage, icon: const Icon(Icons.reply)));
+    _messageOptions.add(IconButton(onPressed: replyToMessage, icon: const Icon(Icons.reply)));
     // can favorite
     _messageOptions.add(const IconButton(onPressed: null, icon: Icon(Icons.star)));
     // can show info
@@ -251,7 +263,7 @@ class ConversationController {
     // can reply
     _messageOptions.add(Transform.flip(
       flipX: true,
-      child: IconButton(onPressed: _replyToMessage, icon: const Icon(Icons.reply)),
+      child: IconButton(onPressed: replyToMessage, icon: const Icon(Icons.reply)),
     ));
     // can edit
     if (isUserSender) {
@@ -358,6 +370,7 @@ $timestamp
                 timestamp: timestampToString(history[index]['timestamp']),
                 messagePicture: const SizedBox(height: 0, width: 0),
                 replyTo: _selectedMessageData!.putIfAbsent('replyto', () => null),
+                isIncoming: _currentUser != _selectedMessageData!['sender'],
               );
             },
           ),
@@ -367,11 +380,13 @@ $timestamp
     unSelectMessages();
   }
 
-  void _replyToMessage() {
+  void replyToMessage() {
+    if (!_hasSelectedMessages) throw "No selected messages";
     setStateCallback(() => _showReply = true);
   }
 
-  late List<String> _conversationParticipants;
+  late List<String> _conversationParticipantsEmail;
+  late Map<String, String> _conversationParticipantsUsernames;
   late final DocumentReference<Map<String, dynamic>> _conversationRef;
   final _currentUser = FirebaseAuth.instance.currentUser!;
   final Map<String, int> _conversationMessagesIndexes = {};

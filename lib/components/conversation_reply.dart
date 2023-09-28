@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/username.dart';
+// import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
 
 class ConversationReply extends StatelessWidget {
@@ -45,7 +45,7 @@ class ConversationReply extends StatelessWidget {
                     children: [
                       const SizedBox(height: 5),
                       // sender
-                      Username(userEmail: sender),
+                      Text(conversationController.getUsernames[sender]!),
                       // message text
                       Text(
                         messageText,

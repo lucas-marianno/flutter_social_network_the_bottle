@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
 
+// TODO: design: make the reply section extend to the left
+// TODO: add rounded corners to it
+
 class MessageBaloonReply extends StatelessWidget {
   const MessageBaloonReply({
     super.key,
@@ -40,10 +43,14 @@ class MessageBaloonReply extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: Container(
-                color: Theme.of(context).colorScheme.surface,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                clipBehavior: Clip.hardEdge,
                 height: 60,
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                  // mainAxisSize: MainAxisSize.min,
                   children: [
                     // reply line
                     Container(
@@ -77,17 +84,16 @@ class MessageBaloonReply extends StatelessWidget {
                         ),
                       ),
                     ),
+                    // image thumbnail
+                    imageUrl == null ? const SizedBox() : const Spacer(),
                     imageUrl == null
                         ? const SizedBox()
-                        : Positioned(
-                            right: 0,
-                            child: SizedBox(
-                              height: 60,
-                              width: 60,
-                              child: CachedNetworkImage(
-                                imageUrl: imageUrl,
-                                fit: BoxFit.cover,
-                              ),
+                        : SizedBox(
+                            height: 60,
+                            width: 60,
+                            child: CachedNetworkImage(
+                              imageUrl: imageUrl,
+                              fit: BoxFit.cover,
                             ),
                           ),
                   ],

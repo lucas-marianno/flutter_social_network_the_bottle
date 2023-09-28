@@ -8,7 +8,6 @@ import 'package:the_bottle/components/post_picture.dart';
 import 'package:the_bottle/components/conversation_reply.dart';
 import 'package:the_bottle/components/message_baloon.dart';
 import 'package:the_bottle/components/profile_picture.dart';
-import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
 import 'package:the_bottle/pages/profile_page.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
@@ -31,10 +30,12 @@ class _ConversationPageState extends State<ConversationPage> {
   late final ConversationController conversationController;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final ItemScrollController itemScrollController = ItemScrollController();
-  late final Widget currentUserUsername;
-  late final Widget talkingToUsername;
+  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
   late final Widget talkingToProfilePicture;
+  late final String currentUserEmail;
+  late final String talkingToEmail;
   bool initialized = false;
+  bool showFloatingActionButton = false;
 
   asyncInit() async {
     // init controller
@@ -47,15 +48,23 @@ class _ConversationPageState extends State<ConversationPage> {
     await conversationController.initController();
     conversationController.markConversationAsSeenForCurrentUser();
 
-    // init widgets
-    currentUserUsername = Username(
-      userEmail: conversationController.getParticipants[0],
-    );
-    talkingToUsername = Username(
-      userEmail: conversationController.getParticipants[1],
-    );
+    // init users
+    currentUserEmail = conversationController.getParticipants[0];
+    talkingToEmail = conversationController.getParticipants[1];
+
+    // init widget
     talkingToProfilePicture = ProfilePicture(
       profileEmailId: conversationController.getParticipants[1],
+    );
+
+    itemPositionsListener.itemPositions.addListener(
+      () {
+        final previousState = showFloatingActionButton;
+        showFloatingActionButton = itemPositionsListener.itemPositions.value.first.index > 10;
+        if (previousState != showFloatingActionButton) {
+          setState(() {});
+        }
+      },
     );
 
     setState(() => initialized = true);
@@ -95,7 +104,7 @@ class _ConversationPageState extends State<ConversationPage> {
                 children: [
                   talkingToProfilePicture,
                   const SizedBox(width: 10),
-                  talkingToUsername,
+                  Text(conversationController.getUsernames[talkingToEmail]!),
                 ],
               ),
         actions: conversationController.hasSelectedMessages
@@ -106,16 +115,6 @@ class _ConversationPageState extends State<ConversationPage> {
                     scaffoldKey.currentState?.openEndDrawer();
                   },
                   icon: const Icon(Icons.message),
-                ),
-                IconButton(
-                  onPressed: () {
-                    itemScrollController.scrollTo(
-                      index: 0,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.decelerate,
-                    );
-                  },
-                  icon: const Icon(Icons.find_in_page),
                 ),
               ],
       ),
@@ -150,6 +149,7 @@ class _ConversationPageState extends State<ConversationPage> {
                           final int itemCount = snapshot.data!.docs.length;
                           return ScrollablePositionedList.builder(
                             itemScrollController: itemScrollController,
+                            itemPositionsListener: itemPositionsListener,
                             shrinkWrap: true,
                             reverse: true,
                             itemCount: itemCount,
@@ -192,7 +192,7 @@ class _ConversationPageState extends State<ConversationPage> {
                                         )
                                       : const SizedBox(),
                                   MessageBaloon(
-                                    sender: message['sender'],
+                                    sender: conversationController.getUsernames[message['sender']]!,
                                     text: message['text'],
                                     timestamp: timestampToString(message['timestamp']),
                                     messagePicture: PostPicture(
@@ -210,12 +210,17 @@ class _ConversationPageState extends State<ConversationPage> {
                                         ),
                                       ],
                                     ),
+                                    isIncoming: currentUserEmail != message['sender'],
                                     isSelected:
                                         conversationController.getSelectedMessageId == message.id,
                                     showSender: showsender,
                                     isEdited: isEdited,
                                     onLongPress: () =>
                                         conversationController.selectMessage(message.id),
+                                    onSwipeRight: () {
+                                      conversationController.selectMessage(message.id);
+                                      conversationController.replyToMessage();
+                                    },
                                   ),
                                 ],
                               );
@@ -240,6 +245,23 @@ class _ConversationPageState extends State<ConversationPage> {
           ],
         ),
       ),
+      floatingActionButton: showFloatingActionButton
+          ? Stack(
+              alignment: Alignment.bottomRight,
+              clipBehavior: Clip.none,
+              children: [
+                Positioned(
+                  bottom: 75,
+                  child: IconButton.filled(
+                    onPressed: () {
+                      conversationController.scrollToLatestMessage();
+                    },
+                    icon: const Icon(Icons.arrow_downward),
+                  ),
+                ),
+              ],
+            )
+          : const SizedBox(),
     );
   }
 }
