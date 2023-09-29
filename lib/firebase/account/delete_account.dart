@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import '../../components/input_from_dialog.dart';
-import '../../components/show_dialog.dart';
+import '../../components/dialog/input_from_dialog.dart';
+import '../../components/dialog/show_dialog.dart';
 import '../is_current_user.dart';
 
 void deleteAccount(String accountEmail, BuildContext context) async {

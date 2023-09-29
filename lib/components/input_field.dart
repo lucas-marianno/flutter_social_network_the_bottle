@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:the_bottle/components/textfield.dart';
 import '../pages/image_visualizer_page.dart';
 import 'list_tile.dart';
-import 'options_modal_bottom_sheet.dart';
+import 'dialog/options_modal_bottom_sheet.dart';
 
 class InputField extends StatefulWidget {
   const InputField({

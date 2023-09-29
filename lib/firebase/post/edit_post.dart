@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/firebase/is_current_user.dart';
-import '../../components/input_from_modal_bottom_sheet.dart';
-import '../../components/show_dialog.dart';
+import '../../components/dialog/input_from_modal_bottom_sheet.dart';
+import '../../components/dialog/show_dialog.dart';
 
 void editPost(String postId, String opEmail, String currentText, BuildContext context) async {
   // dismiss any keyboard

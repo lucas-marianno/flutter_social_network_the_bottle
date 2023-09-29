@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/profile_picture.dart';
-import 'package:the_bottle/components/show_dialog.dart';
+import 'package:the_bottle/components/dialog/show_dialog.dart';
 import 'package:the_bottle/components/username.dart';
 import '../pages/profile_page.dart';
 

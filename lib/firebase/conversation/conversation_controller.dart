@@ -5,7 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:the_bottle/components/input_from_modal_bottom_sheet.dart';
+import 'package:the_bottle/components/dialog/input_from_modal_bottom_sheet.dart';
 import 'package:the_bottle/components/message_baloon.dart';
 import 'package:the_bottle/pages/conversation_page.dart';
 import 'package:the_bottle/pages/conversations_page.dart';

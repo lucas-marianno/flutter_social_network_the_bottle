@@ -46,6 +46,9 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   animated_text_kit: ^4.2.2
   scrollable_positioned_list: ^0.3.8
+  path_provider: ^2.1.1
+  dio: ^5.3.3
+  gallery_saver: ^2.3.2
 
 flutter_launcher_icons:
   android: true

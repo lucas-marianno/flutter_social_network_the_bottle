@@ -2,7 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../components/show_dialog.dart';
+import '../../components/dialog/show_dialog.dart';
 
 void loginToAccount(String email, String password, BuildContext context) async {
   if (email.isEmpty || password.isEmpty) return;

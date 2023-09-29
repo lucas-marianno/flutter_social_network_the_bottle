@@ -5,7 +5,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:the_bottle/firebase/is_current_user.dart';
 import '../../components/list_tile.dart';
-import '../../components/options_modal_bottom_sheet.dart';
+import '../../components/dialog/options_modal_bottom_sheet.dart';
 
 void pickAndUploadProfilePicture(String userEmail, BuildContext context) async {
   if (!isCurrentUser(userEmail)) return;

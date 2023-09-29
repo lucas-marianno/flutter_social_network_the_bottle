@@ -9,7 +9,7 @@ import '../firebase/post/delete_post.dart';
 import '../firebase/post/edit_post.dart';
 import '../pages/profile_page.dart';
 import '../util/timestamp_to_string.dart';
-import 'options_modal_bottom_sheet.dart';
+import 'dialog/options_modal_bottom_sheet.dart';
 
 class WallPostHeader extends StatefulWidget {
   const WallPostHeader({

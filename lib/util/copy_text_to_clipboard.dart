@@ -1,17 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:the_bottle/components/dialog/show_snackbar.dart';
 
 Future<void> copyTextToClipboard(String text, BuildContext context) async {
+  if (text.isEmpty) return;
   Clipboard.setData(ClipboardData(text: text));
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: const Text(
-        'Text copied to clipboard',
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
-      duration: const Duration(seconds: 3),
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      elevation: 10,
-    ),
-  );
+  showMySnackBar(context, 'Text copied to clipboard');
 }

@@ -12,11 +12,7 @@ import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
 import 'package:the_bottle/pages/profile_page.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
 
-// TODO: Feature: implement favorite message
-// TODO: Feature: implement forward message
-// TODO: Feature: implement message like
 // TODO: Feature: implement multiple message selection
-// TODO: Feature: implement download image
 
 class ConversationPage extends StatefulWidget {
   const ConversationPage({super.key, required this.conversationId});
@@ -213,14 +209,10 @@ class _ConversationPageState extends State<ConversationPage> {
                                       padding: const EdgeInsets.only(bottom: 10),
                                       postImageUrl: imageUrl,
                                     ),
-                                    replyTo: Column(
-                                      children: [
-                                        MessageBaloonReply(
-                                          conversationId: widget.conversationId,
-                                          replyToId: replyTo,
-                                          conversationController: conversationController,
-                                        ),
-                                      ],
+                                    replyTo: MessageBaloonReply(
+                                      conversationId: widget.conversationId,
+                                      replyToId: replyTo,
+                                      conversationController: conversationController,
                                     ),
                                     isIncoming: currentUserEmail != message['sender'],
                                     isSelected:
@@ -251,7 +243,7 @@ class _ConversationPageState extends State<ConversationPage> {
                 ),
                 // reply field
                 ConversationReply(conversationController),
-                // post message
+                // input field
                 InputField(
                   onSendTap: conversationController.sendMessage,
                   dismissKeyboardOnSend: false,
@@ -261,6 +253,7 @@ class _ConversationPageState extends State<ConversationPage> {
           ],
         ),
       ),
+      // go to most recent button
       floatingActionButton: showFloatingActionButton
           ? Stack(
               alignment: Alignment.bottomRight,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/options_modal_bottom_sheet.dart';
+import 'package:the_bottle/components/dialog/options_modal_bottom_sheet.dart';
 import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
 import 'package:the_bottle/pages/conversation_page.dart';
 import 'package:the_bottle/pages/conversations_page.dart';

@@ -5,9 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
 
-// TODO: design: make the reply section extend to the left
-// TODO: add rounded corners to it
-
 class MessageBaloonReply extends StatelessWidget {
   const MessageBaloonReply({
     super.key,

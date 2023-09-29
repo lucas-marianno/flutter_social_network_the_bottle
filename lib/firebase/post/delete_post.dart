@@ -3,7 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/firebase/is_current_user.dart';
 
-import '../../components/show_dialog.dart';
+import '../../components/dialog/show_dialog.dart';
 
 void deletePost(String postId, String opEmail, BuildContext context) async {
   // dismiss any keyboard
