@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/dialog/options_modal_bottom_sheet.dart';
+import 'package:the_bottle/components/dialog/show_dialog.dart';
 import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
 import 'package:the_bottle/pages/conversation_page.dart';
 import 'package:the_bottle/pages/conversations_page.dart';
@@ -24,9 +25,22 @@ class DrawerConversations extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.delete),
             title: const Text('Delete Conversation'),
-            onTap: () {
-              conversationController.deleteConversationIfEmpty(forceDelete: true);
+            onTap: () async {
               Navigator.of(context).pop();
+              final result = await showMyDialog(
+                context,
+                title: 'Warning!',
+                content:
+                    """This action will delete the entire conversation, including media for all participants.
+
+Are you sure you want to delete this conversation?
+
+This action is irreversible!""",
+                showActions: true,
+              );
+              if (result == true) {
+                conversationController.deleteConversationIfEmpty(forceDelete: true);
+              }
             },
           ),
         ],

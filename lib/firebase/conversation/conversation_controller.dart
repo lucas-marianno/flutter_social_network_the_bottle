@@ -79,7 +79,7 @@ class ConversationController {
 
     // delete conversation messages
     final messages = (await _conversationRef.collection('Messages').get()).docs;
-    for (final message in messages) {
+    for (var message in messages) {
       await _conversationRef.collection('Messages').doc(message.id).delete();
     }
 
@@ -123,7 +123,8 @@ class ConversationController {
       _conversationParticipantsEmail[1]: await getUserName(_conversationParticipantsEmail[1]),
     };
 
-    setStateCallback(() => _initialized = true);
+    _initialized = true;
+    setStateCallback(() {});
   }
 
   Future<bool> hasMessages() async {

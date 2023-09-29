@@ -10,7 +10,9 @@ Future<dynamic> showMyDialog(
     context: context,
     builder: (context) => AlertDialog(
       title: title != null ? Text(title) : null,
-      content: content != null ? Text(content, style: const TextStyle(fontSize: 16)) : null,
+      content: content != null
+          ? Text(content, textAlign: TextAlign.justify, style: const TextStyle(fontSize: 16))
+          : null,
       actions: !showActions
           ? []
           : [
