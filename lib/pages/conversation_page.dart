@@ -161,6 +161,7 @@ class _ConversationPageState extends State<ConversationPage> {
                               late final bool isEdited;
                               late final String? replyTo;
                               late final bool forwarded;
+                              late final bool isLiked;
                               if (index == itemCount - 1 ||
                                   snapshot.data!.docs[index + 1]['sender'] != message['sender']) {
                                 showsender = true;
@@ -186,6 +187,11 @@ class _ConversationPageState extends State<ConversationPage> {
                                 forwarded = message['forwarded'];
                               } catch (e) {
                                 forwarded = false;
+                              }
+                              try {
+                                isLiked = message['liked'];
+                              } catch (e) {
+                                isLiked = false;
                               }
                               return Column(
                                 children: [
@@ -221,9 +227,12 @@ class _ConversationPageState extends State<ConversationPage> {
                                         conversationController.getSelectedMessageId == message.id,
                                     showSender: showsender,
                                     isEdited: isEdited,
+                                    isLiked: isLiked,
                                     forwarded: forwarded,
                                     onLongPress: () =>
                                         conversationController.selectMessage(message.id),
+                                    onDoubleTap: () =>
+                                        conversationController.toggleMessageLike(message.id),
                                     onSwipeRight: () {
                                       conversationController.selectMessage(message.id);
                                       conversationController.replyToMessage();

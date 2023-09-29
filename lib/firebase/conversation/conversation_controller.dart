@@ -246,6 +246,16 @@ class ConversationController {
     scrollToLatestMessage();
   }
 
+  Future<void> toggleMessageLike(String messageId) async {
+    bool? isLiked =
+        (await _conversationRef.collection('Messages').doc(messageId).get()).data()?['liked'];
+    isLiked = isLiked ?? false;
+    await _conversationRef.collection('Messages').doc(messageId).set(
+      {'liked': !isLiked},
+      SetOptions(merge: true),
+    );
+  }
+
   void unSelectMessages() {
     setStateCallback(() {
       _hasSelectedMessages = false;
