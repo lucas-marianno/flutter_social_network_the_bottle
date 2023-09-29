@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/show_dialog.dart';
 import 'package:the_bottle/components/username.dart';
+import 'package:the_bottle/pages/profile_page.dart';
+// import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
 import 'comment_like_button.dart';
 import 'input_from_modal_bottom_sheet.dart';
@@ -141,6 +143,18 @@ class _CommentState extends State<Comment> {
                           Username(
                             userEmail: commentData['CommentedBy'],
                             style: const TextStyle(fontSize: 16),
+                            onTap: () {
+                              // Go to profile
+                              Navigator.pop(context);
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => ProfilePage(
+                                    userEmail: commentData['CommentedBy'],
+                                    heroTag: widget.postId,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           // timestamp
                           Text(
