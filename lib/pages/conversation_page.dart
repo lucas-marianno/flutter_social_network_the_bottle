@@ -160,6 +160,7 @@ class _ConversationPageState extends State<ConversationPage> {
                               late final String? imageUrl;
                               late final bool isEdited;
                               late final String? replyTo;
+                              late final bool forwarded;
                               if (index == itemCount - 1 ||
                                   snapshot.data!.docs[index + 1]['sender'] != message['sender']) {
                                 showsender = true;
@@ -180,6 +181,11 @@ class _ConversationPageState extends State<ConversationPage> {
                                 replyTo = message['replyto'];
                               } catch (e) {
                                 replyTo = null;
+                              }
+                              try {
+                                forwarded = message['forwarded'];
+                              } catch (e) {
+                                forwarded = false;
                               }
                               return Column(
                                 children: [
@@ -215,6 +221,7 @@ class _ConversationPageState extends State<ConversationPage> {
                                         conversationController.getSelectedMessageId == message.id,
                                     showSender: showsender,
                                     isEdited: isEdited,
+                                    forwarded: forwarded,
                                     onLongPress: () =>
                                         conversationController.selectMessage(message.id),
                                     onSwipeRight: () {

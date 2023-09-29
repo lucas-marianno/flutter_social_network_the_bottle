@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:the_bottle/components/input_from_modal_bottom_sheet.dart';
 import 'package:the_bottle/components/message_baloon.dart';
+import 'package:the_bottle/pages/conversation_page.dart';
+import 'package:the_bottle/pages/conversations_page.dart';
 import 'package:the_bottle/util/copy_text_to_clipboard.dart';
 import 'package:the_bottle/firebase/account/get_username.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
@@ -136,7 +138,7 @@ class ConversationController {
   }
 
   Future<void> scrollToLatestMessage() async {
-    await itemScrollController!.scrollTo(
+    await itemScrollController?.scrollTo(
       index: 0,
       duration: const Duration(milliseconds: 300),
       curve: Curves.decelerate,
@@ -157,7 +159,12 @@ class ConversationController {
     setStateCallback(() {});
   }
 
-  Future<void> sendMessage(String text, Uint8List? image) async {
+  Future<void> sendMessage(
+    String text,
+    Uint8List? image, {
+    bool forwarded = false,
+    String? imageUrl,
+  }) async {
     if (!_initialized) await initController();
     if (text.isEmpty && image == null) return;
 
@@ -167,6 +174,14 @@ class ConversationController {
       'text': text,
       'timestamp': Timestamp.now(),
     });
+
+    // add forward info (if exists)
+    if (forwarded) {
+      await messageRef.set({
+        'forwarded': true,
+      }, SetOptions(merge: true));
+      unSelectMessages();
+    }
 
     // add reply info (if exists)
     if (_showReply) {
@@ -206,27 +221,29 @@ class ConversationController {
       }
     }
 
+    if (image != null) {
+      // upload picture to firebase storage and retrieve download URL
+      imageUrl = await (await FirebaseStorage.instance
+              .ref('Conversation Files/${messageRef.id}')
+              .putData(image))
+          .ref
+          .getDownloadURL();
+    }
+
+    if (imageUrl != null) {
+      // upload pictureUrl to firebase database
+      await FirebaseFirestore.instance
+          .collection('Conversations')
+          .doc(conversationId)
+          .collection('Messages')
+          .doc(messageRef.id)
+          .set(
+        {'image': imageUrl},
+        SetOptions(merge: true),
+      );
+    }
+
     scrollToLatestMessage();
-
-    if (image == null) return;
-
-    // upload picture to firebase storage and retrieve download URL
-    final String storageUrl = await (await FirebaseStorage.instance
-            .ref('Conversation Files/${messageRef.id}')
-            .putData(image))
-        .ref
-        .getDownloadURL();
-
-    // upload pictureUrl to firebase database
-    await FirebaseFirestore.instance
-        .collection('Conversations')
-        .doc(conversationId)
-        .collection('Messages')
-        .doc(messageRef.id)
-        .set(
-      {'image': storageUrl},
-      SetOptions(merge: true),
-    );
   }
 
   void unSelectMessages() {
@@ -247,8 +264,6 @@ class ConversationController {
 
     // can reply
     _messageOptions.add(IconButton(onPressed: replyToMessage, icon: const Icon(Icons.reply)));
-    // can favorite
-    _messageOptions.add(const IconButton(onPressed: null, icon: Icon(Icons.star)));
     // can show info
     _messageOptions.add(IconButton(onPressed: _messageInfo, icon: const Icon(Icons.info_outline)));
     // can delete
@@ -260,10 +275,10 @@ class ConversationController {
     }
     // can copy
     _messageOptions.add(IconButton(onPressed: _copyMessageText, icon: const Icon(Icons.copy)));
-    // can reply
+    // can forward
     _messageOptions.add(Transform.flip(
       flipX: true,
-      child: IconButton(onPressed: replyToMessage, icon: const Icon(Icons.reply)),
+      child: IconButton(onPressed: _forwardMessage, icon: const Icon(Icons.reply)),
     ));
     // can edit
     if (isUserSender) {
@@ -337,6 +352,53 @@ $timestamp
       'newText': newText,
       'timestamp': Timestamp.now(),
     });
+    unSelectMessages();
+  }
+
+  Future<void> _forwardMessage() async {
+    if (context == null) throw "'context' must be provided";
+
+    if (_selectedMessageId == null) return;
+    final String forwardText = _selectedMessageData!['text'];
+    final String? forwardImageUrl = _selectedMessageData!['image'];
+
+    await showDialog(
+      context: context!,
+      builder: (context) => AlertDialog(
+        content: SizedBox(
+          height: MediaQuery.of(context).size.height / 2,
+          width: double.maxFinite,
+          child: ConversationsPage(
+            onConversationTileTap: (newConversationId) {
+              Navigator.of(context).pop();
+
+              ConversationController newConversation = ConversationController(
+                conversationId: newConversationId,
+                setStateCallback: (_) {},
+                context: context,
+                itemScrollController: null,
+              );
+
+              newConversation.sendMessage(
+                forwardText,
+                null,
+                imageUrl: forwardImageUrl,
+                forwarded: true,
+              );
+
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ConversationPage(
+                    conversationId: newConversationId,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
     unSelectMessages();
   }
 

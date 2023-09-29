@@ -13,6 +13,7 @@ class MessageBaloon extends StatefulWidget {
     this.isSelected = false,
     this.showSender = true,
     this.isEdited = false,
+    this.forwarded = false,
     this.onLongPress,
     this.onSwipeRight,
   });
@@ -26,6 +27,7 @@ class MessageBaloon extends StatefulWidget {
   final bool isSelected;
   final bool showSender;
   final bool isEdited;
+  final bool forwarded;
   final void Function()? onLongPress;
   final void Function()? onSwipeRight;
 
@@ -90,6 +92,31 @@ class _MessageBaloonState extends State<MessageBaloon> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              // forwarded tag
+                              !widget.forwarded
+                                  ? const SizedBox()
+                                  : Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Transform.flip(
+                                          flipX: true,
+                                          child: const Icon(
+                                            Icons.reply,
+                                            size: 10,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        const Text(
+                                          '  forwarded',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontStyle: FontStyle.italic,
+                                            fontSize: 10,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                              SizedBox(height: widget.forwarded ? 5 : 0),
                               // sender
                               widget.showSender ? Text(widget.sender) : const SizedBox(),
                               SizedBox(height: widget.showSender ? 5 : 0),
@@ -112,6 +139,7 @@ class _MessageBaloonState extends State<MessageBaloon> {
                                   )
                                 : Container(),
                           ),
+
                           // edited tag + timestamp
                           Positioned(
                             right: 0,
