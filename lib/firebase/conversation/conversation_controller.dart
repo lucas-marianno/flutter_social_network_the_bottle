@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:the_bottle/components/dialog/input_from_modal_bottom_sheet.dart';
 import 'package:the_bottle/components/message_baloon.dart';
@@ -11,6 +12,7 @@ import 'package:the_bottle/pages/conversation_page.dart';
 import 'package:the_bottle/pages/conversations_page.dart';
 import 'package:the_bottle/util/copy_text_to_clipboard.dart';
 import 'package:the_bottle/firebase/account/get_username.dart';
+import 'package:the_bottle/util/temporary_save_network_image.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
 
 class ConversationController {
@@ -163,10 +165,9 @@ class ConversationController {
     String text,
     Uint8List? image, {
     bool forwarded = false,
-    String? imageUrl,
   }) async {
     if (!_initialized) await initController();
-    if (text.isEmpty && image == null && imageUrl == null) return;
+    if (text.isEmpty && image == null) return;
 
     // send text message
     final messageRef = await _conversationRef.collection('Messages').add({
@@ -223,14 +224,12 @@ class ConversationController {
 
     if (image != null) {
       // upload picture to firebase storage and retrieve download URL
-      imageUrl = await (await FirebaseStorage.instance
+      final imageUrl = await (await FirebaseStorage.instance
               .ref('Conversation Files/${messageRef.id}')
               .putData(image))
           .ref
           .getDownloadURL();
-    }
 
-    if (imageUrl != null) {
       // upload pictureUrl to firebase database
       await FirebaseFirestore.instance
           .collection('Conversations')
@@ -369,8 +368,17 @@ $timestamp
     if (context == null) throw "'context' must be provided";
 
     if (_selectedMessageId == null) return;
+
     final String forwardText = _selectedMessageData!['text'];
-    final String? forwardImageUrl = _selectedMessageData!['image'];
+    final String? forwardImagePath =
+        await saveTemporaryNetworkImage(_selectedMessageData!['image']);
+
+    late final Uint8List? forwardImg;
+    if (forwardImagePath != null) {
+      forwardImg = await XFile(forwardImagePath).readAsBytes();
+    } else {
+      forwardImg = null;
+    }
 
     await showDialog(
       context: context!,
@@ -391,8 +399,7 @@ $timestamp
 
               newConversation.sendMessage(
                 forwardText,
-                null,
-                imageUrl: forwardImageUrl,
+                forwardImg,
                 forwarded: true,
               );
 

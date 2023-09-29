@@ -1,13 +1,12 @@
 import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:the_bottle/components/dialog/show_snackbar.dart';
 import 'package:the_bottle/components/list_tile.dart';
 import 'package:the_bottle/components/dialog/options_modal_bottom_sheet.dart';
+import 'package:the_bottle/util/temporary_save_network_image.dart';
 
 class ImageVisualizerPage extends StatelessWidget {
   const ImageVisualizerPage({
@@ -37,12 +36,9 @@ class ImageVisualizerPage extends StatelessWidget {
                   text: 'Download Image',
                   onTap: () async {
                     Navigator.of(context).pop();
-                    final tempDir = await getTemporaryDirectory();
-                    final path = '${tempDir.path}/tempImg.jpg';
                     try {
-                      await Dio().download(imageUrl!, path);
-                      final result = await GallerySaver.saveImage(path, albumName: 'The Bottle');
-
+                      final path = await saveTemporaryNetworkImage(imageUrl!);
+                      final result = await GallerySaver.saveImage(path!, albumName: 'The Bottle');
                       // ignore: use_build_context_synchronously
                       showMySnackBar(
                         context,
@@ -50,7 +46,7 @@ class ImageVisualizerPage extends StatelessWidget {
                       );
                     } catch (e) {
                       // ignore: use_build_context_synchronously
-                      showMySnackBar(context, e.toString());
+                      showMySnackBar(context, 'There was a problem: $e');
                     }
                   },
                 )
