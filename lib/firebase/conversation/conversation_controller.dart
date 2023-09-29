@@ -166,7 +166,7 @@ class ConversationController {
     String? imageUrl,
   }) async {
     if (!_initialized) await initController();
-    if (text.isEmpty && image == null) return;
+    if (text.isEmpty && image == null && imageUrl == null) return;
 
     // send text message
     final messageRef = await _conversationRef.collection('Messages').add({
@@ -331,7 +331,7 @@ $timestamp
       enterKeyPressSubmits: false,
     );
 
-    if (newText == null || newText.isEmpty || newText == oldText) return;
+    if (newText == null || newText == oldText) return;
 
     // set new text value and tag as edited
     _selectedMessageRef!.set({
