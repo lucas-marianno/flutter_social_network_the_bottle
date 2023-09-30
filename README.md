@@ -10,13 +10,6 @@ This project was developed solely with the intention of study and learning.
 
 Completely developed with Flutter and Firebase by [Lucas Marianno](https://linktr.ee/lucasmarianno).
 
-Find me here:
-
-- [LinkedIn](https://www.linkedin.com/in/lucas-marianno94/)
-- [GitHub](https://github.com/lucas-marianno)
-- [E-Mail](lucas.marianno94@gmail.com)
-
-
 ## Features:
 
 - Post text
