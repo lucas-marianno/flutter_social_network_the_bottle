@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/firebase/is_current_user.dart';
-
+import 'package:the_bottle/firebase/post/delete_post_image.dart';
 import '../../components/dialog/show_dialog.dart';
 
-void deletePost(String postId, String opEmail, BuildContext context) async {
+Future<void> deletePost(String postId, String opEmail, BuildContext context) async {
   // dismiss any keyboard
   FocusManager.instance.primaryFocus?.unfocus();
   if (context.mounted) Navigator.pop(context);
@@ -15,12 +14,7 @@ void deletePost(String postId, String opEmail, BuildContext context) async {
     return;
   }
 
-  // delete post picture from firebase storage (if it exists)
-  try {
-    await FirebaseStorage.instance.ref('Post Pictures/$postId').delete();
-  } on Exception {
-    // skip
-  }
+  await deletePostImage(postId);
 
   // delete comments collection (if they exist)
   try {

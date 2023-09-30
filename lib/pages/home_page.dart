@@ -84,6 +84,7 @@ class _HomePageState extends State<HomePage> {
                             opEmail: post['UserEmail'],
                             postTimeStamp: post['TimeStamp'],
                             isEdited: isEdited,
+                            hasImage: postPictureUrl != null,
                           ),
                           message: post['Message'],
                           postId: post.id,

@@ -1,10 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:the_bottle/components/textfield.dart';
+import 'package:the_bottle/util/pick_image.dart';
 import '../pages/image_visualizer_page.dart';
-import 'list_tile.dart';
-import 'dialog/options_modal_bottom_sheet.dart';
 
 class InputField extends StatefulWidget {
   const InputField({
@@ -12,50 +10,22 @@ class InputField extends StatefulWidget {
     required this.onSendTap,
     this.dismissKeyboardOnSend = true,
     this.enterKeyPressSubmits = false,
+    this.hintText,
+    this.textEditingController,
   });
   final void Function(String text, Uint8List? loadedImage)? onSendTap;
   final bool dismissKeyboardOnSend;
   final bool enterKeyPressSubmits;
+  final String? hintText;
+  final TextEditingController? textEditingController;
 
   @override
   State<InputField> createState() => _InputFieldState();
 }
 
 class _InputFieldState extends State<InputField> {
-  final TextEditingController textEditingController = TextEditingController();
+  late final TextEditingController textEditingController;
   Uint8List? loadedImage;
-
-  void selectImage() async {
-    // prompt user to select camera or gallery
-    final ImageSource? imgSource = await optionsFromModalBottomSheet(context, children: [
-      MyListTile(
-        iconData: Icons.camera,
-        text: 'Open camera',
-        onTap: () => Navigator.pop(context, ImageSource.camera),
-      ),
-      MyListTile(
-        iconData: Icons.image_search,
-        text: 'From gallery',
-        onTap: () => Navigator.pop(context, ImageSource.gallery),
-      ),
-    ]);
-
-    if (imgSource == null) return;
-
-    // retrieve image from user
-    final img = await ImagePicker().pickImage(
-      source: imgSource,
-      imageQuality: 75,
-      maxHeight: 1080,
-      maxWidth: 1080,
-    );
-
-    if (img == null) return;
-
-    loadedImage = await img.readAsBytes();
-
-    setState(() {});
-  }
 
   void unSelectImage() {
     setState(() => loadedImage = null);
@@ -67,6 +37,12 @@ class _InputFieldState extends State<InputField> {
         builder: (context) => ImageVisualizerPage(image: loadedImage),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    textEditingController = widget.textEditingController ?? TextEditingController();
+    super.initState();
   }
 
   @override
@@ -99,9 +75,10 @@ class _InputFieldState extends State<InputField> {
                     ? Container()
                     : IconButton(
                         icon: const Icon(Icons.add_photo_alternate, size: 38),
-                        onPressed: () {
+                        onPressed: () async {
                           FocusManager.instance.primaryFocus?.unfocus();
-                          selectImage();
+                          loadedImage = await pickImage(context);
+                          setState(() {});
                         },
                       ),
                 // input textfield
@@ -109,7 +86,8 @@ class _InputFieldState extends State<InputField> {
                   child: MyTextField(
                     controller: textEditingController,
                     maxLength: 500,
-                    hintText: loadedImage == null ? 'Write your post' : 'Write your description',
+                    hintText: widget.hintText ??
+                        (loadedImage == null ? 'Write your post' : 'Write your description'),
                     onChanged: () => setState(() {}),
                     onSubmited: () {
                       widget.onSendTap?.call(textEditingController.text, loadedImage);

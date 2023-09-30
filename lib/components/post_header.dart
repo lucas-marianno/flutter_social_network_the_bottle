@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:the_bottle/components/profile_picture.dart';
 import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/is_current_user.dart';
+import 'package:the_bottle/firebase/post/add_image_to_post.dart';
 import 'package:the_bottle/firebase/post/message_op.dart';
 import 'package:the_bottle/util/copy_text_to_clipboard.dart';
+import 'package:the_bottle/util/pick_image.dart';
 import '../firebase/post/delete_post.dart';
 import '../firebase/post/edit_post.dart';
 import '../pages/profile_page.dart';
@@ -20,6 +22,7 @@ class WallPostHeader extends StatefulWidget {
     required this.postTimeStamp,
     this.isEdited = false,
     this.isFullScreen = false,
+    this.hasImage = false,
   });
   final String postText;
   final String postId;
@@ -27,6 +30,7 @@ class WallPostHeader extends StatefulWidget {
   final Timestamp postTimeStamp;
   final bool isEdited;
   final bool isFullScreen;
+  final bool hasImage;
 
   @override
   State<WallPostHeader> createState() => _WallPostHeaderState();
@@ -86,6 +90,20 @@ class _WallPostHeaderState extends State<WallPostHeader> {
           leading: const Icon(Icons.edit),
           title: const Text(
             'Edit post',
+          ),
+        ),
+        ListTile(
+          onTap: () async {
+            Navigator.of(context).pop();
+            if (!widget.hasImage) {
+              addImageToPost(widget.postId, await pickImage(context));
+            } else {
+              deletePostImage(widget.postId);
+            }
+          },
+          leading: Icon(widget.hasImage ? Icons.image_not_supported : Icons.image_search),
+          title: Text(
+            widget.hasImage ? 'Delete image' : 'Add an image to post',
           ),
         ),
         ListTile(

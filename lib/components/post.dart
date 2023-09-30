@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:the_bottle/components/clickable_text.dart';
 import 'package:the_bottle/components/comment_button.dart';
 import 'package:the_bottle/components/comments.dart';
 import 'package:the_bottle/components/post_like_button.dart';
@@ -69,7 +70,7 @@ class _WallPostState extends State<WallPost> {
             widget.header,
             const SizedBox(height: 10),
             // post text
-            Text(widget.message, textAlign: TextAlign.justify),
+            ClickableText(widget.message),
             // post picture
             widget.postPicture,
             // like + comment buttons

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:the_bottle/components/clickable_text.dart';
 import 'package:the_bottle/components/dialog/show_dialog.dart';
 import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/pages/profile_page.dart';
@@ -172,7 +173,7 @@ class _CommentState extends State<Comment> {
                       ),
 
                       // comment
-                      Text(commentData['CommentText'], textAlign: TextAlign.justify),
+                      ClickableText(commentData['CommentText']),
                     ],
                   ),
                 ),

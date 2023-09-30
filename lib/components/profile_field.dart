@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_bottle/components/clickable_text.dart';
 
 class ProfileField extends StatelessWidget {
   const ProfileField({
@@ -46,10 +47,8 @@ class ProfileField extends StatelessWidget {
                       ),
               ],
             ),
-            // const SizedBox(height: 10),
-
             // field value
-            Text(
+            ClickableText(
               text,
               style: const TextStyle(fontSize: 20),
             ),

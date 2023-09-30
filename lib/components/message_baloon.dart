@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:the_bottle/components/clickable_text.dart';
 
 class MessageBaloon extends StatefulWidget {
   const MessageBaloon({
@@ -122,7 +123,7 @@ class _MessageBaloonState extends State<MessageBaloon> {
                         // picture
                         widget.messagePicture,
                         // message
-                        Text(widget.text),
+                        ClickableText(widget.text),
                         const SizedBox(height: 5),
                       ],
                     ),

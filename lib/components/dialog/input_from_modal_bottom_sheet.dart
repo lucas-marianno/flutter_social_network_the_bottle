@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/textfield.dart';
 
@@ -43,12 +45,15 @@ Future<String?> getInputFromModalBottomSheet(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: MyTextField(
-                    controller: controller,
-                    hintText: hintText,
-                    enterKeyPressSubmits: enterKeyPressSubmits,
-                    maxLength: maxLength,
-                    onSubmited: () => Navigator.of(context).pop(controller.text),
+                  child: SizedBox(
+                    height: max(100, MediaQuery.of(context).viewInsets.bottom - 50),
+                    child: MyTextField(
+                      controller: controller,
+                      hintText: hintText,
+                      enterKeyPressSubmits: enterKeyPressSubmits,
+                      maxLength: maxLength,
+                      onSubmited: () => Navigator.of(context).pop(controller.text),
+                    ),
                   ),
                 ),
                 IconButton(
