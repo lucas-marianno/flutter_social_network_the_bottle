@@ -131,12 +131,12 @@ class ConversationController {
     return (await _conversationRef.collection('Messages').get()).docs.isNotEmpty;
   }
 
-  void markConversationAsSeenForCurrentUser() {
-    FirebaseFirestore.instance
+  Future<void> markConversationAsSeenForCurrentUser() async {
+    await FirebaseFirestore.instance
         .collection('User Profile')
         .doc(_currentUser.email)
         .collection('Conversations')
-        .doc(conversationId)
+        .doc(_conversationParticipantsEmail[1])
         .set({'seen': true}, SetOptions(merge: true));
   }
 

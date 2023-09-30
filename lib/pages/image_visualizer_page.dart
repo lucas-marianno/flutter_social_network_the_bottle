@@ -53,8 +53,8 @@ class ImageVisualizerPage extends StatelessWidget {
               ]);
             },
             child: PhotoView(
-              minScale: 0.5,
-              maxScale: 10.0,
+              minScale: PhotoViewComputedScale.contained * 0.5,
+              maxScale: PhotoViewComputedScale.contained * 10,
               imageProvider: CachedNetworkImageProvider(imageUrl!),
             ),
           ),

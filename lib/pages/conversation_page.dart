@@ -42,7 +42,7 @@ class _ConversationPageState extends State<ConversationPage> {
       itemScrollController: itemScrollController,
     );
     await conversationController.initController();
-    conversationController.markConversationAsSeenForCurrentUser();
+    await conversationController.markConversationAsSeenForCurrentUser();
 
     // init users
     currentUserEmail = conversationController.getParticipants[0];
