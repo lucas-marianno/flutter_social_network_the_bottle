@@ -18,6 +18,7 @@ class ClickableText extends StatelessWidget {
       text: text,
       textAlign: TextAlign.justify,
       style: style,
+      linkStyle: const TextStyle(decoration: TextDecoration.none),
       onOpen: (link) {
         url_launcher.launchUrl(Uri.parse(link.url), mode: LaunchMode.externalApplication);
       },
