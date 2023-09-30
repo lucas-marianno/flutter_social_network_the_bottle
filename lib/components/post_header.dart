@@ -4,6 +4,7 @@ import 'package:the_bottle/components/profile_picture.dart';
 import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/is_current_user.dart';
 import 'package:the_bottle/firebase/post/add_image_to_post.dart';
+import 'package:the_bottle/firebase/post/delete_post_image.dart';
 import 'package:the_bottle/firebase/post/message_op.dart';
 import 'package:the_bottle/util/copy_text_to_clipboard.dart';
 import 'package:the_bottle/util/pick_image.dart';
