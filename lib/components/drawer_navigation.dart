@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_bottle/components/profile_picture.dart';
+import 'package:the_bottle/pages/about_page.dart';
 import 'package:the_bottle/pages/profile_page.dart';
 import '../pages/settings_page.dart';
 import 'list_tile.dart';
@@ -66,6 +67,11 @@ class DrawerNavigation extends StatelessWidget {
                     iconData: Icons.settings,
                     text: 'S E T T I N G S',
                     onTap: () => goToPage(const SettingsPage()),
+                  ),
+                  MyListTile(
+                    iconData: Icons.info,
+                    text: 'A B O U T',
+                    onTap: () => goToPage(const AboutPage()),
                   ),
                 ],
               ),

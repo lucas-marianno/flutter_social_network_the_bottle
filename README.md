@@ -8,7 +8,7 @@ A Social Media App inspired by Facebook and WhatsApp.
 
 This project was developed solely with the intention of study and learning.
 
-Completely developed with Flutter and Firebase by Lucas Marianno
+Completely developed with Flutter and Firebase by [Lucas Marianno](https://linktr.ee/lucasmarianno).
 
 Find me here:
 
