@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:the_bottle/components/clickable_text.dart';
 import 'package:the_bottle/components/dialog/show_dialog.dart';
 import 'package:the_bottle/components/username.dart';
-import 'package:the_bottle/pages/profile_page.dart';
-// import 'package:the_bottle/components/username.dart';
+import 'package:the_bottle/util/profile_tap.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
 import 'comment_like_button.dart';
 import 'dialog/input_from_modal_bottom_sheet.dart';
@@ -146,14 +145,10 @@ class _CommentState extends State<Comment> {
                             style: const TextStyle(fontSize: 16),
                             onTap: () {
                               // Go to profile
-                              Navigator.pop(context);
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => ProfilePage(
-                                    userEmail: commentData['CommentedBy'],
-                                    heroTag: widget.postId,
-                                  ),
-                                ),
+                              profileTap(
+                                context,
+                                commentData['CommentedBy'],
+                                heroTag: widget.postId,
                               );
                             },
                           ),

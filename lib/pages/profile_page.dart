@@ -14,11 +14,11 @@ class ProfilePage extends StatefulWidget {
   const ProfilePage({
     super.key,
     required this.userEmail,
-    this.heroTag = 'null',
+    this.heroTag,
   });
 
   final String userEmail;
-  final String heroTag;
+  final String? heroTag;
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -66,7 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: [
                         // profile pic
                         Hero(
-                          tag: widget.heroTag,
+                          tag: widget.heroTag ?? 'null',
                           child: ProfilePicture(
                             profileEmailId: widget.userEmail,
                             size: ProfilePictureSize.large,

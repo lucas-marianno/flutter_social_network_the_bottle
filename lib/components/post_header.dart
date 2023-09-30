@@ -5,14 +5,13 @@ import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/is_current_user.dart';
 import 'package:the_bottle/firebase/post/add_image_to_post.dart';
 import 'package:the_bottle/firebase/post/delete_post_image.dart';
-import 'package:the_bottle/firebase/post/message_op.dart';
 import 'package:the_bottle/util/copy_text_to_clipboard.dart';
 import 'package:the_bottle/util/pick_image.dart';
+import 'package:the_bottle/util/profile_tap.dart';
 import '../firebase/post/delete_post.dart';
 import '../firebase/post/edit_post.dart';
-import '../pages/profile_page.dart';
 import '../util/timestamp_to_string.dart';
-import 'dialog/options_modal_bottom_sheet.dart';
+import 'package:the_bottle/components/dialog/options_modal_bottom_sheet.dart';
 
 class WallPostHeader extends StatefulWidget {
   const WallPostHeader({
@@ -38,49 +37,6 @@ class WallPostHeader extends StatefulWidget {
 }
 
 class _WallPostHeaderState extends State<WallPostHeader> {
-  void profileTap() {
-    optionsFromModalBottomSheet(
-      context,
-      children: [
-        isCurrentUser(widget.opEmail)
-            ? const SizedBox()
-            : ListTile(
-                onTap: () => messageOriginalPoster(widget.opEmail, context),
-                leading: const Icon(Icons.message),
-                title: Row(
-                  children: [
-                    const Text(
-                      'Message ',
-                    ),
-                    Username(
-                      userEmail: widget.opEmail,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-              ),
-        ListTile(
-          onTap: () {
-            // Go to profile
-            Navigator.pop(context);
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => ProfilePage(
-                  userEmail: widget.opEmail,
-                  heroTag: widget.postId,
-                ),
-              ),
-            );
-          },
-          leading: const Icon(Icons.person),
-          title: const Text(
-            'View Profile',
-          ),
-        ),
-      ],
-    );
-  }
-
   void postOptions() {
     if (widget.isFullScreen) return;
     optionsFromModalBottomSheet(
@@ -138,7 +94,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
         ProfilePicture(
           profileEmailId: widget.opEmail,
           size: ProfilePictureSize.small,
-          onTap: profileTap,
+          onTap: () => profileTap(context, widget.opEmail),
         ),
         const SizedBox(width: 15),
         Column(
@@ -147,7 +103,7 @@ class _WallPostHeaderState extends State<WallPostHeader> {
             // username
             Username(
               userEmail: widget.opEmail,
-              onTap: profileTap,
+              onTap: () => profileTap(context, widget.opEmail),
             ),
             // timestamp
             Text(
