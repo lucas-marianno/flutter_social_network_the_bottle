@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:the_bottle/components/blurred_appbar.dart';
-import 'package:the_bottle/components/drawer_conversation.dart';
-import 'package:the_bottle/components/input_field.dart';
-import 'package:the_bottle/components/message_reply.dart';
-import 'package:the_bottle/components/post_picture.dart';
-import 'package:the_bottle/components/conversation_reply.dart';
-import 'package:the_bottle/components/message_baloon.dart';
-import 'package:the_bottle/components/profile_picture.dart';
+import 'package:the_bottle/components/ui_components/ui_components.dart';
+import 'package:the_bottle/components/conversation_components/conversation_components.dart';
+import 'package:the_bottle/components/drawer_components/drawer_components.dart';
+import 'package:the_bottle/components/profile_components/profile_components.dart';
+import 'package:the_bottle/components/post_components/post_components.dart';
 import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
 import 'package:the_bottle/pages/profile_page.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
@@ -26,7 +23,8 @@ class _ConversationPageState extends State<ConversationPage> {
   late final ConversationController conversationController;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final ItemScrollController itemScrollController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
   late final Widget talkingToProfilePicture;
   late final String currentUserEmail;
   late final String talkingToEmail;
@@ -56,7 +54,8 @@ class _ConversationPageState extends State<ConversationPage> {
     itemPositionsListener.itemPositions.addListener(
       () {
         final previousState = showFloatingActionButton;
-        showFloatingActionButton = itemPositionsListener.itemPositions.value.first.index > 10;
+        showFloatingActionButton =
+            itemPositionsListener.itemPositions.value.first.index > 10;
         if (previousState != showFloatingActionButton) {
           setState(() {});
         }
@@ -68,7 +67,8 @@ class _ConversationPageState extends State<ConversationPage> {
 
   void navigateToProfile() {
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => ProfilePage(userEmail: conversationController.getParticipants[1]),
+      builder: (context) =>
+          ProfilePage(userEmail: conversationController.getParticipants[1]),
     ));
   }
 
@@ -93,7 +93,9 @@ class _ConversationPageState extends State<ConversationPage> {
       extendBodyBehindAppBar: true,
       appBar: BlurredAppBar(
         centerTitle: false,
-        onTap: !conversationController.hasSelectedMessages ? navigateToProfile : null,
+        onTap: !conversationController.hasSelectedMessages
+            ? navigateToProfile
+            : null,
         title: conversationController.hasSelectedMessages
             ? Container()
             : Row(
@@ -114,14 +116,14 @@ class _ConversationPageState extends State<ConversationPage> {
                 ),
               ],
       ),
-      body: WillPopScope(
-        onWillPop: () async {
+      body: PopScope(
+        canPop: () {
           if (conversationController.getSelectedMessageId != null) {
             conversationController.unSelectMessages();
             return false;
           }
           return true;
-        },
+        }(),
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -140,7 +142,8 @@ class _ConversationPageState extends State<ConversationPage> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           if (snapshot.data!.docs.isEmpty) {
-                            return const Center(child: Text('start a conversation'));
+                            return const Center(
+                                child: Text('start a conversation'));
                           }
                           final int itemCount = snapshot.data!.docs.length;
                           return ScrollablePositionedList.builder(
@@ -151,7 +154,8 @@ class _ConversationPageState extends State<ConversationPage> {
                             itemCount: itemCount,
                             itemBuilder: (context, index) {
                               final message = snapshot.data!.docs[index];
-                              conversationController.addMessageIndexToMemory(message.id, index);
+                              conversationController.addMessageIndexToMemory(
+                                  message.id, index);
                               late final bool showsender;
                               late final String? imageUrl;
                               late final bool isEdited;
@@ -159,7 +163,8 @@ class _ConversationPageState extends State<ConversationPage> {
                               late final bool forwarded;
                               late final bool isLiked;
                               if (index == itemCount - 1 ||
-                                  snapshot.data!.docs[index + 1]['sender'] != message['sender']) {
+                                  snapshot.data!.docs[index + 1]['sender'] !=
+                                      message['sender']) {
                                 showsender = true;
                               } else {
                                 showsender = false;
@@ -193,40 +198,51 @@ class _ConversationPageState extends State<ConversationPage> {
                                 children: [
                                   index == itemCount - 1
                                       ? SizedBox(
-                                          height: MediaQuery.of(context).size.height / 6,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height /
+                                              6,
                                           child: const Align(
                                               alignment: Alignment.bottomCenter,
-                                              child: Text('This is where the conversation starts')),
+                                              child: Text(
+                                                  'This is where the conversation starts')),
                                         )
                                       : const SizedBox(),
                                   MessageBaloon(
-                                    sender: conversationController.getUsernames[message['sender']]!,
+                                    sender: conversationController
+                                        .getUsernames[message['sender']]!,
                                     text: message['text'],
-                                    timestamp: timestampToString(message['timestamp']),
+                                    timestamp:
+                                        timestampToString(message['timestamp']),
                                     messagePicture: PostPicture(
                                       imageHeight: 200,
                                       context: context,
-                                      padding: const EdgeInsets.only(bottom: 10),
+                                      padding:
+                                          const EdgeInsets.only(bottom: 10),
                                       postImageUrl: imageUrl,
                                     ),
                                     replyTo: MessageBaloonReply(
                                       conversationId: widget.conversationId,
                                       replyToId: replyTo,
-                                      conversationController: conversationController,
+                                      conversationController:
+                                          conversationController,
                                     ),
-                                    isIncoming: currentUserEmail != message['sender'],
-                                    isSelected:
-                                        conversationController.getSelectedMessageId == message.id,
+                                    isIncoming:
+                                        currentUserEmail != message['sender'],
+                                    isSelected: conversationController
+                                            .getSelectedMessageId ==
+                                        message.id,
                                     showSender: showsender,
                                     isEdited: isEdited,
                                     isLiked: isLiked,
                                     forwarded: forwarded,
-                                    onLongPress: () =>
-                                        conversationController.selectMessage(message.id),
-                                    onDoubleTap: () =>
-                                        conversationController.toggleMessageLike(message.id),
+                                    onLongPress: () => conversationController
+                                        .selectMessage(message.id),
+                                    onDoubleTap: () => conversationController
+                                        .toggleMessageLike(message.id),
                                     onSwipeRight: () {
-                                      conversationController.selectMessage(message.id);
+                                      conversationController
+                                          .selectMessage(message.id);
                                       conversationController.replyToMessage();
                                     },
                                   ),
@@ -235,7 +251,8 @@ class _ConversationPageState extends State<ConversationPage> {
                             },
                           );
                         } else {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
                       },
                     ),

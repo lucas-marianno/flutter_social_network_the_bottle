@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/clickable_text.dart';
-import 'package:the_bottle/components/comment_button.dart';
-import 'package:the_bottle/components/comments.dart';
-import 'package:the_bottle/components/post_like_button.dart';
+import 'package:the_bottle/components/ui_components/clickable_text.dart';
+import 'package:the_bottle/components/comment_components/comment_components.dart';
+import 'package:the_bottle/components/post_components/post_like_button.dart';
 import 'package:the_bottle/util/copy_text_to_clipboard.dart';
 
 class WallPost extends StatefulWidget {
@@ -59,7 +58,10 @@ class _WallPostState extends State<WallPost> {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
-            BoxShadow(color: Theme.of(context).colorScheme.shadow, spreadRadius: 5, blurRadius: 5)
+            BoxShadow(
+                color: Theme.of(context).colorScheme.shadow,
+                spreadRadius: 5,
+                blurRadius: 5)
           ],
         ),
         child: Column(

@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/textfield.dart';
+import 'package:the_bottle/components/ui_components/textfield.dart';
 
 Future<String?> getInputFromModalBottomSheet(
   BuildContext context, {
@@ -46,13 +46,15 @@ Future<String?> getInputFromModalBottomSheet(
               children: [
                 Expanded(
                   child: SizedBox(
-                    height: max(100, MediaQuery.of(context).viewInsets.bottom - 50),
+                    height:
+                        max(100, MediaQuery.of(context).viewInsets.bottom - 50),
                     child: MyTextField(
                       controller: controller,
                       hintText: hintText,
                       enterKeyPressSubmits: enterKeyPressSubmits,
                       maxLength: maxLength,
-                      onSubmited: () => Navigator.of(context).pop(controller.text),
+                      onSubmited: () =>
+                          Navigator.of(context).pop(controller.text),
                     ),
                   ),
                 ),

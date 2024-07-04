@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/clickable_text.dart';
+import 'package:the_bottle/components/ui_components/clickable_text.dart';
 import 'package:the_bottle/components/dialog/show_dialog.dart';
 import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/util/profile_tap.dart';
 import 'package:the_bottle/util/timestamp_to_string.dart';
 import 'comment_like_button.dart';
-import 'dialog/input_from_modal_bottom_sheet.dart';
-import 'dialog/options_modal_bottom_sheet.dart';
+import '../dialog/input_from_modal_bottom_sheet.dart';
+import '../dialog/options_modal_bottom_sheet.dart';
 
 class Comment extends StatefulWidget {
   const Comment({
@@ -33,7 +33,8 @@ class _CommentState extends State<Comment> {
 
     if (postOwner != currentUser!.email) {
       showMyDialog(context,
-          title: 'Nope!', content: 'You cannot edit comments made by someone else');
+          title: 'Nope!',
+          content: 'You cannot edit comments made by someone else');
       return;
     }
 
@@ -44,7 +45,9 @@ class _CommentState extends State<Comment> {
       enterKeyPressSubmits: false,
     );
 
-    if (newPostText == null || newPostText.isEmpty || newPostText == currentCommentText) return;
+    if (newPostText == null ||
+        newPostText.isEmpty ||
+        newPostText == currentCommentText) return;
 
     // edit comment from firebase firestore
     FirebaseFirestore.instance
@@ -65,7 +68,8 @@ class _CommentState extends State<Comment> {
 
     if (postOwner != currentUser!.email) {
       showMyDialog(context,
-          title: 'Nope!', content: 'You cannot delete comments made by someone else');
+          title: 'Nope!',
+          content: 'You cannot delete comments made by someone else');
       return;
     }
 
@@ -90,7 +94,8 @@ class _CommentState extends State<Comment> {
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data?.data() != null) {
           final commentData = snapshot.data!.data()!;
-          final isEdited = commentData.containsKey('Edited') ? commentData['Edited'] : false;
+          final isEdited =
+              commentData.containsKey('Edited') ? commentData['Edited'] : false;
           return Stack(
             alignment: Alignment.bottomRight,
             clipBehavior: Clip.none,
@@ -128,7 +133,8 @@ class _CommentState extends State<Comment> {
                   ),
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Column(
@@ -174,7 +180,8 @@ class _CommentState extends State<Comment> {
                 ),
               ),
               // comment like
-              CommentLikeButton(postId: widget.postId, commentId: widget.commentId),
+              CommentLikeButton(
+                  postId: widget.postId, commentId: widget.commentId),
             ],
           );
         } else {

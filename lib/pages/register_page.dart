@@ -1,7 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import '../components/elevated_button.dart';
-import '../components/textfield.dart';
+import '../components/ui_components/elevated_button.dart';
+import '../components/ui_components/textfield.dart';
 import '../firebase/account/create_account.dart';
 
 class RegisterPage extends StatefulWidget {

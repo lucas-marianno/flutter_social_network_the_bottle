@@ -24,11 +24,12 @@ class AboutPage extends StatelessWidget {
               },
               styleSheet: MarkdownStyleSheet(
                   blockSpacing: 12,
-                  textScaleFactor: 1.15,
+                  textScaler: const TextScaler.linear(1.15),
                   checkbox: TextStyle(color: Colors.blue[700])),
               onTapText: () {},
               onTapLink: (text, href, title) {
-                url_launcher.launchUrl(Uri.parse(href!), mode: LaunchMode.externalApplication);
+                url_launcher.launchUrl(Uri.parse(href!),
+                    mode: LaunchMode.externalApplication);
               },
             );
           }

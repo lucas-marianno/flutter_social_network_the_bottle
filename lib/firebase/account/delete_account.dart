@@ -32,8 +32,8 @@ void deleteAccount(String accountEmail, BuildContext context) async {
       password: password,
     );
   } on FirebaseException catch (e) {
-    // ignore: use_build_context_synchronously
     await showMyDialog(
+      // ignore: use_build_context_synchronously
       context,
       title: 'Authentication Failed',
       content: e.code.replaceAll('-', ' '),
@@ -47,8 +47,8 @@ void deleteAccount(String accountEmail, BuildContext context) async {
     // logout
     await FirebaseAuth.instance.signOut();
   } on FirebaseException catch (error) {
-    // ignore: use_build_context_synchronously
     await showMyDialog(
+      // ignore: use_build_context_synchronously
       context,
       title: 'Error',
       content: error.code.replaceAll('-', ' '),
@@ -63,8 +63,8 @@ void deleteAccount(String accountEmail, BuildContext context) async {
     await storage.child('Profile Thumbnails/$currentUserEmail').delete();
   } on FirebaseException catch (error) {
     if (error.code != 'object-not-found') {
-      // ignore: use_build_context_synchronously
       await showMyDialog(
+        // ignore: use_build_context_synchronously
         context,
         title: 'Error',
         content: error.code.replaceAll('-', ' '),
@@ -79,8 +79,8 @@ void deleteAccount(String accountEmail, BuildContext context) async {
     await database.collection('User Settings').doc(currentUserEmail).delete();
   } on FirebaseException catch (error) {
     if (error.code != 'object-not-found') {
-      // ignore: use_build_context_synchronously
       await showMyDialog(
+        // ignore: use_build_context_synchronously
         context,
         title: 'Error',
         content: error.code.replaceAll('-', ' '),

@@ -1,12 +1,13 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:the_bottle/components/dialog/options_modal_bottom_sheet.dart';
-import 'package:the_bottle/components/list_tile.dart';
+import 'package:the_bottle/components/dialog/dialog_components.dart';
+import 'package:the_bottle/components/ui_components/list_tile.dart';
 
 Future<Uint8List?> pickImage(BuildContext context) async {
   // prompt user to select camera or gallery
-  final ImageSource? imgSource = await optionsFromModalBottomSheet(context, children: [
+  final ImageSource? imgSource =
+      await optionsFromModalBottomSheet(context, children: [
     MyListTile(
       iconData: Icons.camera,
       text: 'Open camera',

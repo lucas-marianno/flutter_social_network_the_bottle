@@ -3,9 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:the_bottle/components/dialog/show_snackbar.dart';
-import 'package:the_bottle/components/list_tile.dart';
-import 'package:the_bottle/components/dialog/options_modal_bottom_sheet.dart';
+import 'package:the_bottle/components/ui_components/list_tile.dart';
+import 'package:the_bottle/components/dialog/dialog_components.dart';
 import 'package:the_bottle/util/temporary_save_network_image.dart';
 
 class ImageVisualizerPage extends StatelessWidget {
@@ -38,11 +37,14 @@ class ImageVisualizerPage extends StatelessWidget {
                     Navigator.of(context).pop();
                     try {
                       final path = await saveTemporaryNetworkImage(imageUrl!);
-                      final result = await GallerySaver.saveImage(path!, albumName: 'The Bottle');
-                      // ignore: use_build_context_synchronously
+                      final result = await GallerySaver.saveImage(path!,
+                          albumName: 'The Bottle');
                       showMySnackBar(
+                        // ignore: use_build_context_synchronously
                         context,
-                        result == true ? 'Image saved to gallery' : 'Image could not be saved',
+                        result == true
+                            ? 'Image saved to gallery'
+                            : 'Image could not be saved',
                       );
                     } catch (e) {
                       // ignore: use_build_context_synchronously

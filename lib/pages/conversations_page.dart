@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/conversation_tile.dart';
-import 'package:the_bottle/components/textfield.dart';
+import 'package:the_bottle/components/conversation_components/conversation_tile.dart';
+import 'package:the_bottle/components/ui_components/textfield.dart';
 
 class ConversationsPage extends StatelessWidget {
   const ConversationsPage({
@@ -54,7 +54,8 @@ class ConversationsPage extends StatelessWidget {
                           ?.call(conversations[index].data()['conversationId']);
                     },
                     onTap: () {
-                      onConversationTileTap?.call(conversations[index].data()['conversationId']);
+                      onConversationTileTap
+                          ?.call(conversations[index].data()['conversationId']);
                     },
                   );
                 },

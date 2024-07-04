@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/clickable_text.dart';
+import 'package:the_bottle/components/ui_components/clickable_text.dart';
 
 class ProfileField extends StatelessWidget {
   const ProfileField({

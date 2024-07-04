@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/profile_picture.dart';
+import 'package:the_bottle/components/profile_components/profile_picture.dart';
 import 'package:the_bottle/components/username.dart';
 import 'package:the_bottle/firebase/is_current_user.dart';
 import 'package:the_bottle/firebase/post/add_image_to_post.dart';
@@ -8,10 +8,10 @@ import 'package:the_bottle/firebase/post/delete_post_image.dart';
 import 'package:the_bottle/util/copy_text_to_clipboard.dart';
 import 'package:the_bottle/util/pick_image.dart';
 import 'package:the_bottle/util/profile_tap.dart';
-import '../firebase/post/delete_post.dart';
-import '../firebase/post/edit_post.dart';
-import '../util/timestamp_to_string.dart';
-import 'package:the_bottle/components/dialog/options_modal_bottom_sheet.dart';
+import '../../firebase/post/delete_post.dart';
+import '../../firebase/post/edit_post.dart';
+import '../../util/timestamp_to_string.dart';
+import 'package:the_bottle/components/dialog/dialog_components.dart';
 
 class WallPostHeader extends StatefulWidget {
   const WallPostHeader({
@@ -43,7 +43,8 @@ class _WallPostHeaderState extends State<WallPostHeader> {
       context,
       children: [
         ListTile(
-          onTap: () => editPost(widget.postId, widget.opEmail, widget.postText, context),
+          onTap: () =>
+              editPost(widget.postId, widget.opEmail, widget.postText, context),
           leading: const Icon(Icons.edit),
           title: const Text(
             'Edit post',
@@ -58,7 +59,8 @@ class _WallPostHeaderState extends State<WallPostHeader> {
               deletePostImage(widget.postId);
             }
           },
-          leading: Icon(widget.hasImage ? Icons.image_not_supported : Icons.image_search),
+          leading: Icon(
+              widget.hasImage ? Icons.image_not_supported : Icons.image_search),
           title: Text(
             widget.hasImage ? 'Delete image' : 'Add an image to post',
           ),
@@ -119,7 +121,9 @@ class _WallPostHeaderState extends State<WallPostHeader> {
             isCurrentUser(widget.opEmail)
                 ? Material(
                     color: Colors.transparent,
-                    child: InkWell(onTap: postOptions, child: const Icon(Icons.more_horiz)))
+                    child: InkWell(
+                        onTap: postOptions,
+                        child: const Icon(Icons.more_horiz)))
                 : Container(),
             // edited flag
             Text(

@@ -45,7 +45,8 @@ class ProfilePicture extends StatelessWidget {
                 .doc(profileEmailId)
                 .snapshots(),
             builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.connectionState.name == 'active') {
+              if (snapshot.hasData &&
+                  snapshot.connectionState.name == 'active') {
                 final imgUrl = snapshot.data!.data()?['pictureUrl'];
                 if (imgUrl != null) {
                   return ConstrainedBox(

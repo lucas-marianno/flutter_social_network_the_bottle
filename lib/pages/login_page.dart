@@ -1,7 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import '../components/elevated_button.dart';
-import '../components/textfield.dart';
+import '../components/ui_components/elevated_button.dart';
+import '../components/ui_components/textfield.dart';
 import '../firebase/account/login.dart';
 
 class LoginPage extends StatefulWidget {
@@ -20,7 +20,8 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  login() => loginToAccount(emailController.text, passwordController.text, context);
+  login() =>
+      loginToAccount(emailController.text, passwordController.text, context);
 
   @override
   Widget build(BuildContext context) {

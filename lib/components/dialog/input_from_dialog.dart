@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/textfield.dart';
+import 'package:the_bottle/components/ui_components/textfield.dart';
 
 Future<dynamic> inputFromDialog(
   BuildContext context, {

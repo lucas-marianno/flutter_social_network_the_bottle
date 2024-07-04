@@ -69,7 +69,7 @@ class _CommentLikeButtonState extends State<CommentLikeButton> {
 
           isLiked = likes.contains(currentUser.email);
           return Material(
-            color: Theme.of(context).colorScheme.surfaceVariant,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(5),
             child: InkWell(
               borderRadius: BorderRadius.circular(5),

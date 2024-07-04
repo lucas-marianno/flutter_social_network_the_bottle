@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/clickable_text.dart';
+import 'package:the_bottle/components/ui_components/clickable_text.dart';
 
 class MessageBaloon extends StatefulWidget {
   const MessageBaloon({
@@ -50,27 +50,36 @@ class _MessageBaloonState extends State<MessageBaloon> {
       onDoubleTap: widget.onDoubleTap,
       onHorizontalDragEnd: (details) {
         //onSwipeRight
-        (details.primaryVelocity ?? 0) > 0 ? widget.onSwipeRight?.call() : false;
+        (details.primaryVelocity ?? 0) > 0
+            ? widget.onSwipeRight?.call()
+            : false;
       },
       child: Container(
-        padding: EdgeInsets.only(top: widget.showSender ? 10 : 0, bottom: widget.isLiked ? 10 : 0),
+        padding: EdgeInsets.only(
+            top: widget.showSender ? 10 : 0, bottom: widget.isLiked ? 10 : 0),
         width: double.maxFinite,
-        color: widget.isSelected ? const Color.fromARGB(117, 96, 125, 139) : Colors.transparent,
+        color: widget.isSelected
+            ? const Color.fromARGB(117, 96, 125, 139)
+            : Colors.transparent,
         child: Align(
-          alignment: widget.isIncoming ? Alignment.centerLeft : Alignment.centerRight,
+          alignment:
+              widget.isIncoming ? Alignment.centerLeft : Alignment.centerRight,
           child: FractionallySizedBox(
             widthFactor: 0.9,
             child: Align(
-              alignment: widget.isIncoming ? Alignment.topLeft : Alignment.topRight,
+              alignment:
+                  widget.isIncoming ? Alignment.topLeft : Alignment.topRight,
               child: Container(
                 constraints: const BoxConstraints(minWidth: 150),
                 decoration: BoxDecoration(
                   color: widget.isIncoming
-                      ? Theme.of(context).colorScheme.surfaceVariant
+                      ? Theme.of(context).colorScheme.surfaceContainerHighest
                       : Theme.of(context).colorScheme.inverseSurface,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(widget.showSender && widget.isIncoming ? 0 : 10),
-                    topRight: Radius.circular(widget.showSender && !widget.isIncoming ? 0 : 10),
+                    topLeft: Radius.circular(
+                        widget.showSender && widget.isIncoming ? 0 : 10),
+                    topRight: Radius.circular(
+                        widget.showSender && !widget.isIncoming ? 0 : 10),
                     bottomLeft: const Radius.circular(10),
                     bottomRight: const Radius.circular(10),
                   ),
@@ -116,7 +125,9 @@ class _MessageBaloonState extends State<MessageBaloon> {
                               ),
                         SizedBox(height: widget.forwarded ? 5 : 0),
                         // sender
-                        widget.showSender ? Text(widget.sender) : const SizedBox(),
+                        widget.showSender
+                            ? Text(widget.sender)
+                            : const SizedBox(),
                         SizedBox(height: widget.showSender ? 5 : 0),
                         // reply
                         widget.replyTo ?? const SizedBox(),
@@ -134,7 +145,8 @@ class _MessageBaloonState extends State<MessageBaloon> {
                             right: widget.isIncoming ? null : -5,
                             left: !widget.isIncoming ? null : -5,
                             bottom: -32,
-                            child: const Icon(Icons.favorite, color: Colors.red),
+                            child:
+                                const Icon(Icons.favorite, color: Colors.red),
                           ),
                     // edited tag + timestamp
                     Positioned(
@@ -146,8 +158,9 @@ class _MessageBaloonState extends State<MessageBaloon> {
                           children: [
                             Text(
                               widget.isEdited ? 'edited  •  ' : '',
-                              style:
-                                  const TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+                              style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontStyle: FontStyle.italic),
                             ),
                             Text(
                               widget.timestamp,

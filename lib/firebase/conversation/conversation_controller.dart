@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:the_bottle/components/dialog/input_from_modal_bottom_sheet.dart';
-import 'package:the_bottle/components/message_baloon.dart';
+import 'package:the_bottle/components/conversation_components/message_baloon.dart';
 import 'package:the_bottle/pages/conversation_page.dart';
 import 'package:the_bottle/pages/conversations_page.dart';
 import 'package:the_bottle/util/copy_text_to_clipboard.dart';
@@ -109,18 +109,23 @@ class ConversationController {
   Future<void> initController() async {
     if (_initialized) return;
 
-    _conversationRef = FirebaseFirestore.instance.collection('Conversations').doc(conversationId);
+    _conversationRef = FirebaseFirestore.instance
+        .collection('Conversations')
+        .doc(conversationId);
 
     _conversationParticipantsEmail =
         List<String>.from((await _conversationRef.get())['participants']);
 
     if (_conversationParticipantsEmail[0] != _currentUser.email!) {
-      _conversationParticipantsEmail = _conversationParticipantsEmail.reversed.toList();
+      _conversationParticipantsEmail =
+          _conversationParticipantsEmail.reversed.toList();
     }
 
     _conversationParticipantsUsernames = {
-      _conversationParticipantsEmail[0]: await getUserName(_conversationParticipantsEmail[0]),
-      _conversationParticipantsEmail[1]: await getUserName(_conversationParticipantsEmail[1]),
+      _conversationParticipantsEmail[0]:
+          await getUserName(_conversationParticipantsEmail[0]),
+      _conversationParticipantsEmail[1]:
+          await getUserName(_conversationParticipantsEmail[1]),
     };
 
     _initialized = true;
@@ -128,7 +133,9 @@ class ConversationController {
   }
 
   Future<bool> hasMessages() async {
-    return (await _conversationRef.collection('Messages').get()).docs.isNotEmpty;
+    return (await _conversationRef.collection('Messages').get())
+        .docs
+        .isNotEmpty;
   }
 
   Future<void> markConversationAsSeenForCurrentUser() async {
@@ -248,7 +255,8 @@ class ConversationController {
 
   Future<void> toggleMessageLike(String messageId) async {
     bool? isLiked =
-        (await _conversationRef.collection('Messages').doc(messageId).get()).data()?['liked'];
+        (await _conversationRef.collection('Messages').doc(messageId).get())
+            .data()?['liked'];
     isLiked = isLiked ?? false;
     await _conversationRef.collection('Messages').doc(messageId).set(
       {'liked': !isLiked},
@@ -268,14 +276,17 @@ class ConversationController {
   }
 
   void _createMessageOptions() {
-    bool isUserSender = _selectedMessageData!['sender']! as String == _currentUser.email;
+    bool isUserSender =
+        _selectedMessageData!['sender']! as String == _currentUser.email;
 
     _messageOptions = [];
 
     // can reply
-    _messageOptions.add(IconButton(onPressed: replyToMessage, icon: const Icon(Icons.reply)));
+    _messageOptions.add(
+        IconButton(onPressed: replyToMessage, icon: const Icon(Icons.reply)));
     // can show info
-    _messageOptions.add(IconButton(onPressed: _messageInfo, icon: const Icon(Icons.info_outline)));
+    _messageOptions.add(IconButton(
+        onPressed: _messageInfo, icon: const Icon(Icons.info_outline)));
     // can delete
     if (isUserSender) {
       _messageOptions.add(IconButton(
@@ -284,15 +295,18 @@ class ConversationController {
       ));
     }
     // can copy
-    _messageOptions.add(IconButton(onPressed: _copyMessageText, icon: const Icon(Icons.copy)));
+    _messageOptions.add(
+        IconButton(onPressed: _copyMessageText, icon: const Icon(Icons.copy)));
     // can forward
     _messageOptions.add(Transform.flip(
       flipX: true,
-      child: IconButton(onPressed: _forwardMessage, icon: const Icon(Icons.reply)),
+      child:
+          IconButton(onPressed: _forwardMessage, icon: const Icon(Icons.reply)),
     ));
     // can edit
     if (isUserSender) {
-      _messageOptions.add(IconButton(onPressed: _editMessage, icon: const Icon(Icons.edit)));
+      _messageOptions.add(
+          IconButton(onPressed: _editMessage, icon: const Icon(Icons.edit)));
     }
   }
 
@@ -300,7 +314,8 @@ class ConversationController {
     if (context == null) throw "'context' must be provided";
     final sender = await getUserName(_selectedMessageData!['sender']);
     final text = _selectedMessageData!['text'];
-    final timestamp = timestampToString(_selectedMessageData!['timestamp'], absolute: true);
+    final timestamp =
+        timestampToString(_selectedMessageData!['timestamp'], absolute: true);
     await copyTextToClipboard("""
 $sender
 
@@ -317,7 +332,9 @@ $timestamp
 
     // delete message image (if exists)
     try {
-      await FirebaseStorage.instance.ref('Conversation Files/$_selectedMessageId').delete();
+      await FirebaseStorage.instance
+          .ref('Conversation Files/$_selectedMessageId')
+          .delete();
     } on FirebaseException {
       // skip
     }
@@ -425,8 +442,11 @@ $timestamp
 
     if (_selectedMessageId == null) return;
 
-    final history =
-        (await _selectedMessageRef!.collection('Edit History').orderBy('timestamp').get()).docs;
+    final history = (await _selectedMessageRef!
+            .collection('Edit History')
+            .orderBy('timestamp')
+            .get())
+        .docs;
 
     // ignore: use_build_context_synchronously
     await showDialog(
@@ -449,7 +469,8 @@ $timestamp
                 text: history[index]['newText'],
                 timestamp: timestampToString(history[index]['timestamp']),
                 messagePicture: const SizedBox(height: 0, width: 0),
-                replyTo: _selectedMessageData!.putIfAbsent('replyto', () => null),
+                replyTo:
+                    _selectedMessageData!.putIfAbsent('replyto', () => null),
                 isIncoming: _currentUser != _selectedMessageData!['sender'],
               );
             },

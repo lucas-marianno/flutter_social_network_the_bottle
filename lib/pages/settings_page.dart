@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../components/settings_tile.dart';
+import '../components/settings_components/settings_tile.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -15,7 +15,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final settingsRef = FirebaseFirestore.instance.collection('User Settings').doc(userEmail);
+    final settingsRef =
+        FirebaseFirestore.instance.collection('User Settings').doc(userEmail);
     return Scaffold(
       appBar: AppBar(
         title: const Text('S E T T I N G S'),
@@ -33,14 +34,16 @@ class _SettingsPageState extends State<SettingsPage> {
                       value: snapshot.data!['enterSendsPost'] ?? false,
                       title: 'enterSendsPost',
                       onChanged: (value) {
-                        settingsRef.set({'enterSendsPost': value}, SetOptions(merge: true));
+                        settingsRef.set(
+                            {'enterSendsPost': value}, SetOptions(merge: true));
                       },
                     ),
                     SettingsTile(
                       value: snapshot.data!['darkMode'] ?? false,
                       title: 'darkMode',
                       onChanged: (value) {
-                        settingsRef.set({'darkMode': value}, SetOptions(merge: true));
+                        settingsRef
+                            .set({'darkMode': value}, SetOptions(merge: true));
                       },
                     ),
                   ],

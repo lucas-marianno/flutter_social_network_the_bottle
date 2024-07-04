@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/dialog/options_modal_bottom_sheet.dart';
-import 'package:the_bottle/components/dialog/show_dialog.dart';
+import 'package:the_bottle/components/dialog/dialog_components.dart';
 import 'package:the_bottle/firebase/conversation/conversation_controller.dart';
 import 'package:the_bottle/pages/conversation_page.dart';
 import 'package:the_bottle/pages/conversations_page.dart';
@@ -18,8 +17,8 @@ class DrawerConversations extends StatelessWidget {
         itemScrollController: null,
       );
       await conversationController.initController();
-      // ignore: use_build_context_synchronously
       await optionsFromModalBottomSheet(
+        // ignore: use_build_context_synchronously
         context,
         children: [
           ListTile(
@@ -39,7 +38,8 @@ This action is irreversible!""",
                 showActions: true,
               );
               if (result == true) {
-                conversationController.deleteConversationIfEmpty(forceDelete: true);
+                conversationController.deleteConversationIfEmpty(
+                    forceDelete: true);
               }
             },
           ),

@@ -1,10 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:the_bottle/components/list_tile.dart';
-import 'package:the_bottle/components/profile_picture.dart';
+import 'package:the_bottle/components/ui_components/ui_components.dart';
+import 'package:the_bottle/components/profile_components/profile_components.dart';
 import 'package:the_bottle/pages/image_visualizer_page.dart';
-import '../components/profile_field.dart';
 import '../firebase/account/delete_account.dart';
 import '../firebase/account/edit_bio.dart';
 import '../firebase/account/edit_username.dart';
@@ -43,12 +42,15 @@ class _ProfilePageState extends State<ProfilePage> {
         title: const Text('P R O F I L E'),
       ),
       body: StreamBuilder(
-        stream:
-            FirebaseFirestore.instance.collection('User Profile').doc(widget.userEmail).snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('User Profile')
+            .doc(widget.userEmail)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data!.data() != null) {
             final profileData = snapshot.data!.data()!;
-            username = profileData['username'] ?? widget.userEmail.split('@')[0];
+            username =
+                profileData['username'] ?? widget.userEmail.split('@')[0];
             bio = profileData['bio'] ?? 'Write about yourself here...';
             final pictureUrl = profileData['pictureUrl'];
             return Padding(
@@ -77,12 +79,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         widget.userEmail != currentUser.email
                             ? Container()
                             : IconButton(
-                                onPressed: () =>
-                                    pickAndUploadProfilePicture(widget.userEmail, context),
+                                onPressed: () => pickAndUploadProfilePicture(
+                                    widget.userEmail, context),
                                 icon: CircleAvatar(
                                   backgroundColor: Colors.white,
                                   foregroundColor: Colors.grey[900],
-                                  radius: MediaQuery.of(context).size.width * 0.045,
+                                  radius:
+                                      MediaQuery.of(context).size.width * 0.045,
                                   child: const Icon(Icons.add_a_photo),
                                 ),
                               ),
@@ -109,7 +112,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   ProfileField(
                     sectionName: 'username',
                     text: username,
-                    onTap: () => editUsername(username, widget.userEmail, context),
+                    onTap: () =>
+                        editUsername(username, widget.userEmail, context),
                     editable: widget.userEmail == currentUser.email,
                   ),
                   const Flexible(child: SizedBox(height: 15)),

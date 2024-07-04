@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/textfield.dart';
+import 'package:the_bottle/components/ui_components/textfield.dart';
 import 'package:the_bottle/util/pick_image.dart';
-import '../pages/image_visualizer_page.dart';
+import '../../pages/image_visualizer_page.dart';
 
 class InputField extends StatefulWidget {
   const InputField({
@@ -41,7 +41,8 @@ class _InputFieldState extends State<InputField> {
 
   @override
   void initState() {
-    textEditingController = widget.textEditingController ?? TextEditingController();
+    textEditingController =
+        widget.textEditingController ?? TextEditingController();
     super.initState();
   }
 
@@ -87,10 +88,13 @@ class _InputFieldState extends State<InputField> {
                     controller: textEditingController,
                     maxLength: 500,
                     hintText: widget.hintText ??
-                        (loadedImage == null ? 'Write your post' : 'Write your description'),
+                        (loadedImage == null
+                            ? 'Write your post'
+                            : 'Write your description'),
                     onChanged: () => setState(() {}),
                     onSubmited: () {
-                      widget.onSendTap?.call(textEditingController.text, loadedImage);
+                      widget.onSendTap
+                          ?.call(textEditingController.text, loadedImage);
                       unSelectImage();
                       textEditingController.clear();
                     },
@@ -108,7 +112,8 @@ class _InputFieldState extends State<InputField> {
                           if (widget.dismissKeyboardOnSend) {
                             FocusManager.instance.primaryFocus?.unfocus();
                           }
-                          widget.onSendTap?.call(textEditingController.text, loadedImage);
+                          widget.onSendTap
+                              ?.call(textEditingController.text, loadedImage);
                           textEditingController.clear();
                           unSelectImage();
                         },

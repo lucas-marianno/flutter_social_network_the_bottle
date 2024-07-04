@@ -14,14 +14,17 @@ class Username extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: BoxConstraints.loose(Size(MediaQuery.of(context).size.width - 200, 50)),
+      constraints: BoxConstraints.loose(
+          Size(MediaQuery.of(context).size.width - 200, 50)),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
           child: StreamBuilder(
-            stream:
-                FirebaseFirestore.instance.collection('User Profile').doc(userEmail).snapshots(),
+            stream: FirebaseFirestore.instance
+                .collection('User Profile')
+                .doc(userEmail)
+                .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data!.data() != null) {
                 return Text(

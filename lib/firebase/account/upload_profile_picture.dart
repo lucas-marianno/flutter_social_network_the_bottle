@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:the_bottle/firebase/is_current_user.dart';
-import '../../components/list_tile.dart';
-import '../../components/dialog/options_modal_bottom_sheet.dart';
+import '../../components/ui_components/list_tile.dart';
+import '../../components/dialog/dialog_components.dart';
 
 void pickAndUploadProfilePicture(String userEmail, BuildContext context) async {
   if (!isCurrentUser(userEmail)) return;
 
   // prompt user to select camera or gallery
-  final ImageSource? imgSource = await optionsFromModalBottomSheet(context, children: [
+  final ImageSource? imgSource =
+      await optionsFromModalBottomSheet(context, children: [
     MyListTile(
       iconData: Icons.camera,
       text: 'Open camera',
@@ -57,9 +58,13 @@ void pickAndUploadProfilePicture(String userEmail, BuildContext context) async {
 
   // img and thumbnail urls
   final String imgStorageUrl = await imgUploadTask.ref.getDownloadURL();
-  final String thumbnailStorageUrl = await thumbnailUploadTask.ref.getDownloadURL();
+  final String thumbnailStorageUrl =
+      await thumbnailUploadTask.ref.getDownloadURL();
 
   // save image download URL to database in UserProfile/picture
-  await FirebaseFirestore.instance.collection('User Profile').doc(userEmail).set(
-      {'pictureUrl': imgStorageUrl, 'thumbnailUrl': thumbnailStorageUrl}, SetOptions(merge: true));
+  await FirebaseFirestore.instance
+      .collection('User Profile')
+      .doc(userEmail)
+      .set({'pictureUrl': imgStorageUrl, 'thumbnailUrl': thumbnailStorageUrl},
+          SetOptions(merge: true));
 }

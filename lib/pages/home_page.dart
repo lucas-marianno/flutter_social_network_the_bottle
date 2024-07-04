@@ -1,14 +1,10 @@
+import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:the_bottle/components/drawer_conversation.dart';
-import 'package:the_bottle/components/input_field.dart';
-import 'package:the_bottle/components/post.dart';
-import 'package:the_bottle/components/post_header.dart';
-import 'package:the_bottle/components/post_picture.dart';
 import 'package:the_bottle/firebase/post/create_post.dart';
-import '../components/blurred_appbar.dart';
-import '../components/drawer_navigation.dart';
+import '../components/drawer_components/drawer_components.dart';
+import '../components/ui_components/ui_components.dart';
+import '../components/post_components/post_components.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -70,7 +66,9 @@ class _HomePageState extends State<HomePage> {
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
                         final post = snapshot.data!.docs[index];
-                        final isEdited = post.data().containsKey('Edited') ? post['Edited'] : false;
+                        final isEdited = post.data().containsKey('Edited')
+                            ? post['Edited']
+                            : false;
                         String? postPictureUrl;
                         try {
                           postPictureUrl = post['Post Picture'];

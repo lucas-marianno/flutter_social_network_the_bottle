@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_bottle/components/profile_picture.dart';
+import 'package:the_bottle/components/profile_components/profile_picture.dart';
 import 'package:the_bottle/pages/about_page.dart';
 import 'package:the_bottle/pages/profile_page.dart';
-import '../pages/settings_page.dart';
-import 'list_tile.dart';
+import '../../pages/settings_page.dart';
+import '../ui_components/list_tile.dart';
 
 class DrawerNavigation extends StatelessWidget {
   const DrawerNavigation({
@@ -61,7 +61,8 @@ class DrawerNavigation extends StatelessWidget {
                   MyListTile(
                     iconData: Icons.person,
                     text: 'P R O F I L E',
-                    onTap: () => goToPage(ProfilePage(userEmail: currentUser.email!)),
+                    onTap: () =>
+                        goToPage(ProfilePage(userEmail: currentUser.email!)),
                   ),
                   MyListTile(
                     iconData: Icons.settings,

@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import '../pages/image_visualizer_page.dart';
+import '../../pages/image_visualizer_page.dart';
 
 class PostPicture extends StatelessWidget {
   const PostPicture({
@@ -27,7 +27,8 @@ class PostPicture extends StatelessWidget {
           onTap: onTap ??
               () => Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => ImageVisualizerPage(imageUrl: postImageUrl),
+                      builder: (context) =>
+                          ImageVisualizerPage(imageUrl: postImageUrl),
                     ),
                   ),
           child: CachedNetworkImage(
